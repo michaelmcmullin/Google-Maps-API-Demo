@@ -9,6 +9,8 @@ body {
   position: relative;
   font-family: 'Open Sans', sans-serif;
 }
+
+/* Header */
 #header {
   position: relative;
   box-sizing: border-box;
@@ -31,6 +33,8 @@ h1 {
   font-weight: normal;
   font-size: 24px;
 }
+
+/* Control Panel */
 #main_controls {
   position: absolute;
   display: block;
@@ -58,6 +62,29 @@ h1 {
   color: #fff;
 }
 
+/* About Modal */
+#about-modal {
+  display: none;
+  position: absolute;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: rgba(0,0,0,0.75);
+}
+#about-modal-content {
+  background: #fff;
+  margin: 10% auto;
+  padding: 24px;
+  width: 60%;
+}
+.close {
+  float: right;
+  cursor: pointer;
+}
+/* Map */
 #map {
 	bottom:0px;
 	height: 100%;

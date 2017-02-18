@@ -253,6 +253,14 @@ function initMap() {
   $('#toggle-drawing-circle').on('click', function() {
     toggleDrawing(drawingManager, google.maps.drawing.OverlayType.CIRCLE, $(this));
   });
+  
+  $('#about-button').on('click', function() {
+    $('#about-modal').show();
+  });
+  $('#about-modal .close').on('click', function() {
+    $('#about-modal').fadeOut();
+  });
+ 
 
   $('#zoom-to-area').on('click', zoomToArea);
   $('#search-within-time').on('click', searchWithinTime);
