@@ -120,6 +120,19 @@ h1 {
 	right: 0px;
   z-index: 0;
 }
+
+/* Directions */
+#directions-panel {
+	position: absolute;
+	z-index: 600;
+	top: 100px;
+	right: 10px;
+  width: 25%;
+  background: #fff;
+  padding: 24px;
+	display: none;
+}
+
 .options-box {
 	position: absolute;
 	margin-top: 10px;

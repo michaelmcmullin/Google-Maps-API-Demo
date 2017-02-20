@@ -170,7 +170,7 @@ function initMap() {
   $('#toggle-transit').on('click', toggleTransit);
   $('#toggle-bicycling').on('click', toggleBicycling);
 
-  $('#directions-close-button').on('click', removeDirectionsPanel);
+  $('#directions-panel .close').on('click', removeDirectionsPanel);
   
   $('#toggle-search').on('click', function() {
     $('#search-panel').slideToggle("fast");
@@ -651,6 +651,7 @@ function displayDirections(origin) {
         );
         populateDirectionsPanel(response);
         $('#directions-panel').show(200);
+        $('#search-panel').slideUp('fast');
 
         directionsDisplay.addListener('directions_changed', function(){
           populateDirectionsPanel(directionsDisplay.getDirections());
@@ -706,9 +707,9 @@ function populateDirectionsPanel(directions) {
 function getManeuverIcon(maneuver) {
   switch(maneuver) {
     case 'turn-left':
-      return '<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>';
+      return '<i class="material-icons" aria-hidden="true">arrow_back</i>';
     case 'turn-right':
-      return '<span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>';
+      return '<i class="material-icons" aria-hidden="true">arrow_forward</i>';
     default:
       return '';
   }
