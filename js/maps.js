@@ -171,6 +171,10 @@ function initMap() {
   $('#toggle-bicycling').on('click', toggleBicycling);
 
   $('#directions-close-button').on('click', removeDirectionsPanel);
+  
+  $('#toggle-search').on('click', function() {
+    $('#search-panel').slideToggle("fast");
+  });
 
   // This autocomplete is for use in the search within time entry box.
   var timeAutocomplete = new google.maps.places.Autocomplete($('#search-within-time-text')[0]);

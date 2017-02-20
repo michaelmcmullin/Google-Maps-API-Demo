@@ -12,6 +12,36 @@
 <body>
   <section id="header"> 
     <h1>Find Your New NYC Home</h1>
+    <a id="toggle-search" title="Search"><i class="material-icons">search</i></a>
+    <ul id="search-panel">
+      <li>
+        <input id="zoom-to-area-text" type="text" placeholder="Enter your favorite area!" />
+        <input id="zoom-to-area" type="button" value="Zoom" />
+      </li>
+      <li>
+        <label for="places-search">Search for listings within:</label>
+        <select id="max-duration">
+          <option value="10">10 min</option>
+          <option value="15">15 min</option>
+          <option value="30">30 min</option>
+          <option value="60">1 hour</option>
+        </select>
+        <select id="mode">
+          <option value="DRIVING">drive</option>
+          <option value="WALKING">walk</option>
+          <option value="BICYCLING">bike</option>
+          <option value="TRANSIT">transit ride</option>
+        </select>
+        of:
+        <input id="search-within-time-text" type="text" placeholder="Ex: Google Office NYC or 75 9th Ave, New York, NY">
+        <input id="search-within-time" type="button" value="Go" />
+      </li>
+      <li>
+        <label for="places-search">Search for nearby places</label>
+        <input id="places-search" type="text" placeholder="Ex: Pizza delivery in NYC">
+        <input id="go-places" type="button" value="Go" />
+      </li>
+    </ul>
   </section>
   
   <section id="content">
@@ -35,38 +65,6 @@
 
     </ul>
     
-    <!-- Main control panel -->
-    <div id="control-panel">
-      <!--<h4 class="h4">Draw a shape to search within it for homes!</h4>
-      <input id="toggle-drawing" type="button" value="Display Drawing Tools">-->
-      
-      <input id="zoom-to-area-text" type="text" placeholder="Enter your favorite area!">
-      <input id="zoom-to-area" type="button" value="Zoom" />
-      
-      <label for="places-search">Search for listings within:</label>
-      <select id="max-duration">
-        <option value="10">10 min</option>
-        <option value="15">15 min</option>
-        <option value="30">30 min</option>
-        <option value="60">1 hour</option>
-      </select>
-      <select id="mode">
-        <option value="DRIVING">drive</option>
-        <option value="WALKING">walk</option>
-        <option value="BICYCLING">bike</option>
-        <option value="TRANSIT">transit ride</option>
-      </select>
-      of:
-      <input id="search-within-time-text" type="text" placeholder="Ex: Google Office NYC or 75 9th Ave, New York, NY">
-      <input id="search-within-time" type="button" value="Go" />
-      
-      <label for="places-search">Search for nearby places</label>
-      <input id="places-search" type="text" placeholder="Ex: Pizza delivery in NYC">
-      <input id="go-places" type="button" value="Go" />
-      
-      <input id="show-about" type="button" value="About This Page" data-toggle="modal" data-target="#about-modal">
-    </div>
-
     <!-- Directions panel (populated dynamically) -->
     <div id="directions-panel">
       <h3 class="panel-title">Directions</h3>
