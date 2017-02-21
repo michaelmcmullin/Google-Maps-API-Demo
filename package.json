@@ -1,0 +1,25 @@
+{
+  "name": "Google-Maps-API-Demo",
+  "version": "1.0.0",
+  "description": "My variation of the items covered in Udacity's Google Maps APIs course.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mrmcnerd/Google-Maps-API-Demo.git"
+  },
+  "keywords": [
+    "google maps api",
+    "udacity"
+  ],
+  "author": "Michael McMullin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mrmcnerd/Google-Maps-API-Demo/issues"
+  },
+  "homepage": "https://github.com/mrmcnerd/Google-Maps-API-Demo",
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-contrib-cssmin": "^2.0.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-sass": "^2.0.0"
+  }
+}
