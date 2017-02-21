@@ -23,6 +23,12 @@ module.exports = function(grunt) {
         }]
       }
     },
+    concat: {
+      dist: {
+        src: ['src/globals.js', 'src/main.js'],
+        dest: 'js/maps.js',
+      },
+    },
     watch: {
       css: {
         files: '**/*.scss',
@@ -32,6 +38,7 @@ module.exports = function(grunt) {
 	});
 	grunt.loadNpmTasks('grunt-sass');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
+  grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.registerTask('default',['sass', 'cssmin']);
+	grunt.registerTask('default',['sass', 'cssmin', 'concat']);
 }
