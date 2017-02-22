@@ -25,123 +25,122 @@ var directionsDisplay = null;
 var currentPlace = null;
 var currentPhoto = 0;
 
+var styles = [
+  {
+    "featureType": "administrative",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+          "color": "#444444"
+      }
+    ]
+  },
+  {
+    "featureType": "landscape",
+    "elementType": "all",
+    "stylers": [
+      {
+          "color": "#f2f2f2"
+      }
+    ]
+  },
+  {
+    "featureType": "landscape.man_made",
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+          "lightness": "-10"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "elementType": "all",
+    "stylers": [
+      {
+          "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+          "color": "#5cb85c"
+      },
+      {
+          "visibility": "on"
+      },
+      {
+          "lightness": "50"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "all",
+    "stylers": [
+      {
+          "saturation": -100
+      },
+      {
+          "lightness": 45
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway",
+    "elementType": "all",
+    "stylers": [
+      {
+          "visibility": "simplified"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway",
+    "elementType": "labels.icon",
+    "stylers": [
+      {
+          "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "road.arterial",
+    "elementType": "labels.icon",
+    "stylers": [
+      {
+          "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "all",
+    "stylers": [
+      {
+          "color": "#91dcfa"
+      },
+      {
+          "visibility": "on"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+          "color": "#337ab7"
+      }
+    ]
+  }
+];
+
 // Main entry point
 function initMap() {
-  // Create a styles array to use with the map.
-  var styles = [
-    {
-      "featureType": "administrative",
-      "elementType": "labels.text.fill",
-      "stylers": [
-        {
-            "color": "#444444"
-        }
-      ]
-    },
-    {
-      "featureType": "landscape",
-      "elementType": "all",
-      "stylers": [
-        {
-            "color": "#f2f2f2"
-        }
-      ]
-    },
-    {
-      "featureType": "landscape.man_made",
-      "elementType": "geometry.fill",
-      "stylers": [
-        {
-            "lightness": "-10"
-        }
-      ]
-    },
-    {
-      "featureType": "poi",
-      "elementType": "all",
-      "stylers": [
-        {
-            "visibility": "off"
-        }
-      ]
-    },
-    {
-      "featureType": "poi.park",
-      "elementType": "geometry.fill",
-      "stylers": [
-        {
-            "color": "#5cb85c"
-        },
-        {
-            "visibility": "on"
-        },
-        {
-            "lightness": "50"
-        }
-      ]
-    },
-    {
-      "featureType": "road",
-      "elementType": "all",
-      "stylers": [
-        {
-            "saturation": -100
-        },
-        {
-            "lightness": 45
-        }
-      ]
-    },
-    {
-      "featureType": "road.highway",
-      "elementType": "all",
-      "stylers": [
-        {
-            "visibility": "simplified"
-        }
-      ]
-    },
-    {
-      "featureType": "road.highway",
-      "elementType": "labels.icon",
-      "stylers": [
-        {
-            "visibility": "off"
-        }
-      ]
-    },
-    {
-      "featureType": "road.arterial",
-      "elementType": "labels.icon",
-      "stylers": [
-        {
-            "visibility": "off"
-        }
-      ]
-    },
-    {
-      "featureType": "water",
-      "elementType": "all",
-      "stylers": [
-        {
-            "color": "#91dcfa"
-        },
-        {
-            "visibility": "on"
-        }
-      ]
-    },
-    {
-      "featureType": "water",
-      "elementType": "geometry.fill",
-      "stylers": [
-        {
-            "color": "#337ab7"
-        }
-      ]
-    }
-  ];
-
   var styledMapType = new google.maps.StyledMapType(
     styles,
     {name: 'Mono'}
@@ -193,17 +192,6 @@ function initMap() {
   // Bias the searchbox to within the bounds of the map.
   searchBox.setBounds(map.getBounds());
 
-  // These are the real estate listings that will be shown to the user.
-  // Normally we'd have these in a database instead.
-  var locations = [
-    {title: 'Park Ave Penthouse', location: {lat: 40.7713024, lng: -73.9632393}},
-    {title: 'Chelsea Loft', location: {lat: 40.7444883, lng: -73.9949465}},
-    {title: 'Union Square Open Floor Plan', location: {lat: 40.7347062, lng: -73.9895759}},
-    {title: 'East Village Hip Studio', location: {lat: 40.7281777, lng: -73.984377}},
-    {title: 'TriBeCa Artsy Bachelor Pad', location: {lat: 40.7195264, lng: -74.0089934}},
-    {title: 'Chinatown Homey Space', location: {lat: 40.7180628, lng: -73.9961237}}
-  ];
-
   var largeInfowindow = new google.maps.InfoWindow();
 
   // Initialize the drawing manager.
@@ -238,7 +226,7 @@ function initMap() {
     markers.push(marker);
 
     // Create an onclick, mouseover and mouseout events to open the large
-// infowindow at each marker.
+    // infowindow at each marker.
     addMarkerEvents(marker, largeInfowindow, defaultIcon, highlightedIcon);
   }
 
@@ -307,6 +295,18 @@ function initMap() {
     //polygon.getPath().addListener('insert_at', searchWithinPolygon);
   });
 }
+
+// These are the real estate listings that will be shown to the user.
+// Normally we'd have these in a database instead.
+var locations = [
+  {title: 'Park Ave Penthouse', location: {lat: 40.7713024, lng: -73.9632393}},
+  {title: 'Chelsea Loft', location: {lat: 40.7444883, lng: -73.9949465}},
+  {title: 'Union Square Open Floor Plan', location: {lat: 40.7347062, lng: -73.9895759}},
+  {title: 'East Village Hip Studio', location: {lat: 40.7281777, lng: -73.984377}},
+  {title: 'TriBeCa Artsy Bachelor Pad', location: {lat: 40.7195264, lng: -74.0089934}},
+  {title: 'Chinatown Homey Space', location: {lat: 40.7180628, lng: -73.9961237}}
+];
+
 
 // Function to add events to a given marker.
 function addMarkerEvents(marker, infoWindow, defaultIcon, highlightedIcon) {
@@ -414,92 +414,6 @@ function makeMarkerIcon(markerColor) {
     new google.maps.Point(10, 34),
     new google.maps.Size(21,34));
   return markerImage;
-}
-
-// This shows and hides (respectively) the drawing options.
-function toggleDrawing(drawingManager, drawingmode, caller) {
-  $('#hand-tool').removeClass('selected');
-  deselectDrawingTools();
-  
-  if (drawingManager.map && caller === currentDrawingTool) {
-    drawingManager.setMap(null);
-    // In case the user drew anything, get rid of the polygon
-    if (polygon !== null) {
-      polygon.setMap(null);
-    }
-  } else {
-    drawingManager.setMap(map);
-    drawingManager.setDrawingMode(drawingmode);
-    if (polygon !== null) {
-      polygon.setMap(null);
-    }
-    caller.addClass('selected');
-    currentDrawingTool = caller;
-  }
-}
-
-// Deselect all drawing tool icons.
-function deselectDrawingTools() {
-  $('#toggle-listings').removeClass('selected');
-  $('#toggle-drawing-polygon').removeClass('selected');
-  $('#toggle-drawing-rectangle').removeClass('selected');
-  $('#toggle-drawing-circle').removeClass('selected');
-}
-
-// Disable drawing functions
-function disableDrawing(drawingManager) {
-  deselectDrawingTools();
-  $('#hand-tool').addClass('selected');
-  if (drawingManager.map) {
-    drawingManager.setMap(null);
-  }
-  if (polygon !== null) {
-    polygon.setMap(null);
-  }
-}
-
-// This function hides all markers outside the polygon,
-// and shows only the ones within it. This is so that the
-// user can specify an exact area of search.
-function searchWithinPolygon(polygon, drawingManager) {
-  var markerCount = 0;
-  for (var i = 0; i < markers.length; i++) {
-    //if (google.maps.geometry.poly.containsLocation(markers[i].position, polygon)) {
-    if (isWithinCurrentShape(markers[i].position, polygon)) {
-      markers[i].setMap(map);
-      markerCount++;
-    } else {
-      markers[i].setMap(null);
-    }
-  }
-  deselectDrawingTools();
-  if (markerCount > 0) {
-    $('#toggle-listings').addClass('selected');
-  } else {
-    $('#toggle-listings').removeClass('selected');
-  }
-  $('#hand-tool').addClass('selected');
-  if (drawingManager.map) {
-    drawingManager.setMap(null);
-  }
-}
-
-// Determine if a position is within the current drawing tool
-function isWithinCurrentShape(position, shape) {
-  var currentShape = currentDrawingTool[0].id;
-  if (currentShape) {
-    currentShape = currentShape.split('-').pop();
-    if (currentShape === 'polygon') {
-      return google.maps.geometry.poly.containsLocation(position, shape);
-    }
-    if (currentShape === 'rectangle') {
-      return shape.getBounds().contains(position);
-    }
-    if (currentShape === 'circle') {
-      return google.maps.geometry.spherical.computeDistanceBetween(position, shape.getCenter()) <= shape.getRadius();
-    }
-  }
-  return false;
 }
 
 // This function takes the input value in the find nearby area text input
@@ -623,107 +537,6 @@ function displayMarkersWithinTime(response) {
   if (!atLeastOne) { window.alert('We could not find any locations within that distance!'); }
 }
 
-// This function is in response to the user selecting "show route" on one
-// of the markers within the calculated distance. This will display the route
-// on the map.
-function displayDirections(origin) {
-  hideMarkers(markers);
-  var directionsService = new google.maps.DirectionsService();
-  // Get the destination address from the user entered value.
-  var destinationAddress = $('#search-within-time-text').val();
-  // Get mode again from the user entered value.
-  var mode = $('#mode').val();
-  directionsService.route({
-      // The origin is the passed in marker's position.
-      origin: origin,
-      // The destination is user entered address.
-      destination: destinationAddress,
-      travelMode: google.maps.TravelMode[mode]
-    }, function(response, status) {
-      if (status === google.maps.DirectionsStatus.OK) {
-        if (directionsDisplay) clearExistingDirections();
-        directionsDisplay = new google.maps.DirectionsRenderer({
-            map: map,
-            directions: response,
-            draggable: true,
-            polylineOptions: {
-              strokeColor: 'green'
-            }
-          }
-        );
-        populateDirectionsPanel(response);
-        $('#directions-panel').show(200);
-        $('#search-panel').slideUp('fast');
-
-        directionsDisplay.addListener('directions_changed', function(){
-          populateDirectionsPanel(directionsDisplay.getDirections());
-        });
-      } else {
-        window.alert('Directions request failed due to ' + status);
-      }
-    }
-  );
-}
-
-// Clear the existing directions from the map so that new directions don't
-// get too cluttered.
-function clearExistingDirections() {
-  directionsDisplay.setMap(null);
-}
-
-// Display directions in a separate panel
-function populateDirectionsPanel(directions) {
-  var steps = directions.routes[0].legs[0].steps;
-  var distance = directions.routes[0].legs[0].distance;
-  var duration = directions.routes[0].legs[0].duration;
-
-  var text = '<strong>From:</strong> ' + directions.request.origin;
-  text += '<br><strong>To:</strong> ' + directions.request.destination;
-  text += '<br><strong>Total Journey:</strong> ' + distance.text;
-  text += ' (about ' + duration.text + ')';
-  text += '<ul class="list-group top-row-margin">';
-
-  for (var i=0; i<steps.length; i++) {
-    var stepDistance = steps[i].distance;
-    var stepDuration = steps[i].duration;
-    var maneuver = steps[i].maneuver;
-
-    text += '<li class="list-group-item">' +
-      '<div class="row"><div class="col-md-2">' +
-      getManeuverIcon(maneuver) +
-      '</div>' +
-      '<div class="col-md-10">' +
-      steps[i].instructions +
-      '<div class="text-right"><small>Travel for ' +
-      stepDistance.text +
-      ' (' +
-      stepDuration.text +
-      ')</small></div></div></div></li>';
-  }
-  text += '</ul>';
-
-  $('#directions').html(text);
-}
-
-// Function to retrieve an appropriate icon for a given maneuver
-function getManeuverIcon(maneuver) {
-  switch(maneuver) {
-    case 'turn-left':
-      return '<i class="material-icons" aria-hidden="true">arrow_back</i>';
-    case 'turn-right':
-      return '<i class="material-icons" aria-hidden="true">arrow_forward</i>';
-    default:
-      return '';
-  }
-}
-
-// Remove the directions panel
-function removeDirectionsPanel() {
-  if (directionsDisplay) clearExistingDirections();
-  $('#directions-panel').hide(200);
-  searchWithinTime();
-}
-
 // This function fires when the user selects a searchbox picklist item.
 // It will do a nearby search using the selected query string or place.
 function searchBoxPlaces(searchBox) {
@@ -737,7 +550,7 @@ function searchBoxPlaces(searchBox) {
   }
 }
 
-// This function firest when the user select "go" on the places search.
+// This function fires when the user select "go" on the places search.
 // It will do a nearby search using the entered query string or place.
 function textSearchPlaces() {
   var bounds = map.getBounds();
@@ -788,7 +601,7 @@ function createMarkersForPlaces(places) {
     //    }
     //  }
     //);
-addPlaceMarkerEvents(marker, placeInfoWindow);
+    addPlaceMarkerEvents(marker, placeInfoWindow);
     placeMarkers.push(marker);
     if (place.geometry.viewport) {
       // Only geocodes have viewport.
@@ -901,6 +714,194 @@ function previousPhoto() {
     currentPhoto = next;
   }
 }
+
+// This shows and hides (respectively) the drawing options.
+function toggleDrawing(drawingManager, drawingmode, caller) {
+  $('#hand-tool').removeClass('selected');
+  deselectDrawingTools();
+  
+  if (drawingManager.map && caller === currentDrawingTool) {
+    drawingManager.setMap(null);
+    // In case the user drew anything, get rid of the polygon
+    if (polygon !== null) {
+      polygon.setMap(null);
+    }
+  } else {
+    drawingManager.setMap(map);
+    drawingManager.setDrawingMode(drawingmode);
+    if (polygon !== null) {
+      polygon.setMap(null);
+    }
+    caller.addClass('selected');
+    currentDrawingTool = caller;
+  }
+}
+
+// Deselect all drawing tool icons.
+function deselectDrawingTools() {
+  $('#toggle-listings').removeClass('selected');
+  $('#toggle-drawing-polygon').removeClass('selected');
+  $('#toggle-drawing-rectangle').removeClass('selected');
+  $('#toggle-drawing-circle').removeClass('selected');
+}
+
+// Disable drawing functions
+function disableDrawing(drawingManager) {
+  deselectDrawingTools();
+  $('#hand-tool').addClass('selected');
+  if (drawingManager.map) {
+    drawingManager.setMap(null);
+  }
+  if (polygon !== null) {
+    polygon.setMap(null);
+  }
+}
+
+// This function hides all markers outside the polygon,
+// and shows only the ones within it. This is so that the
+// user can specify an exact area of search.
+function searchWithinPolygon(polygon, drawingManager) {
+  var markerCount = 0;
+  for (var i = 0; i < markers.length; i++) {
+    //if (google.maps.geometry.poly.containsLocation(markers[i].position, polygon)) {
+    if (isWithinCurrentShape(markers[i].position, polygon)) {
+      markers[i].setMap(map);
+      markerCount++;
+    } else {
+      markers[i].setMap(null);
+    }
+  }
+  deselectDrawingTools();
+  if (markerCount > 0) {
+    $('#toggle-listings').addClass('selected');
+  } else {
+    $('#toggle-listings').removeClass('selected');
+  }
+  $('#hand-tool').addClass('selected');
+  if (drawingManager.map) {
+    drawingManager.setMap(null);
+  }
+}
+
+// Determine if a position is within the current drawing tool
+function isWithinCurrentShape(position, shape) {
+  var currentShape = currentDrawingTool[0].id;
+  if (currentShape) {
+    currentShape = currentShape.split('-').pop();
+    if (currentShape === 'polygon') {
+      return google.maps.geometry.poly.containsLocation(position, shape);
+    }
+    if (currentShape === 'rectangle') {
+      return shape.getBounds().contains(position);
+    }
+    if (currentShape === 'circle') {
+      return google.maps.geometry.spherical.computeDistanceBetween(position, shape.getCenter()) <= shape.getRadius();
+    }
+  }
+  return false;
+}
+
+// This function is in response to the user selecting "show route" on one
+// of the markers within the calculated distance. This will display the route
+// on the map.
+function displayDirections(origin) {
+  hideMarkers(markers);
+  var directionsService = new google.maps.DirectionsService();
+  // Get the destination address from the user entered value.
+  var destinationAddress = $('#search-within-time-text').val();
+  // Get mode again from the user entered value.
+  var mode = $('#mode').val();
+  directionsService.route({
+      // The origin is the passed in marker's position.
+      origin: origin,
+      // The destination is user entered address.
+      destination: destinationAddress,
+      travelMode: google.maps.TravelMode[mode]
+    }, function(response, status) {
+      if (status === google.maps.DirectionsStatus.OK) {
+        if (directionsDisplay) clearExistingDirections();
+        directionsDisplay = new google.maps.DirectionsRenderer({
+            map: map,
+            directions: response,
+            draggable: true,
+            polylineOptions: {
+              strokeColor: 'green'
+            }
+          }
+        );
+        populateDirectionsPanel(response);
+        $('#directions-panel').show(200);
+        $('#search-panel').slideUp('fast');
+
+        directionsDisplay.addListener('directions_changed', function(){
+          populateDirectionsPanel(directionsDisplay.getDirections());
+        });
+      } else {
+        window.alert('Directions request failed due to ' + status);
+      }
+    }
+  );
+}
+
+// Clear the existing directions from the map so that new directions don't
+// get too cluttered.
+function clearExistingDirections() {
+  directionsDisplay.setMap(null);
+}
+
+// Display directions in a separate panel
+function populateDirectionsPanel(directions) {
+  var steps = directions.routes[0].legs[0].steps;
+  var distance = directions.routes[0].legs[0].distance;
+  var duration = directions.routes[0].legs[0].duration;
+
+  var text = '<strong>From:</strong> ' + directions.request.origin;
+  text += '<br><strong>To:</strong> ' + directions.request.destination;
+  text += '<br><strong>Total Journey:</strong> ' + distance.text;
+  text += ' (about ' + duration.text + ')';
+  text += '<ul class="list-group top-row-margin">';
+
+  for (var i=0; i<steps.length; i++) {
+    var stepDistance = steps[i].distance;
+    var stepDuration = steps[i].duration;
+    var maneuver = steps[i].maneuver;
+
+    text += '<li class="list-group-item">' +
+      '<div class="row"><div class="col-md-2">' +
+      getManeuverIcon(maneuver) +
+      '</div>' +
+      '<div class="col-md-10">' +
+      steps[i].instructions +
+      '<div class="text-right"><small>Travel for ' +
+      stepDistance.text +
+      ' (' +
+      stepDuration.text +
+      ')</small></div></div></div></li>';
+  }
+  text += '</ul>';
+
+  $('#directions').html(text);
+}
+
+// Function to retrieve an appropriate icon for a given maneuver
+function getManeuverIcon(maneuver) {
+  switch(maneuver) {
+    case 'turn-left':
+      return '<i class="material-icons" aria-hidden="true">arrow_back</i>';
+    case 'turn-right':
+      return '<i class="material-icons" aria-hidden="true">arrow_forward</i>';
+    default:
+      return '';
+  }
+}
+
+// Remove the directions panel
+function removeDirectionsPanel() {
+  if (directionsDisplay) clearExistingDirections();
+  $('#directions-panel').hide(200);
+  searchWithinTime();
+}
+
 
 // Hide all of the transport layers, and reset their toggle buttons
 function hideLayers() {

@@ -25,7 +25,18 @@ module.exports = function(grunt) {
     },
     concat: {
       dist: {
-        src: ['src/globals.js', 'src/main.js'],
+        src: [
+          'src/globals.js',
+          'src/map-styles.js',
+          'src/main.js',
+          'src/listings.js',
+          'src/search-zoom.js',
+          'src/search-time.js',
+          'src/search-places.js',
+          'src/drawing-tools.js',
+          'src/directions-panel.js',
+          'src/transport-layers.js'
+          ],
         dest: 'js/maps.js',
       },
     },
