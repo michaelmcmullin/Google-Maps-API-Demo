@@ -26,19 +26,30 @@ module.exports = function(grunt) {
     concat: {
       dist: {
         src: [
-          'src/globals.js',
-          'src/map-styles.js',
-          'src/main.js',
-          'src/listings.js',
-          'src/search-zoom.js',
-          'src/search-time.js',
-          'src/search-places.js',
-          'src/drawing-tools.js',
-          'src/directions-panel.js',
-          'src/transport-layers.js'
+          'src/imports.ts',
+          'src/globals.ts',
+          'src/map-styles.ts',
+          'src/main.ts',
+          'src/listings.ts',
+          'src/search-zoom.ts',
+          'src/search-time.ts',
+          'src/search-places.ts',
+          'src/drawing-tools.ts',
+          'src/directions-panel.ts',
+          'src/transport-layers.ts'
           ],
-        dest: 'js/maps.js',
+        dest: 'tmp/maps.ts',
       },
+    },
+    ts: {
+      default:{
+        src: ['tmp/maps.ts'],
+        out: 'js/maps.js'
+      },
+      options: {
+          module: 'amd', //or commonjs 
+          target: 'es5' //or es3 
+      }
     },
     watch: {
       css: {
@@ -50,6 +61,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-sass');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-ts');
 	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.registerTask('default',['sass', 'cssmin', 'concat']);
+	grunt.registerTask('default',['sass', 'cssmin', 'concat','ts']);
 }

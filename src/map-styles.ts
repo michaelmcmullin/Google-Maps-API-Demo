@@ -22,7 +22,7 @@ var styles = [
     "elementType": "geometry.fill",
     "stylers": [
       {
-          "lightness": "-10"
+          "lightness": -10
       }
     ]
   },
@@ -46,7 +46,7 @@ var styles = [
           "visibility": "on"
       },
       {
-          "lightness": "50"
+          "lightness": 50
       }
     ]
   },
