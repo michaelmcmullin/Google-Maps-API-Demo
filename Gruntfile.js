@@ -43,7 +43,20 @@ module.exports = function(grunt) {
     },
     ts: {
       default:{
-        src: ['tmp/maps.ts'],
+        src: [
+          'src/imports.ts',
+          'src/globals.ts',
+          'src/map-styles.ts',
+          'src/main.ts',
+          'src/listings.ts',
+          'src/search-zoom.ts',
+          'src/search-time.ts',
+          'src/search-places.ts',
+          'src/drawing-tools.ts',
+          'src/directions-panel.ts',
+          'src/transport-layers.ts'
+        ],
+        reference: 'src/imports.ts',
         out: 'js/maps.js'
       },
       options: {
@@ -63,5 +76,5 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-ts');
 	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.registerTask('default',['sass', 'cssmin', 'concat','ts']);
+	grunt.registerTask('default',['sass', 'cssmin', 'ts']);
 }

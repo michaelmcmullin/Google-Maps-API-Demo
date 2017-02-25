@@ -37,16 +37,16 @@ function initMap() {
   });
 
   // This autocomplete is for use in the search within time entry box.
-  var timeAutocomplete = new google.maps.places.Autocomplete($('#search-within-time-text')[0]);
+  var timeAutocomplete = new google.maps.places.Autocomplete(<HTMLInputElement> $('#search-within-time-text')[0]);
 
   // This autocomplete is for use in the geocoder entry box.
-  var zoomAutocomplete = new google.maps.places.Autocomplete($('#zoom-to-area-text')[0]);
+  var zoomAutocomplete = new google.maps.places.Autocomplete(<HTMLInputElement> $('#zoom-to-area-text')[0]);
 
   // Bias the boundaries within the map for the zoom to area text.
   zoomAutocomplete.bindTo('bounds', map);
 
   // Create a searchbox in order to execute a places search
-  var searchBox = new google.maps.places.SearchBox($('#places-search')[0]);
+  var searchBox = new google.maps.places.SearchBox(<HTMLInputElement> $('#places-search')[0]);
 
   // Bias the searchbox to within the bounds of the map.
   searchBox.setBounds(map.getBounds());
