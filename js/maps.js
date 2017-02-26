@@ -417,11 +417,10 @@ function createMarkersForPlaces(places) {
             map: map,
             icon: icon,
             title: place.name,
-            position: place.geometry.location,
-            id: place.place_id
+            position: place.geometry.location
         });
         var placeInfoWindow = new google.maps.InfoWindow();
-        addPlaceMarkerEvents(marker, placeInfoWindow);
+        addPlaceMarkerEvents(marker, place.place_id, placeInfoWindow);
         placeMarkers.push(marker);
         if (place.geometry.viewport) {
             bounds.union(place.geometry.viewport);
@@ -432,20 +431,20 @@ function createMarkersForPlaces(places) {
     }
     map.fitBounds(bounds);
 }
-function addPlaceMarkerEvents(marker, infowindow) {
+function addPlaceMarkerEvents(marker, place_id, infowindow) {
     marker.addListener('click', function () {
         if (infowindow.marker == this) {
             console.log("This infowindow already is on this marker!");
         }
         else {
-            getPlacesDetails(this, infowindow);
+            getPlacesDetails(this, place_id, infowindow);
         }
     });
 }
-function getPlacesDetails(marker, infowindow) {
+function getPlacesDetails(marker, place_id, infowindow) {
     var service = new google.maps.places.PlacesService(map);
     service.getDetails({
-        placeId: marker.id
+        placeId: place_id
     }, function (place, status) {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
             infowindow.marker = marker;
@@ -470,7 +469,7 @@ function getPlacesDetails(marker, infowindow) {
                     place.opening_hours.weekday_text[6];
             }
             if (place.photos) {
-                innerHTML += '<br><br><img id="' + place.id + '_photo" src="' + place.photos[0].getUrl({ maxHeight: 100, maxWidth: 200 }) + '">';
+                innerHTML += '<br><br><img id="' + place.place_id + '_photo" src="' + place.photos[0].getUrl({ maxHeight: 100, maxWidth: 200 }) + '">';
                 if (place.photos.length > 1) {
                     innerHTML += '<br>';
                     innerHTML += place.photos.length + ' photos: ';

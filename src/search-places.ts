@@ -45,10 +45,11 @@ function createMarkersForPlaces(places) {
         map: map,
         icon: icon,
         title: place.name,
-        position: place.geometry.location,
-        id: place.place_id
+        position: place.geometry.location
+        //id: place.place_id
       }
     );
+
     // Create a single infowindow to be used with the place details information
     // so that only one is open at once.
     var placeInfoWindow = new google.maps.InfoWindow();
@@ -62,7 +63,7 @@ function createMarkersForPlaces(places) {
     //    }
     //  }
     //);
-    addPlaceMarkerEvents(marker, placeInfoWindow);
+    addPlaceMarkerEvents(marker, place.place_id, placeInfoWindow);
     placeMarkers.push(marker);
     if (place.geometry.viewport) {
       // Only geocodes have viewport.
@@ -75,13 +76,13 @@ function createMarkersForPlaces(places) {
 }
 
 // Function to add an event to a place marker.
-function addPlaceMarkerEvents(marker, infowindow) {
+function addPlaceMarkerEvents(marker:google.maps.Marker, place_id:string, infowindow) {
   // If a marker is clicked, do a place details search on it in the next function.
   marker.addListener('click', function() {
       if (infowindow.marker == this) {
         console.log("This infowindow already is on this marker!");
       } else {
-        getPlacesDetails(this, infowindow);
+        getPlacesDetails(this, place_id, infowindow);
       }
     }
   );
@@ -90,10 +91,10 @@ function addPlaceMarkerEvents(marker, infowindow) {
 // This is the PLACE DETAILS search - it's the most detailed so it's only
 // executed when a marker is selected, indicating the user wants more
 // details about that place.
-function getPlacesDetails(marker, infowindow) {
+function getPlacesDetails(marker:google.maps.Marker, place_id:string, infowindow) {
   var service = new google.maps.places.PlacesService(map);
   service.getDetails({
-      placeId: marker.id
+      placeId: place_id
     }, function(place, status) {
       if (status === google.maps.places.PlacesServiceStatus.OK) {
         // Set the marker property on this infowindow so it isn't created again.
@@ -119,7 +120,7 @@ function getPlacesDetails(marker, infowindow) {
             place.opening_hours.weekday_text[6];
         }
         if (place.photos) {
-          innerHTML += '<br><br><img id="' + place.id + '_photo" src="' + place.photos[0].getUrl(
+          innerHTML += '<br><br><img id="' + place.place_id + '_photo" src="' + place.photos[0].getUrl(
             {maxHeight: 100, maxWidth: 200}) + '">';
           if (place.photos.length > 1)
           {
