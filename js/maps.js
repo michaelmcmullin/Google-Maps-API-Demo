@@ -501,7 +501,7 @@ function nextPhoto() {
         var next = currentPhoto + 1;
         if (next >= totalPhotos)
             next = 0;
-        $('#' + currentPlace.id + '_photo').attr('src', currentPlace.photos[next].getUrl({ maxHeight: 100, maxWidth: 200 }));
+        $('#' + currentPlace.place_id + '_photo').attr('src', currentPlace.photos[next].getUrl({ maxHeight: 100, maxWidth: 200 }));
         currentPhoto = next;
     }
 }
@@ -511,7 +511,7 @@ function previousPhoto() {
         var next = currentPhoto - 1;
         if (next < 0)
             next = totalPhotos - 1;
-        $('#' + currentPlace.id + '_photo').attr('src', currentPlace.photos[next].getUrl({ maxHeight: 100, maxWidth: 200 }));
+        $('#' + currentPlace.place_id + '_photo').attr('src', currentPlace.photos[next].getUrl({ maxHeight: 100, maxWidth: 200 }));
         currentPhoto = next;
     }
 }
