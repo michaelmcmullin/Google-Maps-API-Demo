@@ -13,7 +13,7 @@ function displayDirections(origin) {
       origin: origin,
       // The destination is user entered address.
       destination: destinationAddress,
-      travelMode: google.maps.TravelMode[mode]
+      travelMode: getTravelMode(mode)
     }, function(response, status) {
       if (status === google.maps.DirectionsStatus.OK) {
         if (directionsDisplay) clearExistingDirections();

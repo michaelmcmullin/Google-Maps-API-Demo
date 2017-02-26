@@ -45,6 +45,7 @@ module.exports = function(grunt) {
       default:{
         src: [
           'src/imports.ts',
+          'src/utilities.ts',
           'src/globals.ts',
           'src/map-styles.ts',
           'src/main.ts',

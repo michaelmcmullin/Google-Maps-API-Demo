@@ -26,7 +26,7 @@ function searchWithinTime() {
     distanceMatrixService.getDistanceMatrix({
         origins: origins,
         destinations: [destination],
-        travelMode: google.maps.TravelMode[mode],
+        travelMode: getTravelMode(mode),
         unitSystem: google.maps.UnitSystem.IMPERIAL,
       }, function(response, status) {
         if (status !== google.maps.DistanceMatrixStatus.OK) {

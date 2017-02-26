@@ -77,8 +77,8 @@ function initMap() {
       position: position,
       title: title,
       animation: google.maps.Animation.DROP,
-      icon: defaultIcon,
-      id: i
+      icon: defaultIcon
+      // id: i
     });
 
     // Push the marker to our array of markers.

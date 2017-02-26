@@ -1,3 +1,15 @@
+function getTravelMode(mode) {
+    switch (mode.toUpperCase()) {
+        case 'DRIVING':
+            return google.maps.TravelMode.DRIVING;
+        case 'BICYCLING':
+            return google.maps.TravelMode.BICYCLING;
+        case 'TRANSIT':
+            return google.maps.TravelMode.TRANSIT;
+        case 'WALKING':
+            return google.maps.TravelMode.WALKING;
+    }
+}
 var map;
 var markers = [];
 var polygon = null;
@@ -166,8 +178,7 @@ function initMap() {
             position: position,
             title: title,
             animation: google.maps.Animation.DROP,
-            icon: defaultIcon,
-            id: i
+            icon: defaultIcon
         });
         markers.push(marker);
         addMarkerEvents(marker, largeInfowindow, defaultIcon, highlightedIcon);
@@ -324,7 +335,7 @@ function searchWithinTime() {
         distanceMatrixService.getDistanceMatrix({
             origins: origins,
             destinations: [destination],
-            travelMode: google.maps.TravelMode[mode],
+            travelMode: getTravelMode(mode),
             unitSystem: google.maps.UnitSystem.IMPERIAL,
         }, function (response, status) {
             if (status !== google.maps.DistanceMatrixStatus.OK) {
@@ -581,7 +592,7 @@ function displayDirections(origin) {
     directionsService.route({
         origin: origin,
         destination: destinationAddress,
-        travelMode: google.maps.TravelMode[mode]
+        travelMode: getTravelMode(mode)
     }, function (response, status) {
         if (status === google.maps.DirectionsStatus.OK) {
             if (directionsDisplay)
