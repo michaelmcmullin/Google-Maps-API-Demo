@@ -1,26 +1,26 @@
 // The original tutorial code used a lot of globals. Hopefully these will
 // disappear in time.
-var map;
+//var map;
 
 // Create a new blank array for all the listing markers.
-var markers = [];
+//var markers = [];
 
 // This global polygon variable is to ensure only ONE polygon is rendered.
-var polygon = null;
-var currentDrawingTool = null;
+//var polygon = null;
+//var currentDrawingTool = null;
 
 // Create placemarkers array to use in multiple functions to have control
 // over the number of places that show.
-var placeMarkers = [];
+//var placeMarkers = [];
 
 // Add Traffic Layers
-var trafficLayer = null;
-var transitLayer = null;
-var bikeLayer = null;
+//var trafficLayer = null;
+//var transitLayer = null;
+//var bikeLayer = null;
 
 // Route layers
-var directionsDisplay = null;
+//var directionsDisplay = null;
 
 // Place details
-var currentPlace = null;
-var currentPhoto = 0;
+//var currentPlace = null;
+//var currentPhoto = 0;

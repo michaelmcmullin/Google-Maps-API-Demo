@@ -1,5 +1,5 @@
 // Hide all of the transport layers, and reset their toggle buttons
-function hideLayers() {
+function hideLayers(trafficLayer, transitLayer, bikeLayer) {
   trafficLayer.setMap(null);
   transitLayer.setMap(null);
   bikeLayer.setMap(null);
@@ -10,9 +10,9 @@ function hideLayers() {
 }
 
 // Toggle the traffic button and layer
-function toggleTraffic() {
+function toggleTraffic(map, trafficLayer, transitLayer, bikeLayer) {
   if (trafficLayer.getMap() === null) {
-    hideLayers();
+    hideLayers(trafficLayer, transitLayer, bikeLayer);
     trafficLayer.setMap(map);
     $('#toggle-traffic').addClass('selected');
   } else {
@@ -22,9 +22,9 @@ function toggleTraffic() {
 }
 
 // Toggle the transit button and layer
-function toggleTransit() {
+function toggleTransit(map, trafficLayer, transitLayer, bikeLayer) {
   if (transitLayer.getMap() === null) {
-    hideLayers();
+    hideLayers(trafficLayer, transitLayer, bikeLayer);
     transitLayer.setMap(map);
     $('#toggle-transit').addClass('selected');
   } else {
@@ -34,9 +34,9 @@ function toggleTransit() {
 }
 
 // Toggle the bicycling button and layer
-function toggleBicycling() {
+function toggleBicycling(map, trafficLayer, transitLayer, bikeLayer) {
   if (bikeLayer.getMap() === null) {
-    hideLayers();
+    hideLayers(trafficLayer, transitLayer, bikeLayer);
     bikeLayer.setMap(map);
     $('#toggle-bicycling').addClass('selected');
   } else {

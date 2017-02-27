@@ -1,19 +1,19 @@
 // This function fires when the user selects a searchbox picklist item.
 // It will do a nearby search using the selected query string or place.
-function searchBoxPlaces(searchBox) {
+function searchBoxPlaces(searchBox, map, placeMarkers, currentPlace, currentPhoto) {
   hideMarkers(placeMarkers);
   var places = searchBox.getPlaces();
   if (places.length === 0) {
     window.alert('We did not find any places matching that search!');
   } else {
     // For each place, get the icon, name and location.
-    createMarkersForPlaces(places);
+    createMarkersForPlaces(places, map, placeMarkers, currentPlace, currentPhoto);
   }
 }
 
 // This function fires when the user select "go" on the places search.
 // It will do a nearby search using the entered query string or place.
-function textSearchPlaces() {
+function textSearchPlaces(map, placeMarkers, currentPlace, currentPhoto) {
   var bounds = map.getBounds();
   hideMarkers(placeMarkers);
   var placesService = new google.maps.places.PlacesService(map);
@@ -22,14 +22,14 @@ function textSearchPlaces() {
       bounds: bounds
     }, function(results, status) {
       if (status === google.maps.places.PlacesServiceStatus.OK) {
-        createMarkersForPlaces(results);
+        createMarkersForPlaces(results, map, placeMarkers, currentPlace, currentPhoto);
       }
     }
   );
 }
 
 // This function creates markers for each place found in either places search.
-function createMarkersForPlaces(places) {
+function createMarkersForPlaces(places, map, placeMarkers, currentPlace, currentPhoto) {
   var bounds = new google.maps.LatLngBounds();
   for (var i = 0; i < places.length; i++) {
     var place = places[i];
@@ -63,7 +63,7 @@ function createMarkersForPlaces(places) {
     //    }
     //  }
     //);
-    addPlaceMarkerEvents(marker, place.place_id, placeInfoWindow);
+    addPlaceMarkerEvents(marker, place.place_id, placeInfoWindow, map, currentPlace, currentPhoto);
     placeMarkers.push(marker);
     if (place.geometry.viewport) {
       // Only geocodes have viewport.
@@ -76,13 +76,13 @@ function createMarkersForPlaces(places) {
 }
 
 // Function to add an event to a place marker.
-function addPlaceMarkerEvents(marker:google.maps.Marker, place_id:string, infowindow) {
+function addPlaceMarkerEvents(marker:google.maps.Marker, place_id:string, infowindow, map, currentPlace, currentPhoto) {
   // If a marker is clicked, do a place details search on it in the next function.
   marker.addListener('click', function() {
       if (infowindow.marker == this) {
         console.log("This infowindow already is on this marker!");
       } else {
-        getPlacesDetails(this, place_id, infowindow);
+        getPlacesDetails(this, place_id, infowindow, map, currentPlace, currentPhoto);
       }
     }
   );
@@ -91,7 +91,7 @@ function addPlaceMarkerEvents(marker:google.maps.Marker, place_id:string, infowi
 // This is the PLACE DETAILS search - it's the most detailed so it's only
 // executed when a marker is selected, indicating the user wants more
 // details about that place.
-function getPlacesDetails(marker:google.maps.Marker, place_id:string, infowindow) {
+function getPlacesDetails(marker:google.maps.Marker, place_id:string, infowindow, map, currentPlace, currentPhoto) {
   var service = new google.maps.places.PlacesService(map);
   service.getDetails({
       placeId: place_id
@@ -146,7 +146,7 @@ function getPlacesDetails(marker:google.maps.Marker, place_id:string, infowindow
 }
 
 // Get next photo
-function nextPhoto() {
+function nextPhoto(currentPlace, currentPhoto) {
   if (currentPlace) {
     var totalPhotos = currentPlace.photos.length;
     var next = currentPhoto + 1;
@@ -162,7 +162,7 @@ function nextPhoto() {
 }
 
 // Get previous photo
-function previousPhoto() {
+function previousPhoto(currentPlace, currentPhoto) {
   if (currentPlace) {
     var totalPhotos = currentPlace.photos.length;
     var next = currentPhoto - 1;

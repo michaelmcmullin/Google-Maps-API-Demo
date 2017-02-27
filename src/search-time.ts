@@ -1,7 +1,7 @@
 // This function allows the user to input a desired travel time, in
 // minutes, and a travel mode, and a location - and only show the listings
 // that are within that travel time (via that travel mode) of the location
-function searchWithinTime() {
+function searchWithinTime(markers, map, directionsDisplay) {
   // Initialize the distance matrix service.
   var distanceMatrixService = new google.maps.DistanceMatrixService();
   var address = $('#search-within-time-text').val();
@@ -32,7 +32,7 @@ function searchWithinTime() {
         if (status !== google.maps.DistanceMatrixStatus.OK) {
           window.alert('Error was: ' + status);
         } else {
-          displayMarkersWithinTime(response);
+          displayMarkersWithinTime(response, map, markers, directionsDisplay);
         }
       }
     );
@@ -41,7 +41,7 @@ function searchWithinTime() {
 
 // This function will go through each of the results, and,
 // if the distance is LESS than the value in the picker, show it on the map.
-function displayMarkersWithinTime(response) {
+function displayMarkersWithinTime(response, map, markers, directionsDisplay) {
   var maxDuration = $('#max-duration').val();
   var origins = response.originAddresses;
   var destinations = response.destinationAddresses;
@@ -73,9 +73,12 @@ function displayMarkersWithinTime(response) {
           var infowindow = new google.maps.InfoWindow({
               content: durationText + ' away, ' + distanceText +
                 '<div><input type="button" class="btn btn-default" value=\"View Route\" onclick =' +
-                '"displayDirections(&quot;' + origins[i] + '&quot;);"></input></div>'
+                '"viewRoute(&quot;' + origins[i] + '&quot;);"></input></div>'
             }
           );
+          function viewRoute(origin) {
+            displayDirections(map, origin, markers, directionsDisplay);
+          };
           infowindow.open(map, markers[i]);
           // Put this in so that this small window closes if the user clicks
           // the marker, when the big infowindow opens

@@ -1,6 +1,6 @@
 
 // This shows and hides (respectively) the drawing options.
-function toggleDrawing(drawingManager, drawingmode, caller) {
+function toggleDrawing(map, drawingManager, drawingmode, caller, currentDrawingTool, polygon) {
   $('#hand-tool').removeClass('selected');
   deselectDrawingTools();
   
@@ -19,6 +19,7 @@ function toggleDrawing(drawingManager, drawingmode, caller) {
     caller.addClass('selected');
     currentDrawingTool = caller;
   }
+  return currentDrawingTool;
 }
 
 // Deselect all drawing tool icons.
@@ -30,7 +31,7 @@ function deselectDrawingTools() {
 }
 
 // Disable drawing functions
-function disableDrawing(drawingManager) {
+function disableDrawing(drawingManager, polygon) {
   deselectDrawingTools();
   $('#hand-tool').addClass('selected');
   if (drawingManager.map) {
@@ -44,11 +45,11 @@ function disableDrawing(drawingManager) {
 // This function hides all markers outside the polygon,
 // and shows only the ones within it. This is so that the
 // user can specify an exact area of search.
-function searchWithinPolygon(polygon, drawingManager) {
+function searchWithinPolygon(polygon, drawingManager, markers, map, currentDrawingTool) {
   var markerCount = 0;
   for (var i = 0; i < markers.length; i++) {
     //if (google.maps.geometry.poly.containsLocation(markers[i].position, polygon)) {
-    if (isWithinCurrentShape(markers[i].position, polygon)) {
+    if (isWithinCurrentShape(markers[i].position, polygon, currentDrawingTool)) {
       markers[i].setMap(map);
       markerCount++;
     } else {
@@ -68,7 +69,7 @@ function searchWithinPolygon(polygon, drawingManager) {
 }
 
 // Determine if a position is within the current drawing tool
-function isWithinCurrentShape(position, shape) {
+function isWithinCurrentShape(position, shape, currentDrawingTool) {
   var currentShape = currentDrawingTool[0].id;
   if (currentShape) {
     currentShape = currentShape.split('-').pop();

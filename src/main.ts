@@ -1,5 +1,34 @@
 // Main entry point
 function initMap() {
+  // From globals:
+  var map;
+
+  // Create a new blank array for all the listing markers.
+  var markers = [];
+
+  // This global polygon variable is to ensure only ONE polygon is rendered.
+  var polygon = null;
+  var currentDrawingTool = null;
+
+  // Create placemarkers array to use in multiple functions to have control
+  // over the number of places that show.
+  var placeMarkers = [];
+
+  // Add Traffic Layers
+  var trafficLayer = null;
+  var transitLayer = null;
+  var bikeLayer = null;
+
+  // Route layers
+  var directionsDisplay = null;
+
+  // Place details
+  var currentPlace = null;
+  var currentPhoto = 0;
+  
+  // End Globals
+
+
   var styledMapType = new google.maps.StyledMapType(
     styles,
     {name: 'Mono'}
@@ -26,11 +55,11 @@ function initMap() {
   trafficLayer.setMap(null);
   transitLayer.setMap(null);
   bikeLayer.setMap(null);
-  $('#toggle-traffic').on('click', toggleTraffic);
-  $('#toggle-transit').on('click', toggleTransit);
-  $('#toggle-bicycling').on('click', toggleBicycling);
+  $('#toggle-traffic').on('click', function() { toggleTraffic(map, trafficLayer, transitLayer, bikeLayer); });
+  $('#toggle-transit').on('click', function() { toggleTransit(map, trafficLayer, transitLayer, bikeLayer); });
+  $('#toggle-bicycling').on('click', function() { toggleBicycling(map, trafficLayer, transitLayer, bikeLayer); });
 
-  $('#directions-panel .close').on('click', removeDirectionsPanel);
+  $('#directions-panel .close').on('click', function() { removeDirectionsPanel(directionsDisplay, markers, map); });
   
   $('#toggle-search').on('click', function() {
     $('#search-panel').slideToggle("fast");
@@ -86,25 +115,25 @@ function initMap() {
 
     // Create an onclick, mouseover and mouseout events to open the large
     // infowindow at each marker.
-    addMarkerEvents(marker, largeInfowindow, defaultIcon, highlightedIcon);
+    addMarkerEvents(map, marker, largeInfowindow, defaultIcon, highlightedIcon);
   }
 
   $('#toggle-listings').on('click', function() {
-    toggleListings(markers);
+    toggleListings(markers, map);
   });
 
   $('#hand-tool').on('click', function() {
-    disableDrawing(drawingManager);
+    disableDrawing(drawingManager, polygon);
   });
 
   $('#toggle-drawing-polygon').on('click', function() {
-    toggleDrawing(drawingManager, google.maps.drawing.OverlayType.POLYGON, $(this));
+    currentDrawingTool = toggleDrawing(map, drawingManager, google.maps.drawing.OverlayType.POLYGON, $(this), currentDrawingTool, polygon);
   });
   $('#toggle-drawing-rectangle').on('click', function() {
-    toggleDrawing(drawingManager, google.maps.drawing.OverlayType.RECTANGLE, $(this));
+    currentDrawingTool = toggleDrawing(map, drawingManager, google.maps.drawing.OverlayType.RECTANGLE, $(this), currentDrawingTool, polygon);
   });
   $('#toggle-drawing-circle').on('click', function() {
-    toggleDrawing(drawingManager, google.maps.drawing.OverlayType.CIRCLE, $(this));
+    currentDrawingTool = toggleDrawing(map, drawingManager, google.maps.drawing.OverlayType.CIRCLE, $(this), currentDrawingTool, polygon);
   });
   
   $('#about-button').on('click', function() {
@@ -115,18 +144,18 @@ function initMap() {
   });
  
 
-  $('#zoom-to-area').on('click', zoomToArea);
-  $('#search-within-time').on('click', searchWithinTime);
+  $('#zoom-to-area').on('click', function(){ zoomToArea(map); });
+  $('#search-within-time').on('click', function(){ searchWithinTime(markers, map, directionsDisplay); });
 
   // Listen for the event fired when the user selects a prediction from the
   // picklist and retrieve more details for that place.
   searchBox.addListener('places_changed', function() {
-    searchBoxPlaces(this);
+    searchBoxPlaces(this, map, placeMarkers, currentPlace, currentPhoto);
   });
 
   // Listen for the event fired when the user selects a prediction and clicks
   // "go" more details for that place.
-  $('#go-places').on('click', textSearchPlaces);
+  $('#go-places').on('click', function(){ textSearchPlaces(map, placeMarkers, currentPlace, currentPhoto); });
 
   // Add an event listener so that the polygon is captured,  call the
   // searchWithinPolygon function. This will show the markers in the polygon,
@@ -147,7 +176,7 @@ function initMap() {
     //polygon.setEditable(true);
 
     // Searching within the polygon.
-    searchWithinPolygon(polygon, drawingManager);
+    searchWithinPolygon(polygon, drawingManager, markers, map, currentDrawingTool);
 
     // Make sure the search is re-done if the poly is changed (only relevant if editable).
     //polygon.getPath().addListener('set_at', searchWithinPolygon);

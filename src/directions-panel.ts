@@ -1,7 +1,7 @@
 // This function is in response to the user selecting "show route" on one
 // of the markers within the calculated distance. This will display the route
 // on the map.
-function displayDirections(origin) {
+function displayDirections(map, origin, markers, directionsDisplay) {
   hideMarkers(markers);
   var directionsService = new google.maps.DirectionsService();
   // Get the destination address from the user entered value.
@@ -16,7 +16,7 @@ function displayDirections(origin) {
       travelMode: getTravelMode(mode)
     }, function(response, status) {
       if (status === google.maps.DirectionsStatus.OK) {
-        if (directionsDisplay) clearExistingDirections();
+        if (directionsDisplay) clearExistingDirections(directionsDisplay);
         directionsDisplay = new google.maps.DirectionsRenderer({
             map: map,
             directions: response,
@@ -42,7 +42,7 @@ function displayDirections(origin) {
 
 // Clear the existing directions from the map so that new directions don't
 // get too cluttered.
-function clearExistingDirections() {
+function clearExistingDirections(directionsDisplay) {
   directionsDisplay.setMap(null);
 }
 
@@ -93,9 +93,9 @@ function getManeuverIcon(maneuver) {
 }
 
 // Remove the directions panel
-function removeDirectionsPanel() {
-  if (directionsDisplay) clearExistingDirections();
+function removeDirectionsPanel(directionsDisplay, markers, map) {
+  if (directionsDisplay) clearExistingDirections(directionsDisplay);
   $('#directions-panel').hide(200);
-  searchWithinTime();
+  searchWithinTime(markers, map, directionsDisplay);
 }
 

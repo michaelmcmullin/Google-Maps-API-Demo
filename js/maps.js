@@ -10,17 +10,6 @@ function getTravelMode(mode) {
             return google.maps.TravelMode.WALKING;
     }
 }
-var map;
-var markers = [];
-var polygon = null;
-var currentDrawingTool = null;
-var placeMarkers = [];
-var trafficLayer = null;
-var transitLayer = null;
-var bikeLayer = null;
-var directionsDisplay = null;
-var currentPlace = null;
-var currentPhoto = 0;
 var styles = [
     {
         "featureType": "administrative",
@@ -135,6 +124,17 @@ var styles = [
     }
 ];
 function initMap() {
+    var map;
+    var markers = [];
+    var polygon = null;
+    var currentDrawingTool = null;
+    var placeMarkers = [];
+    var trafficLayer = null;
+    var transitLayer = null;
+    var bikeLayer = null;
+    var directionsDisplay = null;
+    var currentPlace = null;
+    var currentPhoto = 0;
     var styledMapType = new google.maps.StyledMapType(styles, { name: 'Mono' });
     map = new google.maps.Map($('#map')[0], {
         center: { lat: 40.7413549, lng: -73.9980244 },
@@ -152,10 +152,10 @@ function initMap() {
     trafficLayer.setMap(null);
     transitLayer.setMap(null);
     bikeLayer.setMap(null);
-    $('#toggle-traffic').on('click', toggleTraffic);
-    $('#toggle-transit').on('click', toggleTransit);
-    $('#toggle-bicycling').on('click', toggleBicycling);
-    $('#directions-panel .close').on('click', removeDirectionsPanel);
+    $('#toggle-traffic').on('click', function () { toggleTraffic(map, trafficLayer, transitLayer, bikeLayer); });
+    $('#toggle-transit').on('click', function () { toggleTransit(map, trafficLayer, transitLayer, bikeLayer); });
+    $('#toggle-bicycling').on('click', function () { toggleBicycling(map, trafficLayer, transitLayer, bikeLayer); });
+    $('#directions-panel .close').on('click', function () { removeDirectionsPanel(directionsDisplay, markers, map); });
     $('#toggle-search').on('click', function () {
         $('#search-panel').slideToggle("fast");
     });
@@ -181,22 +181,22 @@ function initMap() {
             icon: defaultIcon
         });
         markers.push(marker);
-        addMarkerEvents(marker, largeInfowindow, defaultIcon, highlightedIcon);
+        addMarkerEvents(map, marker, largeInfowindow, defaultIcon, highlightedIcon);
     }
     $('#toggle-listings').on('click', function () {
-        toggleListings(markers);
+        toggleListings(markers, map);
     });
     $('#hand-tool').on('click', function () {
-        disableDrawing(drawingManager);
+        disableDrawing(drawingManager, polygon);
     });
     $('#toggle-drawing-polygon').on('click', function () {
-        toggleDrawing(drawingManager, google.maps.drawing.OverlayType.POLYGON, $(this));
+        currentDrawingTool = toggleDrawing(map, drawingManager, google.maps.drawing.OverlayType.POLYGON, $(this), currentDrawingTool, polygon);
     });
     $('#toggle-drawing-rectangle').on('click', function () {
-        toggleDrawing(drawingManager, google.maps.drawing.OverlayType.RECTANGLE, $(this));
+        currentDrawingTool = toggleDrawing(map, drawingManager, google.maps.drawing.OverlayType.RECTANGLE, $(this), currentDrawingTool, polygon);
     });
     $('#toggle-drawing-circle').on('click', function () {
-        toggleDrawing(drawingManager, google.maps.drawing.OverlayType.CIRCLE, $(this));
+        currentDrawingTool = toggleDrawing(map, drawingManager, google.maps.drawing.OverlayType.CIRCLE, $(this), currentDrawingTool, polygon);
     });
     $('#about-button').on('click', function () {
         $('#about-modal').show();
@@ -204,19 +204,19 @@ function initMap() {
     $('#about-modal .close').on('click', function () {
         $('#about-modal').fadeOut();
     });
-    $('#zoom-to-area').on('click', zoomToArea);
-    $('#search-within-time').on('click', searchWithinTime);
+    $('#zoom-to-area').on('click', function () { zoomToArea(map); });
+    $('#search-within-time').on('click', function () { searchWithinTime(markers, map, directionsDisplay); });
     searchBox.addListener('places_changed', function () {
-        searchBoxPlaces(this);
+        searchBoxPlaces(this, map, placeMarkers, currentPlace, currentPhoto);
     });
-    $('#go-places').on('click', textSearchPlaces);
+    $('#go-places').on('click', function () { textSearchPlaces(map, placeMarkers, currentPlace, currentPhoto); });
     drawingManager.addListener('overlaycomplete', function (event) {
         if (polygon) {
             polygon.setMap(null);
             hideMarkers(markers);
         }
         polygon = event.overlay;
-        searchWithinPolygon(polygon, drawingManager);
+        searchWithinPolygon(polygon, drawingManager, markers, map, currentDrawingTool);
     });
 }
 var locations = [
@@ -227,9 +227,9 @@ var locations = [
     { title: 'TriBeCa Artsy Bachelor Pad', location: { lat: 40.7195264, lng: -74.0089934 } },
     { title: 'Chinatown Homey Space', location: { lat: 40.7180628, lng: -73.9961237 } }
 ];
-function addMarkerEvents(marker, infoWindow, defaultIcon, highlightedIcon) {
+function addMarkerEvents(map, marker, infoWindow, defaultIcon, highlightedIcon) {
     marker.addListener('click', function () {
-        populateInfoWindow(this, infoWindow);
+        populateInfoWindow(map, this, infoWindow);
     });
     marker.addListener('mouseover', function () {
         this.setIcon(highlightedIcon);
@@ -238,7 +238,7 @@ function addMarkerEvents(marker, infoWindow, defaultIcon, highlightedIcon) {
         this.setIcon(defaultIcon);
     });
 }
-function populateInfoWindow(marker, infowindow) {
+function populateInfoWindow(map, marker, infowindow) {
     function getStreetView(data, status) {
         if (status == google.maps.StreetViewStatus.OK) {
             var nearStreetViewLocation = data.location.latLng;
@@ -269,7 +269,7 @@ function populateInfoWindow(marker, infowindow) {
         infowindow.open(map, marker);
     }
 }
-function toggleListings(markers) {
+function toggleListings(markers, map) {
     var listingButton = $('#toggle-listings');
     if (listingButton.hasClass('selected')) {
         listingButton.removeClass('selected');
@@ -277,10 +277,10 @@ function toggleListings(markers) {
     }
     else {
         listingButton.addClass('selected');
-        showListings(markers);
+        showListings(markers, map);
     }
 }
-function showListings(markers) {
+function showListings(markers, map) {
     var bounds = new google.maps.LatLngBounds();
     for (var i = 0; i < markers.length; i++) {
         markers[i].setMap(map);
@@ -303,7 +303,7 @@ function makeMarkerIcon(markerColor) {
     };
     return markerImage;
 }
-function zoomToArea() {
+function zoomToArea(map) {
     var geocoder = new google.maps.Geocoder();
     var address = $('#zoom-to-area-text').val();
     if (address === '') {
@@ -324,7 +324,7 @@ function zoomToArea() {
         });
     }
 }
-function searchWithinTime() {
+function searchWithinTime(markers, map, directionsDisplay) {
     var distanceMatrixService = new google.maps.DistanceMatrixService();
     var address = $('#search-within-time-text').val();
     if (address === '') {
@@ -348,12 +348,12 @@ function searchWithinTime() {
                 window.alert('Error was: ' + status);
             }
             else {
-                displayMarkersWithinTime(response);
+                displayMarkersWithinTime(response, map, markers, directionsDisplay);
             }
         });
     }
 }
-function displayMarkersWithinTime(response) {
+function displayMarkersWithinTime(response, map, markers, directionsDisplay) {
     var maxDuration = $('#max-duration').val();
     var origins = response.originAddresses;
     var destinations = response.destinationAddresses;
@@ -372,8 +372,12 @@ function displayMarkersWithinTime(response) {
                     var infowindow = new google.maps.InfoWindow({
                         content: durationText + ' away, ' + distanceText +
                             '<div><input type="button" class="btn btn-default" value=\"View Route\" onclick =' +
-                            '"displayDirections(&quot;' + origins[i] + '&quot;);"></input></div>'
+                            '"viewRoute(&quot;' + origins[i] + '&quot;);"></input></div>'
                     });
+                    function viewRoute(origin) {
+                        displayDirections(map, origin, markers, directionsDisplay);
+                    }
+                    ;
                     infowindow.open(map, markers[i]);
                     markers[i].infowindow = infowindow;
                     google.maps.event.addListener(markers[i], 'click', function () { this.infowindow.close(); });
@@ -385,17 +389,17 @@ function displayMarkersWithinTime(response) {
         window.alert('We could not find any locations within that distance!');
     }
 }
-function searchBoxPlaces(searchBox) {
+function searchBoxPlaces(searchBox, map, placeMarkers, currentPlace, currentPhoto) {
     hideMarkers(placeMarkers);
     var places = searchBox.getPlaces();
     if (places.length === 0) {
         window.alert('We did not find any places matching that search!');
     }
     else {
-        createMarkersForPlaces(places);
+        createMarkersForPlaces(places, map, placeMarkers, currentPlace, currentPhoto);
     }
 }
-function textSearchPlaces() {
+function textSearchPlaces(map, placeMarkers, currentPlace, currentPhoto) {
     var bounds = map.getBounds();
     hideMarkers(placeMarkers);
     var placesService = new google.maps.places.PlacesService(map);
@@ -404,11 +408,11 @@ function textSearchPlaces() {
         bounds: bounds
     }, function (results, status) {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
-            createMarkersForPlaces(results);
+            createMarkersForPlaces(results, map, placeMarkers, currentPlace, currentPhoto);
         }
     });
 }
-function createMarkersForPlaces(places) {
+function createMarkersForPlaces(places, map, placeMarkers, currentPlace, currentPhoto) {
     var bounds = new google.maps.LatLngBounds();
     for (var i = 0; i < places.length; i++) {
         var place = places[i];
@@ -426,7 +430,7 @@ function createMarkersForPlaces(places) {
             position: place.geometry.location
         });
         var placeInfoWindow = new google.maps.InfoWindow();
-        addPlaceMarkerEvents(marker, place.place_id, placeInfoWindow);
+        addPlaceMarkerEvents(marker, place.place_id, placeInfoWindow, map, currentPlace, currentPhoto);
         placeMarkers.push(marker);
         if (place.geometry.viewport) {
             bounds.union(place.geometry.viewport);
@@ -437,17 +441,17 @@ function createMarkersForPlaces(places) {
     }
     map.fitBounds(bounds);
 }
-function addPlaceMarkerEvents(marker, place_id, infowindow) {
+function addPlaceMarkerEvents(marker, place_id, infowindow, map, currentPlace, currentPhoto) {
     marker.addListener('click', function () {
         if (infowindow.marker == this) {
             console.log("This infowindow already is on this marker!");
         }
         else {
-            getPlacesDetails(this, place_id, infowindow);
+            getPlacesDetails(this, place_id, infowindow, map, currentPlace, currentPhoto);
         }
     });
 }
-function getPlacesDetails(marker, place_id, infowindow) {
+function getPlacesDetails(marker, place_id, infowindow, map, currentPlace, currentPhoto) {
     var service = new google.maps.places.PlacesService(map);
     service.getDetails({
         placeId: place_id
@@ -495,7 +499,7 @@ function getPlacesDetails(marker, place_id, infowindow) {
         }
     });
 }
-function nextPhoto() {
+function nextPhoto(currentPlace, currentPhoto) {
     if (currentPlace) {
         var totalPhotos = currentPlace.photos.length;
         var next = currentPhoto + 1;
@@ -505,7 +509,7 @@ function nextPhoto() {
         currentPhoto = next;
     }
 }
-function previousPhoto() {
+function previousPhoto(currentPlace, currentPhoto) {
     if (currentPlace) {
         var totalPhotos = currentPlace.photos.length;
         var next = currentPhoto - 1;
@@ -515,7 +519,7 @@ function previousPhoto() {
         currentPhoto = next;
     }
 }
-function toggleDrawing(drawingManager, drawingmode, caller) {
+function toggleDrawing(map, drawingManager, drawingmode, caller, currentDrawingTool, polygon) {
     $('#hand-tool').removeClass('selected');
     deselectDrawingTools();
     if (drawingManager.map && caller === currentDrawingTool) {
@@ -533,6 +537,7 @@ function toggleDrawing(drawingManager, drawingmode, caller) {
         caller.addClass('selected');
         currentDrawingTool = caller;
     }
+    return currentDrawingTool;
 }
 function deselectDrawingTools() {
     $('#toggle-listings').removeClass('selected');
@@ -540,7 +545,7 @@ function deselectDrawingTools() {
     $('#toggle-drawing-rectangle').removeClass('selected');
     $('#toggle-drawing-circle').removeClass('selected');
 }
-function disableDrawing(drawingManager) {
+function disableDrawing(drawingManager, polygon) {
     deselectDrawingTools();
     $('#hand-tool').addClass('selected');
     if (drawingManager.map) {
@@ -550,10 +555,10 @@ function disableDrawing(drawingManager) {
         polygon.setMap(null);
     }
 }
-function searchWithinPolygon(polygon, drawingManager) {
+function searchWithinPolygon(polygon, drawingManager, markers, map, currentDrawingTool) {
     var markerCount = 0;
     for (var i = 0; i < markers.length; i++) {
-        if (isWithinCurrentShape(markers[i].position, polygon)) {
+        if (isWithinCurrentShape(markers[i].position, polygon, currentDrawingTool)) {
             markers[i].setMap(map);
             markerCount++;
         }
@@ -573,7 +578,7 @@ function searchWithinPolygon(polygon, drawingManager) {
         drawingManager.setMap(null);
     }
 }
-function isWithinCurrentShape(position, shape) {
+function isWithinCurrentShape(position, shape, currentDrawingTool) {
     var currentShape = currentDrawingTool[0].id;
     if (currentShape) {
         currentShape = currentShape.split('-').pop();
@@ -589,7 +594,7 @@ function isWithinCurrentShape(position, shape) {
     }
     return false;
 }
-function displayDirections(origin) {
+function displayDirections(map, origin, markers, directionsDisplay) {
     hideMarkers(markers);
     var directionsService = new google.maps.DirectionsService();
     var destinationAddress = $('#search-within-time-text').val();
@@ -601,7 +606,7 @@ function displayDirections(origin) {
     }, function (response, status) {
         if (status === google.maps.DirectionsStatus.OK) {
             if (directionsDisplay)
-                clearExistingDirections();
+                clearExistingDirections(directionsDisplay);
             directionsDisplay = new google.maps.DirectionsRenderer({
                 map: map,
                 directions: response,
@@ -622,7 +627,7 @@ function displayDirections(origin) {
         }
     });
 }
-function clearExistingDirections() {
+function clearExistingDirections(directionsDisplay) {
     directionsDisplay.setMap(null);
 }
 function populateDirectionsPanel(directions) {
@@ -663,13 +668,13 @@ function getManeuverIcon(maneuver) {
             return '';
     }
 }
-function removeDirectionsPanel() {
+function removeDirectionsPanel(directionsDisplay, markers, map) {
     if (directionsDisplay)
-        clearExistingDirections();
+        clearExistingDirections(directionsDisplay);
     $('#directions-panel').hide(200);
-    searchWithinTime();
+    searchWithinTime(markers, map, directionsDisplay);
 }
-function hideLayers() {
+function hideLayers(trafficLayer, transitLayer, bikeLayer) {
     trafficLayer.setMap(null);
     transitLayer.setMap(null);
     bikeLayer.setMap(null);
@@ -677,9 +682,9 @@ function hideLayers() {
     $('#toggle-transit').removeClass('selected');
     $('#toggle-bicycling').removeClass('selected');
 }
-function toggleTraffic() {
+function toggleTraffic(map, trafficLayer, transitLayer, bikeLayer) {
     if (trafficLayer.getMap() === null) {
-        hideLayers();
+        hideLayers(trafficLayer, transitLayer, bikeLayer);
         trafficLayer.setMap(map);
         $('#toggle-traffic').addClass('selected');
     }
@@ -688,9 +693,9 @@ function toggleTraffic() {
         $('#toggle-traffic').removeClass('selected');
     }
 }
-function toggleTransit() {
+function toggleTransit(map, trafficLayer, transitLayer, bikeLayer) {
     if (transitLayer.getMap() === null) {
-        hideLayers();
+        hideLayers(trafficLayer, transitLayer, bikeLayer);
         transitLayer.setMap(map);
         $('#toggle-transit').addClass('selected');
     }
@@ -699,9 +704,9 @@ function toggleTransit() {
         $('#toggle-transit').removeClass('selected');
     }
 }
-function toggleBicycling() {
+function toggleBicycling(map, trafficLayer, transitLayer, bikeLayer) {
     if (bikeLayer.getMap() === null) {
-        hideLayers();
+        hideLayers(trafficLayer, transitLayer, bikeLayer);
         bikeLayer.setMap(map);
         $('#toggle-bicycling').addClass('selected');
     }

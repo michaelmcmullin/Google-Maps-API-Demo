@@ -11,10 +11,10 @@ var locations = [
 
 
 // Function to add events to a given marker.
-function addMarkerEvents(marker, infoWindow, defaultIcon, highlightedIcon) {
+function addMarkerEvents(map, marker, infoWindow, defaultIcon, highlightedIcon) {
   // Create an onclick event to open the large infowindow at each marker.
   marker.addListener('click', function() {
-    populateInfoWindow(this, infoWindow);
+    populateInfoWindow(map, this, infoWindow);
   });
 
   // Two event listeners - one for mouseover, one for mouseout,
@@ -30,7 +30,7 @@ function addMarkerEvents(marker, infoWindow, defaultIcon, highlightedIcon) {
 // This function populates the infowindow when the marker is clicked. We'll only allow
 // one infowindow which will open at the marker that is clicked, and populate based
 // on that markers position.
-function populateInfoWindow(marker, infowindow) {
+function populateInfoWindow(map, marker, infowindow) {
 
   // In case the status is OK, which means the pano was found, compute the
   // position of the streetview image, then calculate the heading, then get a
@@ -53,7 +53,7 @@ function populateInfoWindow(marker, infowindow) {
     }
   }
 
-// Check to make sure the infowindow is not already opened on this marker.
+  // Check to make sure the infowindow is not already opened on this marker.
   if (infowindow.marker != marker) {
     // Clear the infowindow content to give the streetview time to load.
     infowindow.setContent('');
@@ -76,19 +76,19 @@ function populateInfoWindow(marker, infowindow) {
 }
 
 // Toggle the display of available listings.
-function toggleListings(markers) {
+function toggleListings(markers, map) {
   var listingButton = $('#toggle-listings');
   if (listingButton.hasClass('selected')) {
     listingButton.removeClass('selected');
     hideMarkers(markers);
   } else {
     listingButton.addClass('selected');
-    showListings(markers);
+    showListings(markers, map);
   }
 }
 
 // This function will loop through the markers array and display them all.
-function showListings(markers) {
+function showListings(markers, map) {
   var bounds = new google.maps.LatLngBounds();
   // Extend the boundaries of the map for each marker and display the marker
   for (var i = 0; i < markers.length; i++) {

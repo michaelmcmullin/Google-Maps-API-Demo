@@ -1,7 +1,7 @@
 // This function takes the input value in the find nearby area text input
 // locates it, and then zooms into that area. This is so that the user can
 // show all listings, then decide to focus on one area of the map.
-function zoomToArea() {
+function zoomToArea(map) {
   // Initialize the geocoder.
   var geocoder = new google.maps.Geocoder();
 
