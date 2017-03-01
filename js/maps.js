@@ -155,7 +155,6 @@ function initMap() {
     $('#toggle-traffic').on('click', function () { toggleTraffic(map, trafficLayer, transitLayer, bikeLayer); });
     $('#toggle-transit').on('click', function () { toggleTransit(map, trafficLayer, transitLayer, bikeLayer); });
     $('#toggle-bicycling').on('click', function () { toggleBicycling(map, trafficLayer, transitLayer, bikeLayer); });
-    $('#directions-panel .close').on('click', function () { removeDirectionsPanel(directionsDisplay, markers, map); });
     $('#toggle-search').on('click', function () {
         $('#search-panel').slideToggle("fast");
     });
@@ -626,6 +625,7 @@ function displayDirections(map, origin, markers, directionsDisplay) {
             window.alert('Directions request failed due to ' + status);
         }
     });
+    $('#directions-panel .close').on('click', function () { removeDirectionsPanel(directionsDisplay, markers, map); });
 }
 function clearExistingDirections(directionsDisplay) {
     directionsDisplay.setMap(null);

@@ -38,6 +38,8 @@ function displayDirections(map, origin, markers, directionsDisplay) {
       }
     }
   );
+  
+  $('#directions-panel .close').on('click', function() { removeDirectionsPanel(directionsDisplay, markers, map); });
 }
 
 // Clear the existing directions from the map so that new directions don't

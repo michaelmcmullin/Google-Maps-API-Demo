@@ -59,7 +59,7 @@ function initMap() {
   $('#toggle-transit').on('click', function() { toggleTransit(map, trafficLayer, transitLayer, bikeLayer); });
   $('#toggle-bicycling').on('click', function() { toggleBicycling(map, trafficLayer, transitLayer, bikeLayer); });
 
-  $('#directions-panel .close').on('click', function() { removeDirectionsPanel(directionsDisplay, markers, map); });
+  //$('#directions-panel .close').on('click', function() { removeDirectionsPanel(directionsDisplay, markers, map); });
   
   $('#toggle-search').on('click', function() {
     $('#search-panel').slideToggle("fast");
