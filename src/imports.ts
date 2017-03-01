@@ -4,7 +4,6 @@
 
 //grunt-start
 /// <reference path="utilities.ts" />
-/// <reference path="globals.ts" />
 /// <reference path="map-styles.ts" />
 /// <reference path="main.ts" />
 /// <reference path="listings.ts" />

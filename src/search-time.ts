@@ -72,21 +72,25 @@ function displayMarkersWithinTime(response, map, markers, directionsDisplay) {
           // distance and duration
           var infowindow = new google.maps.InfoWindow({
               content: durationText + ' away, ' + distanceText +
-                '<div><input type="button" class="btn btn-default" value=\"View Route\" onclick =' +
-                '"viewRoute(&quot;' + origins[i] + '&quot;);"></input></div>'
+                '<div><input type="button" value=\"View Route\" id=\"btn_ViewRoute_' + i + '\"></input></div>'
             }
           );
-          function viewRoute(origin) {
-            displayDirections(map, origin, markers, directionsDisplay);
-          };
+          var origin = origins[i];
           infowindow.open(map, markers[i]);
           // Put this in so that this small window closes if the user clicks
           // the marker, when the big infowindow opens
           markers[i].infowindow = infowindow;
           google.maps.event.addListener(markers[i], 'click', function() { this.infowindow.close(); });
+          attachGetRouteEvent($('#btn_ViewRoute_' + i)[0], map, origin, markers, directionsDisplay);
         }
       }
     }
   }
   if (!atLeastOne) { window.alert('We could not find any locations within that distance!'); }
+}
+
+// Attach a 'get route' click event to each button.
+function attachGetRouteEvent(button, map, origin, markers, directionsDisplay) {
+  google.maps.event.addDomListener(button, 'click',
+      function() { displayDirections(map, origin, markers, directionsDisplay) });
 }

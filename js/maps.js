@@ -371,16 +371,13 @@ function displayMarkersWithinTime(response, map, markers, directionsDisplay) {
                     atLeastOne = true;
                     var infowindow = new google.maps.InfoWindow({
                         content: durationText + ' away, ' + distanceText +
-                            '<div><input type="button" class="btn btn-default" value=\"View Route\" onclick =' +
-                            '"viewRoute(&quot;' + origins[i] + '&quot;);"></input></div>'
+                            '<div><input type="button" value=\"View Route\" id=\"btn_ViewRoute_' + i + '\"></input></div>'
                     });
-                    function viewRoute(origin) {
-                        displayDirections(map, origin, markers, directionsDisplay);
-                    }
-                    ;
+                    var origin = origins[i];
                     infowindow.open(map, markers[i]);
                     markers[i].infowindow = infowindow;
                     google.maps.event.addListener(markers[i], 'click', function () { this.infowindow.close(); });
+                    attachGetRouteEvent($('#btn_ViewRoute_' + i)[0], map, origin, markers, directionsDisplay);
                 }
             }
         }
@@ -388,6 +385,9 @@ function displayMarkersWithinTime(response, map, markers, directionsDisplay) {
     if (!atLeastOne) {
         window.alert('We could not find any locations within that distance!');
     }
+}
+function attachGetRouteEvent(button, map, origin, markers, directionsDisplay) {
+    google.maps.event.addDomListener(button, 'click', function () { displayDirections(map, origin, markers, directionsDisplay); });
 }
 function searchBoxPlaces(searchBox, map, placeMarkers, currentPlace, currentPhoto) {
     hideMarkers(placeMarkers);

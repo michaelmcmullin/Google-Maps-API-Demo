@@ -13,4 +13,3 @@ function getTravelMode(mode) {
       return google.maps.TravelMode.WALKING;
   }
 }
-
