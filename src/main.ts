@@ -4,7 +4,7 @@ function initMap() {
   var map: google.maps.Map;
 
   // Create a new blank array for all the listing markers.
-  var markers: google.maps.Marker[];
+  var markers: google.maps.Marker[] = [];
 
   // This global polygon variable is to ensure only ONE polygon is rendered.
   var polygon: google.maps.Polygon|google.maps.Rectangle|google.maps.Circle = null;

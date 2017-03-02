@@ -45,11 +45,11 @@ function disableDrawing(drawingManager, polygon) {
 // This function hides all markers outside the polygon,
 // and shows only the ones within it. This is so that the
 // user can specify an exact area of search.
-function searchWithinPolygon(polygon, drawingManager, markers, map: google.maps.Map, currentDrawingTool) {
+function searchWithinPolygon(polygon, drawingManager, markers: google.maps.Marker[], map: google.maps.Map, currentDrawingTool) {
   var markerCount = 0;
   for (var i = 0; i < markers.length; i++) {
     //if (google.maps.geometry.poly.containsLocation(markers[i].position, polygon)) {
-    if (isWithinCurrentShape(markers[i].position, polygon, currentDrawingTool)) {
+    if (isWithinCurrentShape(markers[i].getPosition(), polygon, currentDrawingTool)) {
       markers[i].setMap(map);
       markerCount++;
     } else {

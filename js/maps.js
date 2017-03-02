@@ -125,7 +125,7 @@ var styles = [
 ];
 function initMap() {
     var map;
-    var markers;
+    var markers = [];
     var polygon = null;
     var currentDrawingTool = null;
     var placeMarkers = [];
@@ -283,7 +283,7 @@ function showListings(markers, map) {
     var bounds = new google.maps.LatLngBounds();
     for (var i = 0; i < markers.length; i++) {
         markers[i].setMap(map);
-        bounds.extend(markers[i].position);
+        bounds.extend(markers[i].getPosition());
     }
     map.fitBounds(bounds);
 }
@@ -333,7 +333,7 @@ function searchWithinTime(markers, map, directionsDisplay) {
         hideMarkers(markers);
         var origins = [];
         for (var i = 0; i < markers.length; i++) {
-            origins[i] = markers[i].position;
+            origins[i] = markers[i].getPosition();
         }
         var destination = address;
         var mode = $('#mode').val();
@@ -374,8 +374,7 @@ function displayMarkersWithinTime(response, map, markers, directionsDisplay) {
                     });
                     var origin = origins[i];
                     infowindow.open(map, markers[i]);
-                    markers[i].infowindow = infowindow;
-                    google.maps.event.addListener(markers[i], 'click', function () { this.infowindow.close(); });
+                    removeGetRouteInfowindow(markers[i], infowindow);
                     attachGetRouteEvent($('#btn_ViewRoute_' + i)[0], map, origin, markers, directionsDisplay);
                 }
             }
@@ -387,6 +386,9 @@ function displayMarkersWithinTime(response, map, markers, directionsDisplay) {
 }
 function attachGetRouteEvent(button, map, origin, markers, directionsDisplay) {
     google.maps.event.addDomListener(button, 'click', function () { displayDirections(map, origin, markers, directionsDisplay); });
+}
+function removeGetRouteInfowindow(marker, infowindow) {
+    google.maps.event.addListener(marker, 'click', function () { infowindow.close(); });
 }
 function searchBoxPlaces(searchBox, map, placeMarkers, currentPlace, currentPhoto) {
     hideMarkers(placeMarkers);
@@ -557,7 +559,7 @@ function disableDrawing(drawingManager, polygon) {
 function searchWithinPolygon(polygon, drawingManager, markers, map, currentDrawingTool) {
     var markerCount = 0;
     for (var i = 0; i < markers.length; i++) {
-        if (isWithinCurrentShape(markers[i].position, polygon, currentDrawingTool)) {
+        if (isWithinCurrentShape(markers[i].getPosition(), polygon, currentDrawingTool)) {
             markers[i].setMap(map);
             markerCount++;
         }

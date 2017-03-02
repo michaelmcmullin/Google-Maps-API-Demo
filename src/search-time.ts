@@ -1,7 +1,7 @@
 // This function allows the user to input a desired travel time, in
 // minutes, and a travel mode, and a location - and only show the listings
 // that are within that travel time (via that travel mode) of the location
-function searchWithinTime(markers, map: google.maps.Map, directionsDisplay) {
+function searchWithinTime(markers: google.maps.Marker[], map: google.maps.Map, directionsDisplay) {
   // Initialize the distance matrix service.
   var distanceMatrixService = new google.maps.DistanceMatrixService();
   var address = $('#search-within-time-text').val();
@@ -16,7 +16,7 @@ function searchWithinTime(markers, map: google.maps.Map, directionsDisplay) {
     // by the user. Then put all the origins into an origin matrix.
     var origins = [];
     for (var i = 0; i < markers.length; i++) {
-      origins[i] = markers[i].position;
+      origins[i] = markers[i].getPosition();
     }
     var destination = address;
     var mode = $('#mode').val();
@@ -41,7 +41,7 @@ function searchWithinTime(markers, map: google.maps.Map, directionsDisplay) {
 
 // This function will go through each of the results, and,
 // if the distance is LESS than the value in the picker, show it on the map.
-function displayMarkersWithinTime(response, map: google.maps.Map, markers, directionsDisplay) {
+function displayMarkersWithinTime(response, map: google.maps.Map, markers: google.maps.Marker[], directionsDisplay) {
   var maxDuration = $('#max-duration').val();
   var origins = response.originAddresses;
   var destinations = response.destinationAddresses;
@@ -79,8 +79,9 @@ function displayMarkersWithinTime(response, map: google.maps.Map, markers, direc
           infowindow.open(map, markers[i]);
           // Put this in so that this small window closes if the user clicks
           // the marker, when the big infowindow opens
-          markers[i].infowindow = infowindow;
-          google.maps.event.addListener(markers[i], 'click', function() { this.infowindow.close(); });
+          //markers[i].infowindow = infowindow;
+          //google.maps.event.addListener(markers[i], 'click', function() { this.infowindow.close(); });
+          removeGetRouteInfowindow(markers[i], infowindow);
           attachGetRouteEvent($('#btn_ViewRoute_' + i)[0], map, origin, markers, directionsDisplay);
         }
       }
@@ -90,7 +91,13 @@ function displayMarkersWithinTime(response, map: google.maps.Map, markers, direc
 }
 
 // Attach a 'get route' click event to each button.
-function attachGetRouteEvent(button, map: google.maps.Map, origin, markers, directionsDisplay) {
+function attachGetRouteEvent(button, map: google.maps.Map, origin, markers: google.maps.Marker[], directionsDisplay) {
   google.maps.event.addDomListener(button, 'click',
       function() { displayDirections(map, origin, markers, directionsDisplay) });
+}
+
+// Attach a 'close' event to remove the 'get route' infowindow when the
+// associated marker is clicked.
+function removeGetRouteInfowindow(marker: google.maps.Marker, infowindow) {
+  google.maps.event.addListener(marker, 'click', function() { infowindow.close(); });
 }
