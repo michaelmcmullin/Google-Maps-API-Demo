@@ -1,6 +1,6 @@
 
 // This shows and hides (respectively) the drawing options.
-function toggleDrawing(map, drawingManager, drawingmode, caller, currentDrawingTool, polygon) {
+function toggleDrawing(map: google.maps.Map, drawingManager, drawingmode, caller, currentDrawingTool, polygon) {
   $('#hand-tool').removeClass('selected');
   deselectDrawingTools();
   
@@ -45,7 +45,7 @@ function disableDrawing(drawingManager, polygon) {
 // This function hides all markers outside the polygon,
 // and shows only the ones within it. This is so that the
 // user can specify an exact area of search.
-function searchWithinPolygon(polygon, drawingManager, markers, map, currentDrawingTool) {
+function searchWithinPolygon(polygon, drawingManager, markers, map: google.maps.Map, currentDrawingTool) {
   var markerCount = 0;
   for (var i = 0; i < markers.length; i++) {
     //if (google.maps.geometry.poly.containsLocation(markers[i].position, polygon)) {

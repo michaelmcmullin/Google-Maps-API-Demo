@@ -10,7 +10,7 @@ function hideLayers(trafficLayer, transitLayer, bikeLayer) {
 }
 
 // Toggle the traffic button and layer
-function toggleTraffic(map, trafficLayer, transitLayer, bikeLayer) {
+function toggleTraffic(map: google.maps.Map, trafficLayer, transitLayer, bikeLayer) {
   if (trafficLayer.getMap() === null) {
     hideLayers(trafficLayer, transitLayer, bikeLayer);
     trafficLayer.setMap(map);
@@ -22,7 +22,7 @@ function toggleTraffic(map, trafficLayer, transitLayer, bikeLayer) {
 }
 
 // Toggle the transit button and layer
-function toggleTransit(map, trafficLayer, transitLayer, bikeLayer) {
+function toggleTransit(map: google.maps.Map, trafficLayer, transitLayer, bikeLayer) {
   if (transitLayer.getMap() === null) {
     hideLayers(trafficLayer, transitLayer, bikeLayer);
     transitLayer.setMap(map);
@@ -34,7 +34,7 @@ function toggleTransit(map, trafficLayer, transitLayer, bikeLayer) {
 }
 
 // Toggle the bicycling button and layer
-function toggleBicycling(map, trafficLayer, transitLayer, bikeLayer) {
+function toggleBicycling(map: google.maps.Map, trafficLayer, transitLayer, bikeLayer) {
   if (bikeLayer.getMap() === null) {
     hideLayers(trafficLayer, transitLayer, bikeLayer);
     bikeLayer.setMap(map);

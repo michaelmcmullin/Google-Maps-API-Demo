@@ -125,7 +125,7 @@ var styles = [
 ];
 function initMap() {
     var map;
-    var markers = [];
+    var markers;
     var polygon = null;
     var currentDrawingTool = null;
     var placeMarkers = [];

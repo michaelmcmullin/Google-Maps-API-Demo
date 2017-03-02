@@ -1,7 +1,7 @@
 // This function allows the user to input a desired travel time, in
 // minutes, and a travel mode, and a location - and only show the listings
 // that are within that travel time (via that travel mode) of the location
-function searchWithinTime(markers, map, directionsDisplay) {
+function searchWithinTime(markers, map: google.maps.Map, directionsDisplay) {
   // Initialize the distance matrix service.
   var distanceMatrixService = new google.maps.DistanceMatrixService();
   var address = $('#search-within-time-text').val();
@@ -41,7 +41,7 @@ function searchWithinTime(markers, map, directionsDisplay) {
 
 // This function will go through each of the results, and,
 // if the distance is LESS than the value in the picker, show it on the map.
-function displayMarkersWithinTime(response, map, markers, directionsDisplay) {
+function displayMarkersWithinTime(response, map: google.maps.Map, markers, directionsDisplay) {
   var maxDuration = $('#max-duration').val();
   var origins = response.originAddresses;
   var destinations = response.destinationAddresses;
@@ -90,7 +90,7 @@ function displayMarkersWithinTime(response, map, markers, directionsDisplay) {
 }
 
 // Attach a 'get route' click event to each button.
-function attachGetRouteEvent(button, map, origin, markers, directionsDisplay) {
+function attachGetRouteEvent(button, map: google.maps.Map, origin, markers, directionsDisplay) {
   google.maps.event.addDomListener(button, 'click',
       function() { displayDirections(map, origin, markers, directionsDisplay) });
 }

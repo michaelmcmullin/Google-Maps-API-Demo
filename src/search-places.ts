@@ -1,6 +1,6 @@
 // This function fires when the user selects a searchbox picklist item.
 // It will do a nearby search using the selected query string or place.
-function searchBoxPlaces(searchBox, map, placeMarkers, currentPlace, currentPhoto) {
+function searchBoxPlaces(searchBox, map: google.maps.Map, placeMarkers, currentPlace, currentPhoto) {
   hideMarkers(placeMarkers);
   var places = searchBox.getPlaces();
   if (places.length === 0) {
@@ -13,7 +13,7 @@ function searchBoxPlaces(searchBox, map, placeMarkers, currentPlace, currentPhot
 
 // This function fires when the user select "go" on the places search.
 // It will do a nearby search using the entered query string or place.
-function textSearchPlaces(map, placeMarkers, currentPlace, currentPhoto) {
+function textSearchPlaces(map: google.maps.Map, placeMarkers, currentPlace, currentPhoto) {
   var bounds = map.getBounds();
   hideMarkers(placeMarkers);
   var placesService = new google.maps.places.PlacesService(map);
@@ -29,7 +29,7 @@ function textSearchPlaces(map, placeMarkers, currentPlace, currentPhoto) {
 }
 
 // This function creates markers for each place found in either places search.
-function createMarkersForPlaces(places, map, placeMarkers, currentPlace, currentPhoto) {
+function createMarkersForPlaces(places, map: google.maps.Map, placeMarkers, currentPlace, currentPhoto) {
   var bounds = new google.maps.LatLngBounds();
   for (var i = 0; i < places.length; i++) {
     var place = places[i];
@@ -76,7 +76,7 @@ function createMarkersForPlaces(places, map, placeMarkers, currentPlace, current
 }
 
 // Function to add an event to a place marker.
-function addPlaceMarkerEvents(marker:google.maps.Marker, place_id:string, infowindow, map, currentPlace, currentPhoto) {
+function addPlaceMarkerEvents(marker:google.maps.Marker, place_id:string, infowindow, map: google.maps.Map, currentPlace, currentPhoto) {
   // If a marker is clicked, do a place details search on it in the next function.
   marker.addListener('click', function() {
       if (infowindow.marker == this) {
@@ -91,7 +91,7 @@ function addPlaceMarkerEvents(marker:google.maps.Marker, place_id:string, infowi
 // This is the PLACE DETAILS search - it's the most detailed so it's only
 // executed when a marker is selected, indicating the user wants more
 // details about that place.
-function getPlacesDetails(marker:google.maps.Marker, place_id:string, infowindow, map, currentPlace, currentPhoto) {
+function getPlacesDetails(marker:google.maps.Marker, place_id:string, infowindow, map: google.maps.Map, currentPlace, currentPhoto) {
   var service = new google.maps.places.PlacesService(map);
   service.getDetails({
       placeId: place_id

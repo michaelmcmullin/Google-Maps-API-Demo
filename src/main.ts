@@ -1,14 +1,14 @@
 // Main entry point
 function initMap() {
   // From globals:
-  var map;
+  var map: google.maps.Map;
 
   // Create a new blank array for all the listing markers.
-  var markers = [];
+  var markers: google.maps.Marker[];
 
   // This global polygon variable is to ensure only ONE polygon is rendered.
-  var polygon = null;
-  var currentDrawingTool = null;
+  var polygon: google.maps.Polygon|google.maps.Rectangle|google.maps.Circle = null;
+  var currentDrawingTool:JQueryStatic = null;
 
   // Create placemarkers array to use in multiple functions to have control
   // over the number of places that show.
