@@ -4,8 +4,8 @@ function toggleDrawing(
   map: google.maps.Map,
   drawingManager: google.maps.drawing.DrawingManager,
   drawingmode: google.maps.drawing.OverlayType,
-  caller,
-  currentDrawingTool: JQueryStatic,
+  caller: JQuery,
+  currentDrawingTool: JQuery,
   polygon: google.maps.Polygon|google.maps.Rectangle|google.maps.Circle
 ) {
   $('#hand-tool').removeClass('selected');
@@ -60,7 +60,7 @@ function searchWithinPolygon(
   drawingManager: google.maps.drawing.DrawingManager,
   markers: google.maps.Marker[],
   map: google.maps.Map,
-  currentDrawingTool: JQueryStatic
+  currentDrawingTool: JQuery
 ) {
   var markerCount = 0;
   for (var i = 0; i < markers.length; i++) {
@@ -87,7 +87,7 @@ function searchWithinPolygon(
 function isWithinCurrentShape(
   position,
   shape,
-  currentDrawingTool: JQueryStatic
+  currentDrawingTool: JQuery
 ) {
   var currentShape = currentDrawingTool[0].id;
   if (currentShape) {
