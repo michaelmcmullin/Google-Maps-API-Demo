@@ -1,6 +1,6 @@
 // Convert a string representation of a travel mode to a 
 // correctly typed TravelMode enumeration.
-function getTravelMode(mode) {
+function getTravelMode(mode: string) {
   switch(mode.toUpperCase())
   {
     case 'DRIVING':

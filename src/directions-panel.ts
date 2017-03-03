@@ -7,7 +7,7 @@ function displayDirections(map: google.maps.Map, origin, markers: google.maps.Ma
   // Get the destination address from the user entered value.
   var destinationAddress = $('#search-within-time-text').val();
   // Get mode again from the user entered value.
-  var mode = $('#mode').val();
+  var mode: string = $('#mode').val();
   directionsService.route({
       // The origin is the passed in marker's position.
       origin: origin,

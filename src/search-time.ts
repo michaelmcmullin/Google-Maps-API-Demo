@@ -19,7 +19,7 @@ function searchWithinTime(markers: google.maps.Marker[], map: google.maps.Map, d
       origins[i] = markers[i].getPosition();
     }
     var destination = address;
-    var mode = $('#mode').val();
+    var mode: string = $('#mode').val();
 
     // Now that both the origins and destination are defined, get all the
     // info for the distances between them.
