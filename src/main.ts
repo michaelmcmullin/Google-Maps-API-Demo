@@ -15,9 +15,9 @@ function initMap() {
   var placeMarkers = [];
 
   // Add Traffic Layers
-  var trafficLayer = null;
-  var transitLayer = null;
-  var bikeLayer = null;
+  var trafficLayer: google.maps.TrafficLayer = null;
+  var transitLayer: google.maps.TransitLayer = null;
+  var bikeLayer: google.maps.BicyclingLayer = null;
 
   // Route layers
   var directionsDisplay = null;

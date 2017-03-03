@@ -1,5 +1,9 @@
 // Hide all of the transport layers, and reset their toggle buttons
-function hideLayers(trafficLayer, transitLayer, bikeLayer) {
+function hideLayers(
+  trafficLayer: google.maps.TrafficLayer,
+  transitLayer: google.maps.TransitLayer,
+  bikeLayer: google.maps.BicyclingLayer
+) {
   trafficLayer.setMap(null);
   transitLayer.setMap(null);
   bikeLayer.setMap(null);
@@ -10,7 +14,12 @@ function hideLayers(trafficLayer, transitLayer, bikeLayer) {
 }
 
 // Toggle the traffic button and layer
-function toggleTraffic(map: google.maps.Map, trafficLayer, transitLayer, bikeLayer) {
+function toggleTraffic(
+  map: google.maps.Map,
+  trafficLayer: google.maps.TrafficLayer,
+  transitLayer: google.maps.TransitLayer,
+  bikeLayer: google.maps.BicyclingLayer
+) {
   if (trafficLayer.getMap() === null) {
     hideLayers(trafficLayer, transitLayer, bikeLayer);
     trafficLayer.setMap(map);
@@ -22,7 +31,12 @@ function toggleTraffic(map: google.maps.Map, trafficLayer, transitLayer, bikeLay
 }
 
 // Toggle the transit button and layer
-function toggleTransit(map: google.maps.Map, trafficLayer, transitLayer, bikeLayer) {
+function toggleTransit(
+  map: google.maps.Map,
+  trafficLayer: google.maps.TrafficLayer,
+  transitLayer: google.maps.TransitLayer,
+  bikeLayer: google.maps.BicyclingLayer
+) {
   if (transitLayer.getMap() === null) {
     hideLayers(trafficLayer, transitLayer, bikeLayer);
     transitLayer.setMap(map);
@@ -34,7 +48,12 @@ function toggleTransit(map: google.maps.Map, trafficLayer, transitLayer, bikeLay
 }
 
 // Toggle the bicycling button and layer
-function toggleBicycling(map: google.maps.Map, trafficLayer, transitLayer, bikeLayer) {
+function toggleBicycling(
+  map: google.maps.Map,
+  trafficLayer: google.maps.TrafficLayer,
+  transitLayer: google.maps.TransitLayer,
+  bikeLayer: google.maps.BicyclingLayer
+) {
   if (bikeLayer.getMap() === null) {
     hideLayers(trafficLayer, transitLayer, bikeLayer);
     bikeLayer.setMap(map);
