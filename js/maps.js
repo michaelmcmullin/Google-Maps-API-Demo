@@ -523,7 +523,7 @@ function previousPhoto(currentPlace, currentPhoto) {
 function toggleDrawing(map, drawingManager, drawingmode, caller, currentDrawingTool, polygon) {
     $('#hand-tool').removeClass('selected');
     deselectDrawingTools();
-    if (drawingManager.map && caller === currentDrawingTool) {
+    if (drawingManager.getMap() && caller === currentDrawingTool) {
         drawingManager.setMap(null);
         if (polygon !== null) {
             polygon.setMap(null);
@@ -549,7 +549,7 @@ function deselectDrawingTools() {
 function disableDrawing(drawingManager, polygon) {
     deselectDrawingTools();
     $('#hand-tool').addClass('selected');
-    if (drawingManager.map) {
+    if (drawingManager.getMap()) {
         drawingManager.setMap(null);
     }
     if (polygon !== null) {
@@ -575,7 +575,7 @@ function searchWithinPolygon(polygon, drawingManager, markers, map, currentDrawi
         $('#toggle-listings').removeClass('selected');
     }
     $('#hand-tool').addClass('selected');
-    if (drawingManager.map) {
+    if (drawingManager.getMap()) {
         drawingManager.setMap(null);
     }
 }

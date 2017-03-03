@@ -83,7 +83,7 @@ function initMap() {
   var largeInfowindow = new google.maps.InfoWindow();
 
   // Initialize the drawing manager.
-  var drawingManager = new google.maps.drawing.DrawingManager({
+  var drawingManager: google.maps.drawing.DrawingManager = new google.maps.drawing.DrawingManager({
       drawingMode: google.maps.drawing.OverlayType.POLYGON,
       drawingControl: false
   });

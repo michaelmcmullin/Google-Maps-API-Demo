@@ -2,7 +2,7 @@
 // This shows and hides (respectively) the drawing options.
 function toggleDrawing(
   map: google.maps.Map,
-  drawingManager,
+  drawingManager: google.maps.drawing.DrawingManager,
   drawingmode,
   caller,
   currentDrawingTool,
@@ -11,7 +11,7 @@ function toggleDrawing(
   $('#hand-tool').removeClass('selected');
   deselectDrawingTools();
   
-  if (drawingManager.map && caller === currentDrawingTool) {
+  if (drawingManager.getMap() && caller === currentDrawingTool) {
     drawingManager.setMap(null);
     // In case the user drew anything, get rid of the polygon
     if (polygon !== null) {
@@ -39,12 +39,12 @@ function deselectDrawingTools() {
 
 // Disable drawing functions
 function disableDrawing(
-  drawingManager,
+  drawingManager: google.maps.drawing.DrawingManager,
   polygon: google.maps.Polygon|google.maps.Rectangle|google.maps.Circle
 ) {
   deselectDrawingTools();
   $('#hand-tool').addClass('selected');
-  if (drawingManager.map) {
+  if (drawingManager.getMap()) {
     drawingManager.setMap(null);
   }
   if (polygon !== null) {
@@ -57,7 +57,7 @@ function disableDrawing(
 // user can specify an exact area of search.
 function searchWithinPolygon(
   polygon: google.maps.Polygon|google.maps.Rectangle|google.maps.Circle,
-  drawingManager,
+  drawingManager: google.maps.drawing.DrawingManager,
   markers: google.maps.Marker[],
   map: google.maps.Map,
   currentDrawingTool
@@ -78,13 +78,17 @@ function searchWithinPolygon(
     $('#toggle-listings').removeClass('selected');
   }
   $('#hand-tool').addClass('selected');
-  if (drawingManager.map) {
+  if (drawingManager.getMap()) {
     drawingManager.setMap(null);
   }
 }
 
 // Determine if a position is within the current drawing tool
-function isWithinCurrentShape(position, shape, currentDrawingTool) {
+function isWithinCurrentShape(
+  position,
+  shape,
+  currentDrawingTool
+) {
   var currentShape = currentDrawingTool[0].id;
   if (currentShape) {
     currentShape = currentShape.split('-').pop();
