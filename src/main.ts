@@ -8,7 +8,7 @@ function initMap() {
 
   // This global polygon variable is to ensure only ONE polygon is rendered.
   var polygon: google.maps.Polygon|google.maps.Rectangle|google.maps.Circle = null;
-  var currentDrawingTool:JQueryStatic = null;
+  var currentDrawingTool: JQueryStatic = null;
 
   // Create placemarkers array to use in multiple functions to have control
   // over the number of places that show.
