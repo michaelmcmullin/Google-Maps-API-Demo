@@ -85,21 +85,23 @@ function searchWithinPolygon(
 
 // Determine if a position is within the current drawing tool
 function isWithinCurrentShape(
-  position,
-  shape,
+  position: google.maps.LatLng,
+  shape: google.maps.Polygon|google.maps.Rectangle|google.maps.Circle,
   currentDrawingTool: JQuery
 ) {
   var currentShape = currentDrawingTool[0].id;
   if (currentShape) {
     currentShape = currentShape.split('-').pop();
     if (currentShape === 'polygon') {
-      return google.maps.geometry.poly.containsLocation(position, shape);
+      return google.maps.geometry.poly.containsLocation(position, shape as google.maps.Polygon);
     }
     if (currentShape === 'rectangle') {
-      return shape.getBounds().contains(position);
+      var rect = shape as google.maps.Rectangle;
+      return rect.getBounds().contains(position);
     }
     if (currentShape === 'circle') {
-      return google.maps.geometry.spherical.computeDistanceBetween(position, shape.getCenter()) <= shape.getRadius();
+      var circle = shape as google.maps.Circle;
+      return google.maps.geometry.spherical.computeDistanceBetween(position, circle.getCenter()) <= circle.getRadius();
     }
   }
   return false;

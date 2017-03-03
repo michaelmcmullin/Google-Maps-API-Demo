@@ -587,10 +587,12 @@ function isWithinCurrentShape(position, shape, currentDrawingTool) {
             return google.maps.geometry.poly.containsLocation(position, shape);
         }
         if (currentShape === 'rectangle') {
-            return shape.getBounds().contains(position);
+            var rect = shape;
+            return rect.getBounds().contains(position);
         }
         if (currentShape === 'circle') {
-            return google.maps.geometry.spherical.computeDistanceBetween(position, shape.getCenter()) <= shape.getRadius();
+            var circle = shape;
+            return google.maps.geometry.spherical.computeDistanceBetween(position, circle.getCenter()) <= circle.getRadius();
         }
     }
     return false;
