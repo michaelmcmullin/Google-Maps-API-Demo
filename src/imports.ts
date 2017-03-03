@@ -1,7 +1,6 @@
 /// <reference types="jquery" />
 /// <reference types="googlemaps" />
 
-
 //grunt-start
 /// <reference path="utilities.ts" />
 /// <reference path="map-styles.ts" />
