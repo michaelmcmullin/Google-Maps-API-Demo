@@ -502,6 +502,7 @@ function getPlacesDetails(marker, place_id, infowindow, map, currentPlace, curre
     });
 }
 function nextPhoto(currentPlace, currentPhoto) {
+    console.log('next photo');
     if (currentPlace) {
         var totalPhotos = currentPlace.photos.length;
         var next = currentPhoto + 1;

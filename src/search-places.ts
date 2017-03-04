@@ -1,11 +1,11 @@
 // This function fires when the user selects a searchbox picklist item.
 // It will do a nearby search using the selected query string or place.
 function searchBoxPlaces(
-  searchBox,
+  searchBox: google.maps.places.SearchBox,
   map: google.maps.Map,
-  placeMarkers,
-  currentPlace,
-  currentPhoto
+  placeMarkers: google.maps.Marker[],
+  currentPlace: google.maps.places.PlaceResult,
+  currentPhoto: number
 ) {
   hideMarkers(placeMarkers);
   var places = searchBox.getPlaces();
@@ -21,9 +21,9 @@ function searchBoxPlaces(
 // It will do a nearby search using the entered query string or place.
 function textSearchPlaces(
   map: google.maps.Map,
-  placeMarkers,
-  currentPlace,
-  currentPhoto
+  placeMarkers: google.maps.Marker[],
+  currentPlace: google.maps.places.PlaceResult,
+  currentPhoto: number
 ) {
   var bounds = map.getBounds();
   hideMarkers(placeMarkers);
@@ -41,11 +41,11 @@ function textSearchPlaces(
 
 // This function creates markers for each place found in either places search.
 function createMarkersForPlaces(
-  places,
+  places: google.maps.places.PlaceResult[],
   map: google.maps.Map,
-  placeMarkers,
-  currentPlace,
-  currentPhoto
+  placeMarkers: google.maps.Marker[],
+  currentPlace: google.maps.places.PlaceResult,
+  currentPhoto: number
 ) {
   var bounds = new google.maps.LatLngBounds();
   for (var i = 0; i < places.length; i++) {
@@ -94,12 +94,12 @@ function createMarkersForPlaces(
 
 // Function to add an event to a place marker.
 function addPlaceMarkerEvents(
-  marker:google.maps.Marker,
-  place_id:string,
+  marker: google.maps.Marker,
+  place_id: string,
   infowindow,
   map: google.maps.Map,
-  currentPlace,
-  currentPhoto
+  currentPlace: google.maps.places.PlaceResult,
+  currentPhoto: number
 ) {
   // If a marker is clicked, do a place details search on it in the next function.
   marker.addListener('click', function() {
@@ -120,8 +120,8 @@ function getPlacesDetails(
   place_id:string,
   infowindow,
   map: google.maps.Map,
-  currentPlace,
-  currentPhoto
+  currentPlace: google.maps.places.PlaceResult,
+  currentPhoto: number
 ) {
   var service = new google.maps.places.PlacesService(map);
   service.getDetails({
@@ -178,9 +178,10 @@ function getPlacesDetails(
 
 // Get next photo
 function nextPhoto(
-  currentPlace,
-  currentPhoto
+  currentPlace: google.maps.places.PlaceResult,
+  currentPhoto: number
 ) {
+  console.log('next photo');
   if (currentPlace) {
     var totalPhotos = currentPlace.photos.length;
     var next = currentPhoto + 1;
@@ -197,8 +198,8 @@ function nextPhoto(
 
 // Get previous photo
 function previousPhoto(
-  currentPlace,
-  currentPhoto
+  currentPlace: google.maps.places.PlaceResult,
+  currentPhoto: number
 ) {
   if (currentPlace) {
     var totalPhotos = currentPlace.photos.length;
