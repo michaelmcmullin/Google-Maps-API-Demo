@@ -101,7 +101,7 @@ function displayMarkersWithinTime(
 
 // Attach a 'get route' click event to each button.
 function attachGetRouteEvent(
-  button,
+  button: HTMLElement,
   map: google.maps.Map,
   origin: string,
   markers: google.maps.Marker[],
@@ -115,7 +115,7 @@ function attachGetRouteEvent(
 // associated marker is clicked.
 function removeGetRouteInfowindow(
   marker: google.maps.Marker,
-  infowindow
+  infowindow: google.maps.InfoWindow
 ) {
   google.maps.event.addListener(marker, 'click', function() { infowindow.close(); });
 }
