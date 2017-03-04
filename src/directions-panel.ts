@@ -1,7 +1,12 @@
 // This function is in response to the user selecting "show route" on one
 // of the markers within the calculated distance. This will display the route
 // on the map.
-function displayDirections(map: google.maps.Map, origin, markers: google.maps.Marker[], directionsDisplay) {
+function displayDirections(
+  map: google.maps.Map,
+  origin: string,
+  markers: google.maps.Marker[],
+  directionsDisplay: google.maps.DirectionsRenderer
+) {
   hideMarkers(markers);
   var directionsService = new google.maps.DirectionsService();
   // Get the destination address from the user entered value.
@@ -44,12 +49,16 @@ function displayDirections(map: google.maps.Map, origin, markers: google.maps.Ma
 
 // Clear the existing directions from the map so that new directions don't
 // get too cluttered.
-function clearExistingDirections(directionsDisplay) {
+function clearExistingDirections(
+  directionsDisplay: google.maps.DirectionsRenderer
+) {
   directionsDisplay.setMap(null);
 }
 
 // Display directions in a separate panel
-function populateDirectionsPanel(directions) {
+function populateDirectionsPanel(
+  directions
+) {
   var steps = directions.routes[0].legs[0].steps;
   var distance = directions.routes[0].legs[0].distance;
   var duration = directions.routes[0].legs[0].duration;
@@ -83,7 +92,9 @@ function populateDirectionsPanel(directions) {
 }
 
 // Function to retrieve an appropriate icon for a given maneuver
-function getManeuverIcon(maneuver) {
+function getManeuverIcon(
+  maneuver: string
+) {
   switch(maneuver) {
     case 'turn-left':
       return '<i class="material-icons" aria-hidden="true">arrow_back</i>';
@@ -95,7 +106,11 @@ function getManeuverIcon(maneuver) {
 }
 
 // Remove the directions panel
-function removeDirectionsPanel(directionsDisplay, markers: google.maps.Marker[], map: google.maps.Map) {
+function removeDirectionsPanel(
+  directionsDisplay: google.maps.DirectionsRenderer,
+  markers: google.maps.Marker[],
+  map: google.maps.Map
+) {
   if (directionsDisplay) clearExistingDirections(directionsDisplay);
   $('#directions-panel').hide(200);
   searchWithinTime(markers, map, directionsDisplay);

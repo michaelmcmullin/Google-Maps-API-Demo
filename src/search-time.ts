@@ -1,7 +1,11 @@
 // This function allows the user to input a desired travel time, in
 // minutes, and a travel mode, and a location - and only show the listings
 // that are within that travel time (via that travel mode) of the location
-function searchWithinTime(markers: google.maps.Marker[], map: google.maps.Map, directionsDisplay) {
+function searchWithinTime(
+  markers: google.maps.Marker[],
+  map: google.maps.Map,
+  directionsDisplay: google.maps.DirectionsRenderer
+) {
   // Initialize the distance matrix service.
   var distanceMatrixService = new google.maps.DistanceMatrixService();
   var address = $('#search-within-time-text').val();
@@ -41,7 +45,12 @@ function searchWithinTime(markers: google.maps.Marker[], map: google.maps.Map, d
 
 // This function will go through each of the results, and,
 // if the distance is LESS than the value in the picker, show it on the map.
-function displayMarkersWithinTime(response, map: google.maps.Map, markers: google.maps.Marker[], directionsDisplay) {
+function displayMarkersWithinTime(
+  response,
+  map: google.maps.Map,
+  markers: google.maps.Marker[],
+  directionsDisplay: google.maps.DirectionsRenderer
+) {
   var maxDuration = $('#max-duration').val();
   var origins = response.originAddresses;
   var destinations = response.destinationAddresses;
@@ -91,13 +100,22 @@ function displayMarkersWithinTime(response, map: google.maps.Map, markers: googl
 }
 
 // Attach a 'get route' click event to each button.
-function attachGetRouteEvent(button, map: google.maps.Map, origin, markers: google.maps.Marker[], directionsDisplay) {
+function attachGetRouteEvent(
+  button,
+  map: google.maps.Map,
+  origin: string,
+  markers: google.maps.Marker[],
+  directionsDisplay: google.maps.DirectionsRenderer
+) {
   google.maps.event.addDomListener(button, 'click',
       function() { displayDirections(map, origin, markers, directionsDisplay) });
 }
 
 // Attach a 'close' event to remove the 'get route' infowindow when the
 // associated marker is clicked.
-function removeGetRouteInfowindow(marker: google.maps.Marker, infowindow) {
+function removeGetRouteInfowindow(
+  marker: google.maps.Marker,
+  infowindow
+) {
   google.maps.event.addListener(marker, 'click', function() { infowindow.close(); });
 }

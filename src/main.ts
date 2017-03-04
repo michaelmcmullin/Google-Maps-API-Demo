@@ -20,7 +20,7 @@ function initMap() {
   var bikeLayer: google.maps.BicyclingLayer = null;
 
   // Route layers
-  var directionsDisplay = null;
+  var directionsDisplay: google.maps.DirectionsRenderer = null;
 
   // Place details
   var currentPlace = null;
