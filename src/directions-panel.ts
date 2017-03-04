@@ -57,14 +57,16 @@ function clearExistingDirections(
 
 // Display directions in a separate panel
 function populateDirectionsPanel(
-  directions
+  directions: google.maps.DirectionsResult
 ) {
   var steps = directions.routes[0].legs[0].steps;
   var distance = directions.routes[0].legs[0].distance;
   var duration = directions.routes[0].legs[0].duration;
+  var origin = directions.routes[0].legs[0].start_address;
+  var destination = directions.routes[0].legs[0].end_address;
 
-  var text = '<strong>From:</strong> ' + directions.request.origin;
-  text += '<br><strong>To:</strong> ' + directions.request.destination;
+  var text = '<strong>From:</strong> ' + origin;
+  text += '<br><strong>To:</strong> ' + destination;
   text += '<br><strong>Total Journey:</strong> ' + distance.text;
   text += ' (about ' + duration.text + ')';
   text += '<ul class="list-group top-row-margin">';
@@ -72,11 +74,11 @@ function populateDirectionsPanel(
   for (var i=0; i<steps.length; i++) {
     var stepDistance = steps[i].distance;
     var stepDuration = steps[i].duration;
-    var maneuver = steps[i].maneuver;
+    //var maneuver = steps[i].maneuver; // maneuver is undocumented and generating warnings in TypeScript
 
     text += '<li class="list-group-item">' +
       '<div class="row"><div class="col-md-2">' +
-      getManeuverIcon(maneuver) +
+      getManeuverIcon(steps[i].instructions) +
       '</div>' +
       '<div class="col-md-10">' +
       steps[i].instructions +
@@ -93,8 +95,15 @@ function populateDirectionsPanel(
 
 // Function to retrieve an appropriate icon for a given maneuver
 function getManeuverIcon(
-  maneuver: string
+  instructions: string
 ) {
+  var maneuver: string = '';
+
+  // This is a bit of a hack to get around the lack of documented support for
+  // DirectionsStep.maneuver. Not very elegant I know.
+  if (instructions.indexOf('Turn <b>left</b>') > -1) maneuver = 'turn-left';
+  else if (instructions.indexOf('Turn <b>right</b>') > -1) maneuver = 'turn-right';
+
   switch(maneuver) {
     case 'turn-left':
       return '<i class="material-icons" aria-hidden="true">arrow_back</i>';

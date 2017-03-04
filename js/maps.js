@@ -361,7 +361,7 @@ function displayMarkersWithinTime(response, map, markers, directionsDisplay) {
         var results = response.rows[i].elements;
         for (var j = 0; j < results.length; j++) {
             var element = results[j];
-            if (element.status === "OK") {
+            if (element.status === google.maps.DistanceMatrixElementStatus.OK) {
                 var distanceText = element.distance.text;
                 var duration = element.duration.value / 60;
                 var durationText = element.duration.text;
@@ -638,18 +638,19 @@ function populateDirectionsPanel(directions) {
     var steps = directions.routes[0].legs[0].steps;
     var distance = directions.routes[0].legs[0].distance;
     var duration = directions.routes[0].legs[0].duration;
-    var text = '<strong>From:</strong> ' + directions.request.origin;
-    text += '<br><strong>To:</strong> ' + directions.request.destination;
+    var origin = directions.routes[0].legs[0].start_address;
+    var destination = directions.routes[0].legs[0].end_address;
+    var text = '<strong>From:</strong> ' + origin;
+    text += '<br><strong>To:</strong> ' + destination;
     text += '<br><strong>Total Journey:</strong> ' + distance.text;
     text += ' (about ' + duration.text + ')';
     text += '<ul class="list-group top-row-margin">';
     for (var i = 0; i < steps.length; i++) {
         var stepDistance = steps[i].distance;
         var stepDuration = steps[i].duration;
-        var maneuver = steps[i].maneuver;
         text += '<li class="list-group-item">' +
             '<div class="row"><div class="col-md-2">' +
-            getManeuverIcon(maneuver) +
+            getManeuverIcon(steps[i].instructions) +
             '</div>' +
             '<div class="col-md-10">' +
             steps[i].instructions +
@@ -662,7 +663,12 @@ function populateDirectionsPanel(directions) {
     text += '</ul>';
     $('#directions').html(text);
 }
-function getManeuverIcon(maneuver) {
+function getManeuverIcon(instructions) {
+    var maneuver = '';
+    if (instructions.indexOf('Turn <b>left</b>') > -1)
+        maneuver = 'turn-left';
+    else if (instructions.indexOf('Turn <b>right</b>') > -1)
+        maneuver = 'turn-right';
     switch (maneuver) {
         case 'turn-left':
             return '<i class="material-icons" aria-hidden="true">arrow_back</i>';

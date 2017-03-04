@@ -11,7 +11,13 @@ var locations = [
 
 
 // Function to add events to a given marker.
-function addMarkerEvents(map: google.maps.Map, marker, infoWindow, defaultIcon, highlightedIcon) {
+function addMarkerEvents(
+  map: google.maps.Map,
+  marker,
+  infoWindow,
+  defaultIcon,
+  highlightedIcon
+) {
   // Create an onclick event to open the large infowindow at each marker.
   marker.addListener('click', function() {
     populateInfoWindow(map, this, infoWindow);
@@ -30,8 +36,11 @@ function addMarkerEvents(map: google.maps.Map, marker, infoWindow, defaultIcon, 
 // This function populates the infowindow when the marker is clicked. We'll only allow
 // one infowindow which will open at the marker that is clicked, and populate based
 // on that markers position.
-function populateInfoWindow(map: google.maps.Map, marker, infowindow) {
-
+function populateInfoWindow(
+  map: google.maps.Map,
+  marker,
+  infowindow
+) {
   // In case the status is OK, which means the pano was found, compute the
   // position of the streetview image, then calculate the heading, then get a
   // panorama from that and set the options
@@ -76,7 +85,10 @@ function populateInfoWindow(map: google.maps.Map, marker, infowindow) {
 }
 
 // Toggle the display of available listings.
-function toggleListings(markers: google.maps.Marker[], map: google.maps.Map) {
+function toggleListings(
+  markers: google.maps.Marker[],
+  map: google.maps.Map
+) {
   var listingButton = $('#toggle-listings');
   if (listingButton.hasClass('selected')) {
     listingButton.removeClass('selected');
@@ -88,7 +100,10 @@ function toggleListings(markers: google.maps.Marker[], map: google.maps.Map) {
 }
 
 // This function will loop through the markers array and display them all.
-function showListings(markers: google.maps.Marker[], map: google.maps.Map) {
+function showListings(
+  markers: google.maps.Marker[],
+  map: google.maps.Map
+) {
   var bounds = new google.maps.LatLngBounds();
   // Extend the boundaries of the map for each marker and display the marker
   for (var i = 0; i < markers.length; i++) {

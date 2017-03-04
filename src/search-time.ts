@@ -46,7 +46,7 @@ function searchWithinTime(
 // This function will go through each of the results, and,
 // if the distance is LESS than the value in the picker, show it on the map.
 function displayMarkersWithinTime(
-  response,
+  response: google.maps.DistanceMatrixResponse,
   map: google.maps.Map,
   markers: google.maps.Marker[],
   directionsDisplay: google.maps.DirectionsRenderer
@@ -62,7 +62,7 @@ function displayMarkersWithinTime(
     var results = response.rows[i].elements;
     for (var j = 0; j < results.length; j++) {
       var element = results[j];
-      if (element.status === "OK") {
+      if (element.status === google.maps.DistanceMatrixElementStatus.OK) {
         // The distance is returned in feet, but the TEXT is in miles. If we wanted to switch
         // the function to show markers within a user-entered DISTANCE, we would need the
         // value for distance, but for now we only need the text.
