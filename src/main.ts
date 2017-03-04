@@ -80,7 +80,8 @@ function initMap() {
   // Bias the searchbox to within the bounds of the map.
   searchBox.setBounds(map.getBounds());
 
-  var largeInfowindow = new google.maps.InfoWindow();
+  var largeInfowindow: google.maps.InfoWindow = new google.maps.InfoWindow();
+  var largeInfowindowMarker: google.maps.Marker = null;
 
   // Initialize the drawing manager.
   var drawingManager: google.maps.drawing.DrawingManager = new google.maps.drawing.DrawingManager({
@@ -115,7 +116,7 @@ function initMap() {
 
     // Create an onclick, mouseover and mouseout events to open the large
     // infowindow at each marker.
-    addMarkerEvents(map, marker, largeInfowindow, defaultIcon, highlightedIcon);
+    addMarkerEvents(map, marker, largeInfowindow, largeInfowindowMarker, defaultIcon, highlightedIcon);
   }
 
   $('#toggle-listings').on('click', function() {

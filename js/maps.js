@@ -164,6 +164,7 @@ function initMap() {
     var searchBox = new google.maps.places.SearchBox($('#places-search')[0]);
     searchBox.setBounds(map.getBounds());
     var largeInfowindow = new google.maps.InfoWindow();
+    var largeInfowindowMarker = null;
     var drawingManager = new google.maps.drawing.DrawingManager({
         drawingMode: google.maps.drawing.OverlayType.POLYGON,
         drawingControl: false
@@ -180,7 +181,7 @@ function initMap() {
             icon: defaultIcon
         });
         markers.push(marker);
-        addMarkerEvents(map, marker, largeInfowindow, defaultIcon, highlightedIcon);
+        addMarkerEvents(map, marker, largeInfowindow, largeInfowindowMarker, defaultIcon, highlightedIcon);
     }
     $('#toggle-listings').on('click', function () {
         toggleListings(markers, map);
@@ -226,9 +227,9 @@ var locations = [
     { title: 'TriBeCa Artsy Bachelor Pad', location: { lat: 40.7195264, lng: -74.0089934 } },
     { title: 'Chinatown Homey Space', location: { lat: 40.7180628, lng: -73.9961237 } }
 ];
-function addMarkerEvents(map, marker, infoWindow, defaultIcon, highlightedIcon) {
+function addMarkerEvents(map, marker, infowindow, infowindowMarker, defaultIcon, highlightedIcon) {
     marker.addListener('click', function () {
-        populateInfoWindow(map, this, infoWindow);
+        populateInfoWindow(map, this, infowindow, infowindowMarker);
     });
     marker.addListener('mouseover', function () {
         this.setIcon(highlightedIcon);
@@ -237,12 +238,12 @@ function addMarkerEvents(map, marker, infoWindow, defaultIcon, highlightedIcon) 
         this.setIcon(defaultIcon);
     });
 }
-function populateInfoWindow(map, marker, infowindow) {
+function populateInfoWindow(map, marker, infowindow, infowindowMarker) {
     function getStreetView(data, status) {
         if (status == google.maps.StreetViewStatus.OK) {
             var nearStreetViewLocation = data.location.latLng;
-            var heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, marker.position);
-            infowindow.setContent('<div>' + marker.title + '</div><div id="pano"></div>');
+            var heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, marker.getPosition());
+            infowindow.setContent('<div>' + marker.getTitle() + '</div><div id="pano"></div>');
             var panoramaOptions = {
                 position: nearStreetViewLocation,
                 pov: {
@@ -253,18 +254,18 @@ function populateInfoWindow(map, marker, infowindow) {
             var panorama = new google.maps.StreetViewPanorama($('#pano')[0], panoramaOptions);
         }
         else {
-            infowindow.setContent('<div>' + marker.title + '</div><div>No Street View Found</div>');
+            infowindow.setContent('<div>' + marker.getTitle() + '</div><div>No Street View Found</div>');
         }
     }
-    if (infowindow.marker != marker) {
+    if (infowindowMarker != marker) {
         infowindow.setContent('');
-        infowindow.marker = marker;
+        infowindowMarker = marker;
         infowindow.addListener('closeclick', function () {
-            infowindow.marker = null;
+            infowindowMarker = null;
         });
         var streetViewService = new google.maps.StreetViewService();
         var radius = 50;
-        streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
+        streetViewService.getPanoramaByLocation(marker.getPosition(), radius, getStreetView);
         infowindow.open(map, marker);
     }
 }
