@@ -88,7 +88,7 @@ function populateInfoWindow(
 
 // Toggle the display of available listings.
 function toggleListings(
-  markers: google.maps.Marker[],
+  markers: MarkerWithInfoWindow[],
   map: google.maps.Map
 ) {
   var listingButton = $('#toggle-listings');
@@ -103,22 +103,22 @@ function toggleListings(
 
 // This function will loop through the markers array and display them all.
 function showListings(
-  markers: google.maps.Marker[],
+  markers: MarkerWithInfoWindow[],
   map: google.maps.Map
 ) {
   var bounds = new google.maps.LatLngBounds();
   // Extend the boundaries of the map for each marker and display the marker
   for (var i = 0; i < markers.length; i++) {
-    markers[i].setMap(map);
-    bounds.extend(markers[i].getPosition());
+    markers[i].marker.setMap(map);
+    bounds.extend(markers[i].marker.getPosition());
   }
   map.fitBounds(bounds);
 }
 
 // This function will loop through the listings and hide them all.
-function hideMarkers(markers: google.maps.Marker[]) {
+function hideMarkers(markers: MarkerWithInfoWindow[]) {
   for (var i = 0; i < markers.length; i++) {
-    markers[i].setMap(null);
+    markers[i].marker.setMap(null);
   }
 }
 

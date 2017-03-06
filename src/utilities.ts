@@ -13,3 +13,14 @@ function getTravelMode(mode: string) {
       return google.maps.TravelMode.WALKING;
   }
 }
+
+// Interface describing a marker/infowindow pair.
+interface MarkerWithInfoWindow {
+  marker: google.maps.Marker;
+  infowindow: google.maps.InfoWindow;
+}
+
+class PlaceMarker implements MarkerWithInfoWindow {
+  marker: google.maps.Marker;
+  infowindow: google.maps.InfoWindow;
+}

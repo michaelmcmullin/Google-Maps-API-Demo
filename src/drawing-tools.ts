@@ -58,17 +58,17 @@ function disableDrawing(
 function searchWithinPolygon(
   polygon: google.maps.Polygon|google.maps.Rectangle|google.maps.Circle,
   drawingManager: google.maps.drawing.DrawingManager,
-  markers: google.maps.Marker[],
+  markers: MarkerWithInfoWindow[],
   map: google.maps.Map,
   currentDrawingTool: JQuery
 ) {
   var markerCount = 0;
   for (var i = 0; i < markers.length; i++) {
-    if (isWithinCurrentShape(markers[i].getPosition(), polygon, currentDrawingTool)) {
-      markers[i].setMap(map);
+    if (isWithinCurrentShape(markers[i].marker.getPosition(), polygon, currentDrawingTool)) {
+      markers[i].marker.setMap(map);
       markerCount++;
     } else {
-      markers[i].setMap(null);
+      markers[i].marker.setMap(null);
     }
   }
   deselectDrawingTools();

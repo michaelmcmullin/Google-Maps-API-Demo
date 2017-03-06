@@ -3,7 +3,7 @@
 function searchBoxPlaces(
   searchBox: google.maps.places.SearchBox,
   map: google.maps.Map,
-  placeMarkers: google.maps.Marker[],
+  placeMarkers: PlaceMarker[],
   currentPlace: google.maps.places.PlaceResult,
   currentPhoto: number
 ) {
@@ -21,7 +21,7 @@ function searchBoxPlaces(
 // It will do a nearby search using the entered query string or place.
 function textSearchPlaces(
   map: google.maps.Map,
-  placeMarkers: google.maps.Marker[],
+  placeMarkers: PlaceMarker[],
   currentPlace: google.maps.places.PlaceResult,
   currentPhoto: number
 ) {
@@ -43,7 +43,7 @@ function textSearchPlaces(
 function createMarkersForPlaces(
   places: google.maps.places.PlaceResult[],
   map: google.maps.Map,
-  placeMarkers: google.maps.Marker[],
+  placeMarkers: PlaceMarker[],
   currentPlace: google.maps.places.PlaceResult,
   currentPhoto: number
 ) {
@@ -71,6 +71,10 @@ function createMarkersForPlaces(
     // so that only one is open at once.
     var placeInfoWindow = new google.maps.InfoWindow();
 
+    var placeMarker: PlaceMarker = new PlaceMarker();
+    placeMarker.marker = marker;
+    placeMarker.infowindow = placeInfoWindow;
+
     // If a marker is clicked, do a place details search on it in the next function.
     //marker.addListener('click', function() {
     //   if (placeInfoWindow.marker == this) {
@@ -80,8 +84,8 @@ function createMarkersForPlaces(
     //    }
     //  }
     //);
-    addPlaceMarkerEvents(marker, place.place_id, placeInfoWindow, map, currentPlace, currentPhoto);
-    placeMarkers.push(marker);
+    addPlaceMarkerEvents(placeMarker, place.place_id, map, currentPlace, currentPhoto);
+    placeMarkers.push(placeMarker);
     if (place.geometry.viewport) {
       // Only geocodes have viewport.
       bounds.union(place.geometry.viewport);
@@ -94,20 +98,19 @@ function createMarkersForPlaces(
 
 // Function to add an event to a place marker.
 function addPlaceMarkerEvents(
-  marker: google.maps.Marker,
+  placeMarker: PlaceMarker,
   place_id: string,
-  infowindow,
   map: google.maps.Map,
   currentPlace: google.maps.places.PlaceResult,
   currentPhoto: number
 ) {
   // If a marker is clicked, do a place details search on it in the next function.
-  marker.addListener('click', function() {
-      if (infowindow.marker == this) {
-        console.log("This infowindow already is on this marker!");
-      } else {
-        getPlacesDetails(this, place_id, infowindow, map, currentPlace, currentPhoto);
-      }
+  placeMarker.marker.addListener('click', function() {
+      //if (infowindow.marker == this) {
+      //  console.log("This infowindow already is on this marker!");
+      //} else {
+        getPlacesDetails(placeMarker, place_id, map, currentPlace, currentPhoto);
+      //}
     }
   );
 }
@@ -116,9 +119,8 @@ function addPlaceMarkerEvents(
 // executed when a marker is selected, indicating the user wants more
 // details about that place.
 function getPlacesDetails(
-  marker:google.maps.Marker,
-  place_id:string,
-  infowindow,
+  placeMarker: PlaceMarker,
+  place_id: string,
   map: google.maps.Map,
   currentPlace: google.maps.places.PlaceResult,
   currentPhoto: number
@@ -129,7 +131,7 @@ function getPlacesDetails(
     }, function(place, status) {
       if (status === google.maps.places.PlacesServiceStatus.OK) {
         // Set the marker property on this infowindow so it isn't created again.
-        infowindow.marker = marker;
+        //infowindow.marker = marker;
         var innerHTML = '<div>';
         if (place.name) {
           innerHTML += '<strong>' + place.name + '</strong>';
@@ -162,12 +164,12 @@ function getPlacesDetails(
           }
         }
         innerHTML += '</div>';
-        infowindow.setContent(innerHTML);
+        placeMarker.infowindow.setContent(innerHTML);
         currentPlace = place;
-        infowindow.open(map, marker);
+        placeMarker.infowindow.open(map, placeMarker.marker);
         // Make sure the marker property is cleared if the infowindow is closed.
-        infowindow.addListener('closeclick', function() {
-          infowindow.marker = null;
+        placeMarker.infowindow.addListener('closeclick', function() {
+          placeMarker.marker = null;
           currentPlace = null;
           currentPhoto = 0;
         });

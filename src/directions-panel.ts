@@ -4,7 +4,7 @@
 function displayDirections(
   map: google.maps.Map,
   origin: string,
-  markers: google.maps.Marker[],
+  markers: MarkerWithInfoWindow[],
   directionsDisplay: google.maps.DirectionsRenderer
 ) {
   hideMarkers(markers);
@@ -117,7 +117,7 @@ function getManeuverIcon(
 // Remove the directions panel
 function removeDirectionsPanel(
   directionsDisplay: google.maps.DirectionsRenderer,
-  markers: google.maps.Marker[],
+  markers: MarkerWithInfoWindow[],
   map: google.maps.Map
 ) {
   if (directionsDisplay) clearExistingDirections(directionsDisplay);

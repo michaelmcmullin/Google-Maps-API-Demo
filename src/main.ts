@@ -4,7 +4,7 @@ function initMap() {
   var map: google.maps.Map;
 
   // Create a new blank array for all the listing markers.
-  var markers: google.maps.Marker[] = [];
+  var markers: MarkerWithInfoWindow[] = [];
 
   // This global polygon variable is to ensure only ONE polygon is rendered.
   var polygon: google.maps.Polygon|google.maps.Rectangle|google.maps.Circle = null;
@@ -112,7 +112,7 @@ function initMap() {
     });
 
     // Push the marker to our array of markers.
-    markers.push(marker);
+    markers.push({ marker: marker, infowindow: null });
 
     // Create an onclick, mouseover and mouseout events to open the large
     // infowindow at each marker.

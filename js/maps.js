@@ -10,6 +10,11 @@ function getTravelMode(mode) {
             return google.maps.TravelMode.WALKING;
     }
 }
+var PlaceMarker = (function () {
+    function PlaceMarker() {
+    }
+    return PlaceMarker;
+}());
 var styles = [
     {
         "featureType": "administrative",
@@ -180,7 +185,7 @@ function initMap() {
             animation: google.maps.Animation.DROP,
             icon: defaultIcon
         });
-        markers.push(marker);
+        markers.push({ marker: marker, infowindow: null });
         addMarkerEvents(map, marker, largeInfowindow, largeInfowindowMarker, defaultIcon, highlightedIcon);
     }
     $('#toggle-listings').on('click', function () {
@@ -283,14 +288,14 @@ function toggleListings(markers, map) {
 function showListings(markers, map) {
     var bounds = new google.maps.LatLngBounds();
     for (var i = 0; i < markers.length; i++) {
-        markers[i].setMap(map);
-        bounds.extend(markers[i].getPosition());
+        markers[i].marker.setMap(map);
+        bounds.extend(markers[i].marker.getPosition());
     }
     map.fitBounds(bounds);
 }
 function hideMarkers(markers) {
     for (var i = 0; i < markers.length; i++) {
-        markers[i].setMap(null);
+        markers[i].marker.setMap(null);
     }
 }
 function makeMarkerIcon(markerColor) {
@@ -334,7 +339,7 @@ function searchWithinTime(markers, map, directionsDisplay) {
         hideMarkers(markers);
         var origins = [];
         for (var i = 0; i < markers.length; i++) {
-            origins[i] = markers[i].getPosition();
+            origins[i] = markers[i].marker.getPosition();
         }
         var destination = address;
         var mode = $('#mode').val();
@@ -367,14 +372,14 @@ function displayMarkersWithinTime(response, map, markers, directionsDisplay) {
                 var duration = element.duration.value / 60;
                 var durationText = element.duration.text;
                 if (duration <= maxDuration) {
-                    markers[i].setMap(map);
+                    markers[i].marker.setMap(map);
                     atLeastOne = true;
                     var infowindow = new google.maps.InfoWindow({
                         content: durationText + ' away, ' + distanceText +
                             '<div><input type="button" value=\"View Route\" id=\"btn_ViewRoute_' + i + '\"></input></div>'
                     });
                     var origin = origins[i];
-                    infowindow.open(map, markers[i]);
+                    infowindow.open(map, markers[i].marker);
                     removeGetRouteInfowindow(markers[i], infowindow);
                     attachGetRouteEvent($('#btn_ViewRoute_' + i)[0], map, origin, markers, directionsDisplay);
                 }
@@ -389,7 +394,7 @@ function attachGetRouteEvent(button, map, origin, markers, directionsDisplay) {
     google.maps.event.addDomListener(button, 'click', function () { displayDirections(map, origin, markers, directionsDisplay); });
 }
 function removeGetRouteInfowindow(marker, infowindow) {
-    google.maps.event.addListener(marker, 'click', function () { infowindow.close(); });
+    google.maps.event.addListener(marker.marker, 'click', function () { infowindow.close(); });
 }
 function searchBoxPlaces(searchBox, map, placeMarkers, currentPlace, currentPhoto) {
     hideMarkers(placeMarkers);
@@ -432,8 +437,11 @@ function createMarkersForPlaces(places, map, placeMarkers, currentPlace, current
             position: place.geometry.location
         });
         var placeInfoWindow = new google.maps.InfoWindow();
-        addPlaceMarkerEvents(marker, place.place_id, placeInfoWindow, map, currentPlace, currentPhoto);
-        placeMarkers.push(marker);
+        var placeMarker = new PlaceMarker();
+        placeMarker.marker = marker;
+        placeMarker.infowindow = placeInfoWindow;
+        addPlaceMarkerEvents(placeMarker, place.place_id, map, currentPlace, currentPhoto);
+        placeMarkers.push(placeMarker);
         if (place.geometry.viewport) {
             bounds.union(place.geometry.viewport);
         }
@@ -443,23 +451,17 @@ function createMarkersForPlaces(places, map, placeMarkers, currentPlace, current
     }
     map.fitBounds(bounds);
 }
-function addPlaceMarkerEvents(marker, place_id, infowindow, map, currentPlace, currentPhoto) {
-    marker.addListener('click', function () {
-        if (infowindow.marker == this) {
-            console.log("This infowindow already is on this marker!");
-        }
-        else {
-            getPlacesDetails(this, place_id, infowindow, map, currentPlace, currentPhoto);
-        }
+function addPlaceMarkerEvents(placeMarker, place_id, map, currentPlace, currentPhoto) {
+    placeMarker.marker.addListener('click', function () {
+        getPlacesDetails(placeMarker, place_id, map, currentPlace, currentPhoto);
     });
 }
-function getPlacesDetails(marker, place_id, infowindow, map, currentPlace, currentPhoto) {
+function getPlacesDetails(placeMarker, place_id, map, currentPlace, currentPhoto) {
     var service = new google.maps.places.PlacesService(map);
     service.getDetails({
         placeId: place_id
     }, function (place, status) {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
-            infowindow.marker = marker;
             var innerHTML = '<div>';
             if (place.name) {
                 innerHTML += '<strong>' + place.name + '</strong>';
@@ -490,11 +492,11 @@ function getPlacesDetails(marker, place_id, infowindow, map, currentPlace, curre
                 }
             }
             innerHTML += '</div>';
-            infowindow.setContent(innerHTML);
+            placeMarker.infowindow.setContent(innerHTML);
             currentPlace = place;
-            infowindow.open(map, marker);
-            infowindow.addListener('closeclick', function () {
-                infowindow.marker = null;
+            placeMarker.infowindow.open(map, placeMarker.marker);
+            placeMarker.infowindow.addListener('closeclick', function () {
+                placeMarker.marker = null;
                 currentPlace = null;
                 currentPhoto = 0;
             });
@@ -561,12 +563,12 @@ function disableDrawing(drawingManager, polygon) {
 function searchWithinPolygon(polygon, drawingManager, markers, map, currentDrawingTool) {
     var markerCount = 0;
     for (var i = 0; i < markers.length; i++) {
-        if (isWithinCurrentShape(markers[i].getPosition(), polygon, currentDrawingTool)) {
-            markers[i].setMap(map);
+        if (isWithinCurrentShape(markers[i].marker.getPosition(), polygon, currentDrawingTool)) {
+            markers[i].marker.setMap(map);
             markerCount++;
         }
         else {
-            markers[i].setMap(null);
+            markers[i].marker.setMap(null);
         }
     }
     deselectDrawingTools();
