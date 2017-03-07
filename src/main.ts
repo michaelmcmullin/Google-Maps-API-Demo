@@ -21,10 +21,6 @@ function initMap() {
 
   // Route layers
   var directionsDisplay: google.maps.DirectionsRenderer = null;
-
-  // Place details
-  PlaceMarker.currentPlace = null;
-  PlaceMarker.currentPhoto = 0;
   
   // End Globals
 

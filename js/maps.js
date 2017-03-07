@@ -155,8 +155,6 @@ function initMap() {
     var transitLayer = null;
     var bikeLayer = null;
     var directionsDisplay = null;
-    PlaceMarker.currentPlace = null;
-    PlaceMarker.currentPhoto = 0;
     var styledMapType = new google.maps.StyledMapType(styles, { name: 'Mono' });
     map = new google.maps.Map($('#map')[0], {
         center: { lat: 40.7413549, lng: -73.9980244 },
@@ -425,10 +423,13 @@ var PlaceMarker = (function (_super) {
         if (PlaceMarker.activeInfoWindow) {
             PlaceMarker.activeInfoWindow.close();
         }
+        PlaceMarker.currentPhoto = 0;
         PlaceMarker.activeInfoWindow = this.infowindow;
     };
     return PlaceMarker;
 }(MarkerWithInfoWindow));
+PlaceMarker.currentPlace = null;
+PlaceMarker.currentPhoto = 0;
 function searchBoxPlaces(searchBox, placeMarkers) {
     hideMarkers(placeMarkers);
     var places = searchBox.getPlaces();
