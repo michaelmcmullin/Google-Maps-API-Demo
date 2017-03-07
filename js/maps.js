@@ -1,3 +1,13 @@
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 function getTravelMode(mode) {
     switch (mode.toUpperCase()) {
         case 'DRIVING':
@@ -10,10 +20,17 @@ function getTravelMode(mode) {
             return google.maps.TravelMode.WALKING;
     }
 }
-var PlaceMarker = (function () {
-    function PlaceMarker() {
+var MarkerWithInfoWindow = (function () {
+    function MarkerWithInfoWindow() {
     }
-    return PlaceMarker;
+    MarkerWithInfoWindow.prototype.setMarker = function (newMarker) {
+        this.marker = newMarker;
+    };
+    MarkerWithInfoWindow.prototype.clearMarkers = function () {
+        this.marker = null;
+        this.infowindow = null;
+    };
+    return MarkerWithInfoWindow;
 }());
 var styles = [
     {
@@ -138,8 +155,8 @@ function initMap() {
     var transitLayer = null;
     var bikeLayer = null;
     var directionsDisplay = null;
-    var currentPlace = null;
-    var currentPhoto = 0;
+    PlaceMarker.currentPlace = null;
+    PlaceMarker.currentPhoto = 0;
     var styledMapType = new google.maps.StyledMapType(styles, { name: 'Mono' });
     map = new google.maps.Map($('#map')[0], {
         center: { lat: 40.7413549, lng: -73.9980244 },
@@ -185,7 +202,9 @@ function initMap() {
             animation: google.maps.Animation.DROP,
             icon: defaultIcon
         });
-        markers.push({ marker: marker, infowindow: null });
+        var mwinfowin = new MarkerWithInfoWindow();
+        mwinfowin.marker = marker;
+        markers.push(mwinfowin);
         addMarkerEvents(map, marker, largeInfowindow, largeInfowindowMarker, defaultIcon, highlightedIcon);
     }
     $('#toggle-listings').on('click', function () {
@@ -212,9 +231,9 @@ function initMap() {
     $('#zoom-to-area').on('click', function () { zoomToArea(map); });
     $('#search-within-time').on('click', function () { searchWithinTime(markers, map, directionsDisplay); });
     searchBox.addListener('places_changed', function () {
-        searchBoxPlaces(this, map, placeMarkers, currentPlace, currentPhoto);
+        searchBoxPlaces(this, map, placeMarkers);
     });
-    $('#go-places').on('click', function () { textSearchPlaces(map, placeMarkers, currentPlace, currentPhoto); });
+    $('#go-places').on('click', function () { textSearchPlaces(map, placeMarkers); });
     drawingManager.addListener('overlaycomplete', function (event) {
         if (polygon) {
             polygon.setMap(null);
@@ -396,17 +415,24 @@ function attachGetRouteEvent(button, map, origin, markers, directionsDisplay) {
 function removeGetRouteInfowindow(marker, infowindow) {
     google.maps.event.addListener(marker.marker, 'click', function () { infowindow.close(); });
 }
-function searchBoxPlaces(searchBox, map, placeMarkers, currentPlace, currentPhoto) {
+var PlaceMarker = (function (_super) {
+    __extends(PlaceMarker, _super);
+    function PlaceMarker() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    return PlaceMarker;
+}(MarkerWithInfoWindow));
+function searchBoxPlaces(searchBox, map, placeMarkers) {
     hideMarkers(placeMarkers);
     var places = searchBox.getPlaces();
     if (places.length === 0) {
         window.alert('We did not find any places matching that search!');
     }
     else {
-        createMarkersForPlaces(places, map, placeMarkers, currentPlace, currentPhoto);
+        createMarkersForPlaces(places, map, placeMarkers);
     }
 }
-function textSearchPlaces(map, placeMarkers, currentPlace, currentPhoto) {
+function textSearchPlaces(map, placeMarkers) {
     var bounds = map.getBounds();
     hideMarkers(placeMarkers);
     var placesService = new google.maps.places.PlacesService(map);
@@ -415,11 +441,11 @@ function textSearchPlaces(map, placeMarkers, currentPlace, currentPhoto) {
         bounds: bounds
     }, function (results, status) {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
-            createMarkersForPlaces(results, map, placeMarkers, currentPlace, currentPhoto);
+            createMarkersForPlaces(results, map, placeMarkers);
         }
     });
 }
-function createMarkersForPlaces(places, map, placeMarkers, currentPlace, currentPhoto) {
+function createMarkersForPlaces(places, map, placeMarkers) {
     var bounds = new google.maps.LatLngBounds();
     for (var i = 0; i < places.length; i++) {
         var place = places[i];
@@ -440,7 +466,7 @@ function createMarkersForPlaces(places, map, placeMarkers, currentPlace, current
         var placeMarker = new PlaceMarker();
         placeMarker.marker = marker;
         placeMarker.infowindow = placeInfoWindow;
-        addPlaceMarkerEvents(placeMarker, place.place_id, map, currentPlace, currentPhoto);
+        addPlaceMarkerEvents(placeMarker, place.place_id, map);
         placeMarkers.push(placeMarker);
         if (place.geometry.viewport) {
             bounds.union(place.geometry.viewport);
@@ -451,12 +477,12 @@ function createMarkersForPlaces(places, map, placeMarkers, currentPlace, current
     }
     map.fitBounds(bounds);
 }
-function addPlaceMarkerEvents(placeMarker, place_id, map, currentPlace, currentPhoto) {
+function addPlaceMarkerEvents(placeMarker, place_id, map) {
     placeMarker.marker.addListener('click', function () {
-        getPlacesDetails(placeMarker, place_id, map, currentPlace, currentPhoto);
+        getPlacesDetails(placeMarker, place_id, map);
     });
 }
-function getPlacesDetails(placeMarker, place_id, map, currentPlace, currentPhoto) {
+function getPlacesDetails(placeMarker, place_id, map) {
     var service = new google.maps.places.PlacesService(map);
     service.getDetails({
         placeId: place_id
@@ -493,35 +519,34 @@ function getPlacesDetails(placeMarker, place_id, map, currentPlace, currentPhoto
             }
             innerHTML += '</div>';
             placeMarker.infowindow.setContent(innerHTML);
-            currentPlace = place;
+            PlaceMarker.currentPlace = place;
             placeMarker.infowindow.open(map, placeMarker.marker);
             placeMarker.infowindow.addListener('closeclick', function () {
                 placeMarker.marker = null;
-                currentPlace = null;
-                currentPhoto = 0;
+                PlaceMarker.currentPlace = null;
+                PlaceMarker.currentPhoto = 0;
             });
         }
     });
 }
-function nextPhoto(currentPlace, currentPhoto) {
-    console.log('next photo');
-    if (currentPlace) {
-        var totalPhotos = currentPlace.photos.length;
-        var next = currentPhoto + 1;
+function nextPhoto() {
+    if (PlaceMarker.currentPlace) {
+        var totalPhotos = PlaceMarker.currentPlace.photos.length;
+        var next = PlaceMarker.currentPhoto + 1;
         if (next >= totalPhotos)
             next = 0;
-        $('#' + currentPlace.place_id + '_photo').attr('src', currentPlace.photos[next].getUrl({ maxHeight: 100, maxWidth: 200 }));
-        currentPhoto = next;
+        $('#' + PlaceMarker.currentPlace.place_id + '_photo').attr('src', PlaceMarker.currentPlace.photos[next].getUrl({ maxHeight: 100, maxWidth: 200 }));
+        PlaceMarker.currentPhoto = next;
     }
 }
-function previousPhoto(currentPlace, currentPhoto) {
-    if (currentPlace) {
-        var totalPhotos = currentPlace.photos.length;
-        var next = currentPhoto - 1;
+function previousPhoto() {
+    if (PlaceMarker.currentPlace) {
+        var totalPhotos = PlaceMarker.currentPlace.photos.length;
+        var next = PlaceMarker.currentPhoto - 1;
         if (next < 0)
             next = totalPhotos - 1;
-        $('#' + currentPlace.place_id + '_photo').attr('src', currentPlace.photos[next].getUrl({ maxHeight: 100, maxWidth: 200 }));
-        currentPhoto = next;
+        $('#' + PlaceMarker.currentPlace.place_id + '_photo').attr('src', PlaceMarker.currentPlace.photos[next].getUrl({ maxHeight: 100, maxWidth: 200 }));
+        PlaceMarker.currentPhoto = next;
     }
 }
 function toggleDrawing(map, drawingManager, drawingmode, caller, currentDrawingTool, polygon) {

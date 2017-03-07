@@ -12,7 +12,7 @@ function initMap() {
 
   // Create placemarkers array to use in multiple functions to have control
   // over the number of places that show.
-  var placeMarkers = [];
+  var placeMarkers: PlaceMarker[] = [];
 
   // Add Traffic Layers
   var trafficLayer: google.maps.TrafficLayer = null;
@@ -23,8 +23,8 @@ function initMap() {
   var directionsDisplay: google.maps.DirectionsRenderer = null;
 
   // Place details
-  var currentPlace = null;
-  var currentPhoto = 0;
+  PlaceMarker.currentPlace = null;
+  PlaceMarker.currentPhoto = 0;
   
   // End Globals
 
@@ -112,7 +112,9 @@ function initMap() {
     });
 
     // Push the marker to our array of markers.
-    markers.push({ marker: marker, infowindow: null });
+    var mwinfowin: MarkerWithInfoWindow = new MarkerWithInfoWindow();
+    mwinfowin.marker = marker;
+    markers.push(mwinfowin);
 
     // Create an onclick, mouseover and mouseout events to open the large
     // infowindow at each marker.
@@ -151,12 +153,12 @@ function initMap() {
   // Listen for the event fired when the user selects a prediction from the
   // picklist and retrieve more details for that place.
   searchBox.addListener('places_changed', function() {
-    searchBoxPlaces(this, map, placeMarkers, currentPlace, currentPhoto);
+    searchBoxPlaces(this, map, placeMarkers);
   });
 
   // Listen for the event fired when the user selects a prediction and clicks
   // "go" more details for that place.
-  $('#go-places').on('click', function(){ textSearchPlaces(map, placeMarkers, currentPlace, currentPhoto); });
+  $('#go-places').on('click', function(){ textSearchPlaces(map, placeMarkers); });
 
   // Add an event listener so that the polygon is captured,  call the
   // searchWithinPolygon function. This will show the markers in the polygon,

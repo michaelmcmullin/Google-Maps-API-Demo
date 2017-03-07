@@ -14,13 +14,18 @@ function getTravelMode(mode: string) {
   }
 }
 
-// Interface describing a marker/infowindow pair.
-interface MarkerWithInfoWindow {
+// Class describing a marker/infowindow pair.
+class MarkerWithInfoWindow {
   marker: google.maps.Marker;
   infowindow: google.maps.InfoWindow;
+
+  setMarker(newMarker: google.maps.Marker) {
+    this.marker = newMarker;
+  }
+
+  clearMarkers() {
+    this.marker = null;
+    this.infowindow = null;
+  }
 }
 
-class PlaceMarker implements MarkerWithInfoWindow {
-  marker: google.maps.Marker;
-  infowindow: google.maps.InfoWindow;
-}

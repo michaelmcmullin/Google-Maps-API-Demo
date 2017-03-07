@@ -1,11 +1,16 @@
+// Add some place-specific information to the MarkerWithInfoWindow
+// class.
+class PlaceMarker extends MarkerWithInfoWindow {
+  static currentPlace: google.maps.places.PlaceResult;
+  static currentPhoto: number;
+}
+
 // This function fires when the user selects a searchbox picklist item.
 // It will do a nearby search using the selected query string or place.
 function searchBoxPlaces(
   searchBox: google.maps.places.SearchBox,
   map: google.maps.Map,
-  placeMarkers: PlaceMarker[],
-  currentPlace: google.maps.places.PlaceResult,
-  currentPhoto: number
+  placeMarkers: PlaceMarker[]
 ) {
   hideMarkers(placeMarkers);
   var places = searchBox.getPlaces();
@@ -13,7 +18,7 @@ function searchBoxPlaces(
     window.alert('We did not find any places matching that search!');
   } else {
     // For each place, get the icon, name and location.
-    createMarkersForPlaces(places, map, placeMarkers, currentPlace, currentPhoto);
+    createMarkersForPlaces(places, map, placeMarkers);
   }
 }
 
@@ -21,9 +26,7 @@ function searchBoxPlaces(
 // It will do a nearby search using the entered query string or place.
 function textSearchPlaces(
   map: google.maps.Map,
-  placeMarkers: PlaceMarker[],
-  currentPlace: google.maps.places.PlaceResult,
-  currentPhoto: number
+  placeMarkers: PlaceMarker[]
 ) {
   var bounds = map.getBounds();
   hideMarkers(placeMarkers);
@@ -33,7 +36,7 @@ function textSearchPlaces(
       bounds: bounds
     }, function(results, status) {
       if (status === google.maps.places.PlacesServiceStatus.OK) {
-        createMarkersForPlaces(results, map, placeMarkers, currentPlace, currentPhoto);
+        createMarkersForPlaces(results, map, placeMarkers);
       }
     }
   );
@@ -43,9 +46,7 @@ function textSearchPlaces(
 function createMarkersForPlaces(
   places: google.maps.places.PlaceResult[],
   map: google.maps.Map,
-  placeMarkers: PlaceMarker[],
-  currentPlace: google.maps.places.PlaceResult,
-  currentPhoto: number
+  placeMarkers: PlaceMarker[]
 ) {
   var bounds = new google.maps.LatLngBounds();
   for (var i = 0; i < places.length; i++) {
@@ -84,7 +85,7 @@ function createMarkersForPlaces(
     //    }
     //  }
     //);
-    addPlaceMarkerEvents(placeMarker, place.place_id, map, currentPlace, currentPhoto);
+    addPlaceMarkerEvents(placeMarker, place.place_id, map);
     placeMarkers.push(placeMarker);
     if (place.geometry.viewport) {
       // Only geocodes have viewport.
@@ -100,16 +101,14 @@ function createMarkersForPlaces(
 function addPlaceMarkerEvents(
   placeMarker: PlaceMarker,
   place_id: string,
-  map: google.maps.Map,
-  currentPlace: google.maps.places.PlaceResult,
-  currentPhoto: number
+  map: google.maps.Map
 ) {
   // If a marker is clicked, do a place details search on it in the next function.
   placeMarker.marker.addListener('click', function() {
       //if (infowindow.marker == this) {
       //  console.log("This infowindow already is on this marker!");
       //} else {
-        getPlacesDetails(placeMarker, place_id, map, currentPlace, currentPhoto);
+        getPlacesDetails(placeMarker, place_id, map);
       //}
     }
   );
@@ -121,9 +120,7 @@ function addPlaceMarkerEvents(
 function getPlacesDetails(
   placeMarker: PlaceMarker,
   place_id: string,
-  map: google.maps.Map,
-  currentPlace: google.maps.places.PlaceResult,
-  currentPhoto: number
+  map: google.maps.Map
 ) {
   var service = new google.maps.places.PlacesService(map);
   service.getDetails({
@@ -165,13 +162,13 @@ function getPlacesDetails(
         }
         innerHTML += '</div>';
         placeMarker.infowindow.setContent(innerHTML);
-        currentPlace = place;
+        PlaceMarker.currentPlace = place;
         placeMarker.infowindow.open(map, placeMarker.marker);
         // Make sure the marker property is cleared if the infowindow is closed.
         placeMarker.infowindow.addListener('closeclick', function() {
           placeMarker.marker = null;
-          currentPlace = null;
-          currentPhoto = 0;
+          PlaceMarker.currentPlace = null;
+          PlaceMarker.currentPhoto = 0;
         });
       }
     }
@@ -179,40 +176,33 @@ function getPlacesDetails(
 }
 
 // Get next photo
-function nextPhoto(
-  currentPlace: google.maps.places.PlaceResult,
-  currentPhoto: number
-) {
-  console.log('next photo');
-  if (currentPlace) {
-    var totalPhotos = currentPlace.photos.length;
-    var next = currentPhoto + 1;
+function nextPhoto() {
+  if (PlaceMarker.currentPlace) {
+    var totalPhotos = PlaceMarker.currentPlace.photos.length;
+    var next = PlaceMarker.currentPhoto + 1;
     if (next >= totalPhotos) next = 0;
     
-    $('#' + currentPlace.place_id + '_photo').attr(
+    $('#' + PlaceMarker.currentPlace.place_id + '_photo').attr(
       'src',
-      currentPlace.photos[next].getUrl({maxHeight: 100, maxWidth: 200})
+      PlaceMarker.currentPlace.photos[next].getUrl({maxHeight: 100, maxWidth: 200})
     );
         
-    currentPhoto = next;
+    PlaceMarker.currentPhoto = next;
   }
 }
 
 // Get previous photo
-function previousPhoto(
-  currentPlace: google.maps.places.PlaceResult,
-  currentPhoto: number
-) {
-  if (currentPlace) {
-    var totalPhotos = currentPlace.photos.length;
-    var next = currentPhoto - 1;
+function previousPhoto() {
+  if (PlaceMarker.currentPlace) {
+    var totalPhotos = PlaceMarker.currentPlace.photos.length;
+    var next = PlaceMarker.currentPhoto - 1;
     if (next < 0) next = totalPhotos - 1;
     
-    $('#' + currentPlace.place_id + '_photo').attr(
+    $('#' + PlaceMarker.currentPlace.place_id + '_photo').attr(
       'src',
-      currentPlace.photos[next].getUrl({maxHeight: 100, maxWidth: 200})
+      PlaceMarker.currentPlace.photos[next].getUrl({maxHeight: 100, maxWidth: 200})
     );
         
-    currentPhoto = next;
+    PlaceMarker.currentPhoto = next;
   }
 }
