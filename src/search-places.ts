@@ -9,7 +9,6 @@ class PlaceMarker extends MarkerWithInfoWindow {
 // It will do a nearby search using the selected query string or place.
 function searchBoxPlaces(
   searchBox: google.maps.places.SearchBox,
-  map: google.maps.Map,
   placeMarkers: PlaceMarker[]
 ) {
   hideMarkers(placeMarkers);
@@ -18,25 +17,24 @@ function searchBoxPlaces(
     window.alert('We did not find any places matching that search!');
   } else {
     // For each place, get the icon, name and location.
-    createMarkersForPlaces(places, map, placeMarkers);
+    createMarkersForPlaces(places, placeMarkers);
   }
 }
 
 // This function fires when the user select "go" on the places search.
 // It will do a nearby search using the entered query string or place.
 function textSearchPlaces(
-  map: google.maps.Map,
   placeMarkers: PlaceMarker[]
 ) {
-  var bounds = map.getBounds();
+  var bounds = MarkerWithInfoWindow.map.getBounds();
   hideMarkers(placeMarkers);
-  var placesService = new google.maps.places.PlacesService(map);
+  var placesService = new google.maps.places.PlacesService(MarkerWithInfoWindow.map);
   placesService.textSearch({
       query: $('#places-search').val(),
       bounds: bounds
     }, function(results, status) {
       if (status === google.maps.places.PlacesServiceStatus.OK) {
-        createMarkersForPlaces(results, map, placeMarkers);
+        createMarkersForPlaces(results, placeMarkers);
       }
     }
   );
@@ -45,7 +43,6 @@ function textSearchPlaces(
 // This function creates markers for each place found in either places search.
 function createMarkersForPlaces(
   places: google.maps.places.PlaceResult[],
-  map: google.maps.Map,
   placeMarkers: PlaceMarker[]
 ) {
   var bounds = new google.maps.LatLngBounds();
@@ -60,11 +57,10 @@ function createMarkersForPlaces(
     };
     // Create a marker for each place.
     var marker = new google.maps.Marker({
-        map: map,
+        map: MarkerWithInfoWindow.map,
         icon: icon,
         title: place.name,
         position: place.geometry.location
-        //id: place.place_id
       }
     );
 
@@ -85,7 +81,7 @@ function createMarkersForPlaces(
     //    }
     //  }
     //);
-    addPlaceMarkerEvents(placeMarker, place.place_id, map);
+    addPlaceMarkerEvents(placeMarker, place.place_id);
     placeMarkers.push(placeMarker);
     if (place.geometry.viewport) {
       // Only geocodes have viewport.
@@ -94,21 +90,20 @@ function createMarkersForPlaces(
       bounds.extend(place.geometry.location);
     }
   }
-  map.fitBounds(bounds);
+  MarkerWithInfoWindow.map.fitBounds(bounds);
 }
 
 // Function to add an event to a place marker.
 function addPlaceMarkerEvents(
   placeMarker: PlaceMarker,
-  place_id: string,
-  map: google.maps.Map
+  place_id: string
 ) {
   // If a marker is clicked, do a place details search on it in the next function.
   placeMarker.marker.addListener('click', function() {
       //if (infowindow.marker == this) {
       //  console.log("This infowindow already is on this marker!");
       //} else {
-        getPlacesDetails(placeMarker, place_id, map);
+        getPlacesDetails(placeMarker, place_id);
       //}
     }
   );
@@ -119,10 +114,9 @@ function addPlaceMarkerEvents(
 // details about that place.
 function getPlacesDetails(
   placeMarker: PlaceMarker,
-  place_id: string,
-  map: google.maps.Map
+  place_id: string
 ) {
-  var service = new google.maps.places.PlacesService(map);
+  var service = new google.maps.places.PlacesService(MarkerWithInfoWindow.map);
   service.getDetails({
       placeId: place_id
     }, function(place, status) {
@@ -163,7 +157,7 @@ function getPlacesDetails(
         innerHTML += '</div>';
         placeMarker.infowindow.setContent(innerHTML);
         PlaceMarker.currentPlace = place;
-        placeMarker.infowindow.open(map, placeMarker.marker);
+        placeMarker.infowindow.open(MarkerWithInfoWindow.map, placeMarker.marker);
         // Make sure the marker property is cleared if the infowindow is closed.
         placeMarker.infowindow.addListener('closeclick', function() {
           placeMarker.marker = null;

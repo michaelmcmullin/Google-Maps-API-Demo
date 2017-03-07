@@ -16,6 +16,7 @@ function getTravelMode(mode: string) {
 
 // Class describing a marker/infowindow pair.
 class MarkerWithInfoWindow {
+  static map: google.maps.Map;
   marker: google.maps.Marker;
   infowindow: google.maps.InfoWindow;
 

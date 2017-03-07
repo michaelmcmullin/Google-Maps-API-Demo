@@ -46,6 +46,7 @@ function initMap() {
   });
   map.mapTypes.set('mono', styledMapType);
   map.setMapTypeId('mono');
+  MarkerWithInfoWindow.map = map;
 
   // Set up traffic layers
   trafficLayer = new google.maps.TrafficLayer();
@@ -153,12 +154,12 @@ function initMap() {
   // Listen for the event fired when the user selects a prediction from the
   // picklist and retrieve more details for that place.
   searchBox.addListener('places_changed', function() {
-    searchBoxPlaces(this, map, placeMarkers);
+    searchBoxPlaces(this, placeMarkers);
   });
 
   // Listen for the event fired when the user selects a prediction and clicks
   // "go" more details for that place.
-  $('#go-places').on('click', function(){ textSearchPlaces(map, placeMarkers); });
+  $('#go-places').on('click', function(){ textSearchPlaces(placeMarkers); });
 
   // Add an event listener so that the polygon is captured,  call the
   // searchWithinPolygon function. This will show the markers in the polygon,

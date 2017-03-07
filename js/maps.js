@@ -168,6 +168,7 @@ function initMap() {
     });
     map.mapTypes.set('mono', styledMapType);
     map.setMapTypeId('mono');
+    MarkerWithInfoWindow.map = map;
     trafficLayer = new google.maps.TrafficLayer();
     transitLayer = new google.maps.TransitLayer();
     bikeLayer = new google.maps.BicyclingLayer();
@@ -231,9 +232,9 @@ function initMap() {
     $('#zoom-to-area').on('click', function () { zoomToArea(map); });
     $('#search-within-time').on('click', function () { searchWithinTime(markers, map, directionsDisplay); });
     searchBox.addListener('places_changed', function () {
-        searchBoxPlaces(this, map, placeMarkers);
+        searchBoxPlaces(this, placeMarkers);
     });
-    $('#go-places').on('click', function () { textSearchPlaces(map, placeMarkers); });
+    $('#go-places').on('click', function () { textSearchPlaces(placeMarkers); });
     drawingManager.addListener('overlaycomplete', function (event) {
         if (polygon) {
             polygon.setMap(null);
@@ -422,30 +423,30 @@ var PlaceMarker = (function (_super) {
     }
     return PlaceMarker;
 }(MarkerWithInfoWindow));
-function searchBoxPlaces(searchBox, map, placeMarkers) {
+function searchBoxPlaces(searchBox, placeMarkers) {
     hideMarkers(placeMarkers);
     var places = searchBox.getPlaces();
     if (places.length === 0) {
         window.alert('We did not find any places matching that search!');
     }
     else {
-        createMarkersForPlaces(places, map, placeMarkers);
+        createMarkersForPlaces(places, placeMarkers);
     }
 }
-function textSearchPlaces(map, placeMarkers) {
-    var bounds = map.getBounds();
+function textSearchPlaces(placeMarkers) {
+    var bounds = MarkerWithInfoWindow.map.getBounds();
     hideMarkers(placeMarkers);
-    var placesService = new google.maps.places.PlacesService(map);
+    var placesService = new google.maps.places.PlacesService(MarkerWithInfoWindow.map);
     placesService.textSearch({
         query: $('#places-search').val(),
         bounds: bounds
     }, function (results, status) {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
-            createMarkersForPlaces(results, map, placeMarkers);
+            createMarkersForPlaces(results, placeMarkers);
         }
     });
 }
-function createMarkersForPlaces(places, map, placeMarkers) {
+function createMarkersForPlaces(places, placeMarkers) {
     var bounds = new google.maps.LatLngBounds();
     for (var i = 0; i < places.length; i++) {
         var place = places[i];
@@ -457,7 +458,7 @@ function createMarkersForPlaces(places, map, placeMarkers) {
             scaledSize: new google.maps.Size(25, 25)
         };
         var marker = new google.maps.Marker({
-            map: map,
+            map: MarkerWithInfoWindow.map,
             icon: icon,
             title: place.name,
             position: place.geometry.location
@@ -466,7 +467,7 @@ function createMarkersForPlaces(places, map, placeMarkers) {
         var placeMarker = new PlaceMarker();
         placeMarker.marker = marker;
         placeMarker.infowindow = placeInfoWindow;
-        addPlaceMarkerEvents(placeMarker, place.place_id, map);
+        addPlaceMarkerEvents(placeMarker, place.place_id);
         placeMarkers.push(placeMarker);
         if (place.geometry.viewport) {
             bounds.union(place.geometry.viewport);
@@ -475,15 +476,15 @@ function createMarkersForPlaces(places, map, placeMarkers) {
             bounds.extend(place.geometry.location);
         }
     }
-    map.fitBounds(bounds);
+    MarkerWithInfoWindow.map.fitBounds(bounds);
 }
-function addPlaceMarkerEvents(placeMarker, place_id, map) {
+function addPlaceMarkerEvents(placeMarker, place_id) {
     placeMarker.marker.addListener('click', function () {
-        getPlacesDetails(placeMarker, place_id, map);
+        getPlacesDetails(placeMarker, place_id);
     });
 }
-function getPlacesDetails(placeMarker, place_id, map) {
-    var service = new google.maps.places.PlacesService(map);
+function getPlacesDetails(placeMarker, place_id) {
+    var service = new google.maps.places.PlacesService(MarkerWithInfoWindow.map);
     service.getDetails({
         placeId: place_id
     }, function (place, status) {
@@ -520,7 +521,7 @@ function getPlacesDetails(placeMarker, place_id, map) {
             innerHTML += '</div>';
             placeMarker.infowindow.setContent(innerHTML);
             PlaceMarker.currentPlace = place;
-            placeMarker.infowindow.open(map, placeMarker.marker);
+            placeMarker.infowindow.open(MarkerWithInfoWindow.map, placeMarker.marker);
             placeMarker.infowindow.addListener('closeclick', function () {
                 placeMarker.marker = null;
                 PlaceMarker.currentPlace = null;
