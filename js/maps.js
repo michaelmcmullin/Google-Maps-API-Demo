@@ -230,7 +230,7 @@ function initMap() {
         $('#about-modal').fadeOut();
     });
     $('#zoom-to-area').on('click', function () { zoomToArea(map); });
-    $('#search-within-time').on('click', function () { searchWithinTime(markers, map, directionsDisplay); });
+    $('#search-within-time').on('click', function () { searchWithinTime(markers, directionsDisplay); });
     searchBox.addListener('places_changed', function () {
         searchBoxPlaces(this, placeMarkers);
     });
@@ -349,7 +349,7 @@ function zoomToArea(map) {
         });
     }
 }
-function searchWithinTime(markers, map, directionsDisplay) {
+function searchWithinTime(markers, directionsDisplay) {
     var distanceMatrixService = new google.maps.DistanceMatrixService();
     var address = $('#search-within-time-text').val();
     if (address === '') {
@@ -373,12 +373,12 @@ function searchWithinTime(markers, map, directionsDisplay) {
                 window.alert('Error was: ' + status);
             }
             else {
-                displayMarkersWithinTime(response, map, markers, directionsDisplay);
+                displayMarkersWithinTime(response, markers, directionsDisplay);
             }
         });
     }
 }
-function displayMarkersWithinTime(response, map, markers, directionsDisplay) {
+function displayMarkersWithinTime(response, markers, directionsDisplay) {
     var maxDuration = $('#max-duration').val();
     var origins = response.originAddresses;
     var destinations = response.destinationAddresses;
@@ -392,16 +392,16 @@ function displayMarkersWithinTime(response, map, markers, directionsDisplay) {
                 var duration = element.duration.value / 60;
                 var durationText = element.duration.text;
                 if (duration <= maxDuration) {
-                    markers[i].marker.setMap(map);
+                    markers[i].marker.setMap(MarkerWithInfoWindow.map);
                     atLeastOne = true;
                     var infowindow = new google.maps.InfoWindow({
                         content: durationText + ' away, ' + distanceText +
                             '<div><input type="button" value=\"View Route\" id=\"btn_ViewRoute_' + i + '\"></input></div>'
                     });
                     var origin = origins[i];
-                    infowindow.open(map, markers[i].marker);
+                    infowindow.open(MarkerWithInfoWindow.map, markers[i].marker);
                     removeGetRouteInfowindow(markers[i], infowindow);
-                    attachGetRouteEvent($('#btn_ViewRoute_' + i)[0], map, origin, markers, directionsDisplay);
+                    attachGetRouteEvent($('#btn_ViewRoute_' + i)[0], origin, markers, directionsDisplay);
                 }
             }
         }
@@ -410,8 +410,8 @@ function displayMarkersWithinTime(response, map, markers, directionsDisplay) {
         window.alert('We could not find any locations within that distance!');
     }
 }
-function attachGetRouteEvent(button, map, origin, markers, directionsDisplay) {
-    google.maps.event.addDomListener(button, 'click', function () { displayDirections(map, origin, markers, directionsDisplay); });
+function attachGetRouteEvent(button, origin, markers, directionsDisplay) {
+    google.maps.event.addDomListener(button, 'click', function () { displayDirections(origin, markers, directionsDisplay); });
 }
 function removeGetRouteInfowindow(marker, infowindow) {
     google.maps.event.addListener(marker.marker, 'click', function () { infowindow.close(); });
@@ -635,7 +635,7 @@ function isWithinCurrentShape(position, shape, currentDrawingTool) {
     }
     return false;
 }
-function displayDirections(map, origin, markers, directionsDisplay) {
+function displayDirections(origin, markers, directionsDisplay) {
     hideMarkers(markers);
     var directionsService = new google.maps.DirectionsService();
     var destinationAddress = $('#search-within-time-text').val();
@@ -649,7 +649,7 @@ function displayDirections(map, origin, markers, directionsDisplay) {
             if (directionsDisplay)
                 clearExistingDirections(directionsDisplay);
             directionsDisplay = new google.maps.DirectionsRenderer({
-                map: map,
+                map: MarkerWithInfoWindow.map,
                 directions: response,
                 draggable: true,
                 polylineOptions: {
@@ -667,7 +667,7 @@ function displayDirections(map, origin, markers, directionsDisplay) {
             window.alert('Directions request failed due to ' + status);
         }
     });
-    $('#directions-panel .close').on('click', function () { removeDirectionsPanel(directionsDisplay, markers, map); });
+    $('#directions-panel .close').on('click', function () { removeDirectionsPanel(directionsDisplay, markers); });
 }
 function clearExistingDirections(directionsDisplay) {
     directionsDisplay.setMap(null);
@@ -716,11 +716,11 @@ function getManeuverIcon(instructions) {
             return '';
     }
 }
-function removeDirectionsPanel(directionsDisplay, markers, map) {
+function removeDirectionsPanel(directionsDisplay, markers) {
     if (directionsDisplay)
         clearExistingDirections(directionsDisplay);
     $('#directions-panel').hide(200);
-    searchWithinTime(markers, map, directionsDisplay);
+    searchWithinTime(markers, directionsDisplay);
 }
 function hideLayers(trafficLayer, transitLayer, bikeLayer) {
     trafficLayer.setMap(null);

@@ -149,7 +149,7 @@ function initMap() {
  
 
   $('#zoom-to-area').on('click', function(){ zoomToArea(map); });
-  $('#search-within-time').on('click', function(){ searchWithinTime(markers, map, directionsDisplay); });
+  $('#search-within-time').on('click', function(){ searchWithinTime(markers, directionsDisplay); });
 
   // Listen for the event fired when the user selects a prediction from the
   // picklist and retrieve more details for that place.

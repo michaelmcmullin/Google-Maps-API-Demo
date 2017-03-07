@@ -5,6 +5,8 @@ class PlaceMarker extends MarkerWithInfoWindow {
   static currentPlace: google.maps.places.PlaceResult;
   static currentPhoto: number;
 
+  // Sets the infowindow associated with this PlaceMarker as
+  // the currently active infowindow.
   setAsActiveInfoWindow() {
     if (PlaceMarker.activeInfoWindow) {
       PlaceMarker.activeInfoWindow.close();

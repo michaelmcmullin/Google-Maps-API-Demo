@@ -2,7 +2,6 @@
 // of the markers within the calculated distance. This will display the route
 // on the map.
 function displayDirections(
-  map: google.maps.Map,
   origin: string,
   markers: MarkerWithInfoWindow[],
   directionsDisplay: google.maps.DirectionsRenderer
@@ -23,7 +22,7 @@ function displayDirections(
       if (status === google.maps.DirectionsStatus.OK) {
         if (directionsDisplay) clearExistingDirections(directionsDisplay);
         directionsDisplay = new google.maps.DirectionsRenderer({
-            map: map,
+            map: MarkerWithInfoWindow.map,
             directions: response,
             draggable: true,
             polylineOptions: {
@@ -44,7 +43,7 @@ function displayDirections(
     }
   );
   
-  $('#directions-panel .close').on('click', function() { removeDirectionsPanel(directionsDisplay, markers, map); });
+  $('#directions-panel .close').on('click', function() { removeDirectionsPanel(directionsDisplay, markers); });
 }
 
 // Clear the existing directions from the map so that new directions don't
@@ -117,11 +116,10 @@ function getManeuverIcon(
 // Remove the directions panel
 function removeDirectionsPanel(
   directionsDisplay: google.maps.DirectionsRenderer,
-  markers: MarkerWithInfoWindow[],
-  map: google.maps.Map
+  markers: MarkerWithInfoWindow[]
 ) {
   if (directionsDisplay) clearExistingDirections(directionsDisplay);
   $('#directions-panel').hide(200);
-  searchWithinTime(markers, map, directionsDisplay);
+  searchWithinTime(markers, directionsDisplay);
 }
 
