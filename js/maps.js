@@ -421,6 +421,12 @@ var PlaceMarker = (function (_super) {
     function PlaceMarker() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    PlaceMarker.prototype.setAsActiveInfoWindow = function () {
+        if (PlaceMarker.activeInfoWindow) {
+            PlaceMarker.activeInfoWindow.close();
+        }
+        PlaceMarker.activeInfoWindow = this.infowindow;
+    };
     return PlaceMarker;
 }(MarkerWithInfoWindow));
 function searchBoxPlaces(searchBox, placeMarkers) {
@@ -489,6 +495,7 @@ function getPlacesDetails(placeMarker, place_id) {
         placeId: place_id
     }, function (place, status) {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
+            placeMarker.setAsActiveInfoWindow();
             var innerHTML = '<div>';
             if (place.name) {
                 innerHTML += '<strong>' + place.name + '</strong>';
@@ -519,11 +526,12 @@ function getPlacesDetails(placeMarker, place_id) {
                 }
             }
             innerHTML += '</div>';
-            placeMarker.infowindow.setContent(innerHTML);
+            PlaceMarker.activeInfoWindow.setContent(innerHTML);
             PlaceMarker.currentPlace = place;
-            placeMarker.infowindow.open(MarkerWithInfoWindow.map, placeMarker.marker);
-            placeMarker.infowindow.addListener('closeclick', function () {
+            PlaceMarker.activeInfoWindow.open(MarkerWithInfoWindow.map, placeMarker.marker);
+            PlaceMarker.activeInfoWindow.addListener('closeclick', function () {
                 placeMarker.marker = null;
+                PlaceMarker.activeInfoWindow = null;
                 PlaceMarker.currentPlace = null;
                 PlaceMarker.currentPhoto = 0;
             });

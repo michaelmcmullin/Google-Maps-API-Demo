@@ -1,8 +1,16 @@
 // Add some place-specific information to the MarkerWithInfoWindow
 // class.
 class PlaceMarker extends MarkerWithInfoWindow {
+  static activeInfoWindow: google.maps.InfoWindow;
   static currentPlace: google.maps.places.PlaceResult;
   static currentPhoto: number;
+
+  setAsActiveInfoWindow() {
+    if (PlaceMarker.activeInfoWindow) {
+      PlaceMarker.activeInfoWindow.close();
+    }
+    PlaceMarker.activeInfoWindow = this.infowindow;
+  }
 }
 
 // This function fires when the user selects a searchbox picklist item.
@@ -121,6 +129,8 @@ function getPlacesDetails(
       placeId: place_id
     }, function(place, status) {
       if (status === google.maps.places.PlacesServiceStatus.OK) {
+        placeMarker.setAsActiveInfoWindow();
+
         // Set the marker property on this infowindow so it isn't created again.
         //infowindow.marker = marker;
         var innerHTML = '<div>';
@@ -155,12 +165,13 @@ function getPlacesDetails(
           }
         }
         innerHTML += '</div>';
-        placeMarker.infowindow.setContent(innerHTML);
+        PlaceMarker.activeInfoWindow.setContent(innerHTML);
         PlaceMarker.currentPlace = place;
-        placeMarker.infowindow.open(MarkerWithInfoWindow.map, placeMarker.marker);
+        PlaceMarker.activeInfoWindow.open(MarkerWithInfoWindow.map, placeMarker.marker);
         // Make sure the marker property is cleared if the infowindow is closed.
-        placeMarker.infowindow.addListener('closeclick', function() {
+        PlaceMarker.activeInfoWindow.addListener('closeclick', function() {
           placeMarker.marker = null;
+          PlaceMarker.activeInfoWindow = null;
           PlaceMarker.currentPlace = null;
           PlaceMarker.currentPhoto = 0;
         });
