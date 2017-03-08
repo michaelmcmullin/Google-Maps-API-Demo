@@ -14,11 +14,6 @@ function initMap() {
   // over the number of places that show.
   var placeMarkers: PlaceMarker[] = [];
 
-  // Add Traffic Layers
-  var trafficLayer: google.maps.TrafficLayer = null;
-  var transitLayer: google.maps.TransitLayer = null;
-  var bikeLayer: google.maps.BicyclingLayer = null;
-
   // Route layers
   var directionsDisplay: google.maps.DirectionsRenderer = null;
   
@@ -43,18 +38,7 @@ function initMap() {
   map.mapTypes.set('mono', styledMapType);
   map.setMapTypeId('mono');
   MarkerWithInfoWindow.map = map;
-
-  // Set up traffic layers
-  trafficLayer = new google.maps.TrafficLayer();
-  transitLayer = new google.maps.TransitLayer();
-  bikeLayer = new google.maps.BicyclingLayer();
-
-  trafficLayer.setMap(null);
-  transitLayer.setMap(null);
-  bikeLayer.setMap(null);
-  $('#toggle-traffic').on('click', function() { toggleTraffic(map, trafficLayer, transitLayer, bikeLayer); });
-  $('#toggle-transit').on('click', function() { toggleTransit(map, trafficLayer, transitLayer, bikeLayer); });
-  $('#toggle-bicycling').on('click', function() { toggleBicycling(map, trafficLayer, transitLayer, bikeLayer); });
+  TransportLayers.Initialise(map);
 
   //$('#directions-panel .close').on('click', function() { removeDirectionsPanel(directionsDisplay, markers, map); });
   

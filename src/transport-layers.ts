@@ -1,12 +1,29 @@
+class TransportLayers {
+  static map: google.maps.Map; 
+  static trafficLayer: google.maps.TrafficLayer;
+  static transitLayer: google.maps.TransitLayer;
+  static bikeLayer: google.maps.BicyclingLayer;
+
+  // Initial setup for transport layers
+  static Initialise(map: google.maps.Map) {
+    TransportLayers.map = map;
+    TransportLayers.trafficLayer = new google.maps.TrafficLayer();
+    TransportLayers.transitLayer = new google.maps.TransitLayer();
+    TransportLayers.bikeLayer = new google.maps.BicyclingLayer();
+
+    hideLayers();
+
+    $('#toggle-traffic').on('click', function() { toggleTraffic(); });
+    $('#toggle-transit').on('click', function() { toggleTransit(); });
+    $('#toggle-bicycling').on('click', function() { toggleBicycling(); });
+  }
+}
+
 // Hide all of the transport layers, and reset their toggle buttons
-function hideLayers(
-  trafficLayer: google.maps.TrafficLayer,
-  transitLayer: google.maps.TransitLayer,
-  bikeLayer: google.maps.BicyclingLayer
-) {
-  trafficLayer.setMap(null);
-  transitLayer.setMap(null);
-  bikeLayer.setMap(null);
+function hideLayers() {
+  TransportLayers.trafficLayer.setMap(null);
+  TransportLayers.transitLayer.setMap(null);
+  TransportLayers.bikeLayer.setMap(null);
 
   $('#toggle-traffic').removeClass('selected');
   $('#toggle-transit').removeClass('selected');
@@ -15,51 +32,39 @@ function hideLayers(
 
 // Toggle the traffic button and layer
 function toggleTraffic(
-  map: google.maps.Map,
-  trafficLayer: google.maps.TrafficLayer,
-  transitLayer: google.maps.TransitLayer,
-  bikeLayer: google.maps.BicyclingLayer
 ) {
-  if (trafficLayer.getMap() === null) {
-    hideLayers(trafficLayer, transitLayer, bikeLayer);
-    trafficLayer.setMap(map);
+  if (TransportLayers.trafficLayer.getMap() === null) {
+    hideLayers();
+    TransportLayers.trafficLayer.setMap(TransportLayers.map);
     $('#toggle-traffic').addClass('selected');
   } else {
-    trafficLayer.setMap(null);
+    TransportLayers.trafficLayer.setMap(null);
     $('#toggle-traffic').removeClass('selected');
   }
 }
 
 // Toggle the transit button and layer
 function toggleTransit(
-  map: google.maps.Map,
-  trafficLayer: google.maps.TrafficLayer,
-  transitLayer: google.maps.TransitLayer,
-  bikeLayer: google.maps.BicyclingLayer
 ) {
-  if (transitLayer.getMap() === null) {
-    hideLayers(trafficLayer, transitLayer, bikeLayer);
-    transitLayer.setMap(map);
+  if (TransportLayers.transitLayer.getMap() === null) {
+    hideLayers();
+    TransportLayers.transitLayer.setMap(TransportLayers.map);
     $('#toggle-transit').addClass('selected');
   } else {
-    transitLayer.setMap(null);
+    TransportLayers.transitLayer.setMap(null);
     $('#toggle-transit').removeClass('selected');
   }
 }
 
 // Toggle the bicycling button and layer
 function toggleBicycling(
-  map: google.maps.Map,
-  trafficLayer: google.maps.TrafficLayer,
-  transitLayer: google.maps.TransitLayer,
-  bikeLayer: google.maps.BicyclingLayer
 ) {
-  if (bikeLayer.getMap() === null) {
-    hideLayers(trafficLayer, transitLayer, bikeLayer);
-    bikeLayer.setMap(map);
+  if (TransportLayers.bikeLayer.getMap() === null) {
+    hideLayers();
+    TransportLayers.bikeLayer.setMap(TransportLayers.map);
     $('#toggle-bicycling').addClass('selected');
   } else {
-    bikeLayer.setMap(null);
+    TransportLayers.bikeLayer.setMap(null);
     $('#toggle-bicycling').removeClass('selected');
   }
 }

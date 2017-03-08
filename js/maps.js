@@ -151,9 +151,6 @@ function initMap() {
     var polygon = null;
     var currentDrawingTool = null;
     var placeMarkers = [];
-    var trafficLayer = null;
-    var transitLayer = null;
-    var bikeLayer = null;
     var directionsDisplay = null;
     var styledMapType = new google.maps.StyledMapType(styles, { name: 'Mono' });
     map = new google.maps.Map($('#map')[0], {
@@ -167,15 +164,7 @@ function initMap() {
     map.mapTypes.set('mono', styledMapType);
     map.setMapTypeId('mono');
     MarkerWithInfoWindow.map = map;
-    trafficLayer = new google.maps.TrafficLayer();
-    transitLayer = new google.maps.TransitLayer();
-    bikeLayer = new google.maps.BicyclingLayer();
-    trafficLayer.setMap(null);
-    transitLayer.setMap(null);
-    bikeLayer.setMap(null);
-    $('#toggle-traffic').on('click', function () { toggleTraffic(map, trafficLayer, transitLayer, bikeLayer); });
-    $('#toggle-transit').on('click', function () { toggleTransit(map, trafficLayer, transitLayer, bikeLayer); });
-    $('#toggle-bicycling').on('click', function () { toggleBicycling(map, trafficLayer, transitLayer, bikeLayer); });
+    TransportLayers.Initialise(map);
     $('#toggle-search').on('click', function () {
         $('#search-panel').slideToggle("fast");
     });
@@ -723,44 +712,59 @@ function removeDirectionsPanel(directionsDisplay, markers) {
     $('#directions-panel').hide(200);
     searchWithinTime(markers, directionsDisplay);
 }
-function hideLayers(trafficLayer, transitLayer, bikeLayer) {
-    trafficLayer.setMap(null);
-    transitLayer.setMap(null);
-    bikeLayer.setMap(null);
+var TransportLayers = (function () {
+    function TransportLayers() {
+    }
+    TransportLayers.Initialise = function (map) {
+        TransportLayers.map = map;
+        TransportLayers.trafficLayer = new google.maps.TrafficLayer();
+        TransportLayers.transitLayer = new google.maps.TransitLayer();
+        TransportLayers.bikeLayer = new google.maps.BicyclingLayer();
+        hideLayers();
+        $('#toggle-traffic').on('click', function () { toggleTraffic(); });
+        $('#toggle-transit').on('click', function () { toggleTransit(); });
+        $('#toggle-bicycling').on('click', function () { toggleBicycling(); });
+    };
+    return TransportLayers;
+}());
+function hideLayers() {
+    TransportLayers.trafficLayer.setMap(null);
+    TransportLayers.transitLayer.setMap(null);
+    TransportLayers.bikeLayer.setMap(null);
     $('#toggle-traffic').removeClass('selected');
     $('#toggle-transit').removeClass('selected');
     $('#toggle-bicycling').removeClass('selected');
 }
-function toggleTraffic(map, trafficLayer, transitLayer, bikeLayer) {
-    if (trafficLayer.getMap() === null) {
-        hideLayers(trafficLayer, transitLayer, bikeLayer);
-        trafficLayer.setMap(map);
+function toggleTraffic() {
+    if (TransportLayers.trafficLayer.getMap() === null) {
+        hideLayers();
+        TransportLayers.trafficLayer.setMap(TransportLayers.map);
         $('#toggle-traffic').addClass('selected');
     }
     else {
-        trafficLayer.setMap(null);
+        TransportLayers.trafficLayer.setMap(null);
         $('#toggle-traffic').removeClass('selected');
     }
 }
-function toggleTransit(map, trafficLayer, transitLayer, bikeLayer) {
-    if (transitLayer.getMap() === null) {
-        hideLayers(trafficLayer, transitLayer, bikeLayer);
-        transitLayer.setMap(map);
+function toggleTransit() {
+    if (TransportLayers.transitLayer.getMap() === null) {
+        hideLayers();
+        TransportLayers.transitLayer.setMap(TransportLayers.map);
         $('#toggle-transit').addClass('selected');
     }
     else {
-        transitLayer.setMap(null);
+        TransportLayers.transitLayer.setMap(null);
         $('#toggle-transit').removeClass('selected');
     }
 }
-function toggleBicycling(map, trafficLayer, transitLayer, bikeLayer) {
-    if (bikeLayer.getMap() === null) {
-        hideLayers(trafficLayer, transitLayer, bikeLayer);
-        bikeLayer.setMap(map);
+function toggleBicycling() {
+    if (TransportLayers.bikeLayer.getMap() === null) {
+        hideLayers();
+        TransportLayers.bikeLayer.setMap(TransportLayers.map);
         $('#toggle-bicycling').addClass('selected');
     }
     else {
-        bikeLayer.setMap(null);
+        TransportLayers.bikeLayer.setMap(null);
         $('#toggle-bicycling').removeClass('selected');
     }
 }
