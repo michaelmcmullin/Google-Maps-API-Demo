@@ -720,52 +720,52 @@ var TransportLayers = (function () {
         TransportLayers.trafficLayer = new google.maps.TrafficLayer();
         TransportLayers.transitLayer = new google.maps.TransitLayer();
         TransportLayers.bikeLayer = new google.maps.BicyclingLayer();
-        hideLayers();
-        $('#toggle-traffic').on('click', function () { toggleTraffic(); });
-        $('#toggle-transit').on('click', function () { toggleTransit(); });
-        $('#toggle-bicycling').on('click', function () { toggleBicycling(); });
+        TransportLayers.hideLayers();
+        $('#toggle-traffic').on('click', function () { TransportLayers.toggleTraffic(); });
+        $('#toggle-transit').on('click', function () { TransportLayers.toggleTransit(); });
+        $('#toggle-bicycling').on('click', function () { TransportLayers.toggleBicycling(); });
+    };
+    TransportLayers.hideLayers = function () {
+        TransportLayers.trafficLayer.setMap(null);
+        TransportLayers.transitLayer.setMap(null);
+        TransportLayers.bikeLayer.setMap(null);
+        $('#toggle-traffic').removeClass('selected');
+        $('#toggle-transit').removeClass('selected');
+        $('#toggle-bicycling').removeClass('selected');
+    };
+    TransportLayers.toggleTraffic = function () {
+        if (TransportLayers.trafficLayer.getMap() === null) {
+            TransportLayers.hideLayers();
+            TransportLayers.trafficLayer.setMap(TransportLayers.map);
+            $('#toggle-traffic').addClass('selected');
+        }
+        else {
+            TransportLayers.trafficLayer.setMap(null);
+            $('#toggle-traffic').removeClass('selected');
+        }
+    };
+    TransportLayers.toggleTransit = function () {
+        if (TransportLayers.transitLayer.getMap() === null) {
+            TransportLayers.hideLayers();
+            TransportLayers.transitLayer.setMap(TransportLayers.map);
+            $('#toggle-transit').addClass('selected');
+        }
+        else {
+            TransportLayers.transitLayer.setMap(null);
+            $('#toggle-transit').removeClass('selected');
+        }
+    };
+    TransportLayers.toggleBicycling = function () {
+        if (TransportLayers.bikeLayer.getMap() === null) {
+            TransportLayers.hideLayers();
+            TransportLayers.bikeLayer.setMap(TransportLayers.map);
+            $('#toggle-bicycling').addClass('selected');
+        }
+        else {
+            TransportLayers.bikeLayer.setMap(null);
+            $('#toggle-bicycling').removeClass('selected');
+        }
     };
     return TransportLayers;
 }());
-function hideLayers() {
-    TransportLayers.trafficLayer.setMap(null);
-    TransportLayers.transitLayer.setMap(null);
-    TransportLayers.bikeLayer.setMap(null);
-    $('#toggle-traffic').removeClass('selected');
-    $('#toggle-transit').removeClass('selected');
-    $('#toggle-bicycling').removeClass('selected');
-}
-function toggleTraffic() {
-    if (TransportLayers.trafficLayer.getMap() === null) {
-        hideLayers();
-        TransportLayers.trafficLayer.setMap(TransportLayers.map);
-        $('#toggle-traffic').addClass('selected');
-    }
-    else {
-        TransportLayers.trafficLayer.setMap(null);
-        $('#toggle-traffic').removeClass('selected');
-    }
-}
-function toggleTransit() {
-    if (TransportLayers.transitLayer.getMap() === null) {
-        hideLayers();
-        TransportLayers.transitLayer.setMap(TransportLayers.map);
-        $('#toggle-transit').addClass('selected');
-    }
-    else {
-        TransportLayers.transitLayer.setMap(null);
-        $('#toggle-transit').removeClass('selected');
-    }
-}
-function toggleBicycling() {
-    if (TransportLayers.bikeLayer.getMap() === null) {
-        hideLayers();
-        TransportLayers.bikeLayer.setMap(TransportLayers.map);
-        $('#toggle-bicycling').addClass('selected');
-    }
-    else {
-        TransportLayers.bikeLayer.setMap(null);
-        $('#toggle-bicycling').removeClass('selected');
-    }
-}
 //# sourceMappingURL=maps.js.map
