@@ -14,6 +14,13 @@ function getTravelMode(mode: string) {
   }
 }
 
+// This function will loop through the listings and hide them all.
+function hideMarkers(markers: MarkerWithInfoWindow[]) {
+  for (var i = 0; i < markers.length; i++) {
+    markers[i].marker.setMap(null);
+  }
+}
+
 // Class describing a marker/infowindow pair.
 class MarkerWithInfoWindow {
   static map: google.maps.Map;

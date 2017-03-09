@@ -20,6 +20,11 @@ function getTravelMode(mode) {
             return google.maps.TravelMode.WALKING;
     }
 }
+function hideMarkers(markers) {
+    for (var i = 0; i < markers.length; i++) {
+        markers[i].marker.setMap(null);
+    }
+}
 var MarkerWithInfoWindow = (function () {
     function MarkerWithInfoWindow() {
     }
@@ -148,8 +153,6 @@ var styles = [
 function initMap() {
     var map;
     var markers = [];
-    var polygon = null;
-    var currentDrawingTool = null;
     var placeMarkers = [];
     var directionsDisplay = null;
     var styledMapType = new google.maps.StyledMapType(styles, { name: 'Mono' });
@@ -165,6 +168,7 @@ function initMap() {
     map.setMapTypeId('mono');
     MarkerWithInfoWindow.map = map;
     TransportLayers.Initialise(map);
+    DrawingTools.Initialise(map, markers);
     $('#toggle-search').on('click', function () {
         $('#search-panel').slideToggle("fast");
     });
@@ -175,10 +179,6 @@ function initMap() {
     searchBox.setBounds(map.getBounds());
     var largeInfowindow = new google.maps.InfoWindow();
     var largeInfowindowMarker = null;
-    var drawingManager = new google.maps.drawing.DrawingManager({
-        drawingMode: google.maps.drawing.OverlayType.POLYGON,
-        drawingControl: false
-    });
     var defaultIcon = makeMarkerIcon('0091ff');
     var highlightedIcon = makeMarkerIcon('ffff24');
     for (var i = 0; i < locations.length; i++) {
@@ -198,18 +198,6 @@ function initMap() {
     $('#toggle-listings').on('click', function () {
         toggleListings(markers, map);
     });
-    $('#hand-tool').on('click', function () {
-        disableDrawing(drawingManager, polygon);
-    });
-    $('#toggle-drawing-polygon').on('click', function () {
-        currentDrawingTool = toggleDrawing(map, drawingManager, google.maps.drawing.OverlayType.POLYGON, $(this), currentDrawingTool, polygon);
-    });
-    $('#toggle-drawing-rectangle').on('click', function () {
-        currentDrawingTool = toggleDrawing(map, drawingManager, google.maps.drawing.OverlayType.RECTANGLE, $(this), currentDrawingTool, polygon);
-    });
-    $('#toggle-drawing-circle').on('click', function () {
-        currentDrawingTool = toggleDrawing(map, drawingManager, google.maps.drawing.OverlayType.CIRCLE, $(this), currentDrawingTool, polygon);
-    });
     $('#about-button').on('click', function () {
         $('#about-modal').show();
     });
@@ -222,14 +210,6 @@ function initMap() {
         searchBoxPlaces(this, placeMarkers);
     });
     $('#go-places').on('click', function () { textSearchPlaces(placeMarkers); });
-    drawingManager.addListener('overlaycomplete', function (event) {
-        if (polygon) {
-            polygon.setMap(null);
-            hideMarkers(markers);
-        }
-        polygon = event.overlay;
-        searchWithinPolygon(polygon, drawingManager, markers, map, currentDrawingTool);
-    });
 }
 var locations = [
     { title: 'Park Ave Penthouse', location: { lat: 40.7713024, lng: -73.9632393 } },
@@ -299,11 +279,6 @@ function showListings(markers, map) {
         bounds.extend(markers[i].marker.getPosition());
     }
     map.fitBounds(bounds);
-}
-function hideMarkers(markers) {
-    for (var i = 0; i < markers.length; i++) {
-        markers[i].marker.setMap(null);
-    }
 }
 function makeMarkerIcon(markerColor) {
     var markerImage = {
@@ -548,83 +523,127 @@ function previousPhoto() {
         PlaceMarker.currentPhoto = next;
     }
 }
-function toggleDrawing(map, drawingManager, drawingmode, caller, currentDrawingTool, polygon) {
-    $('#hand-tool').removeClass('selected');
-    deselectDrawingTools();
-    if (drawingManager.getMap() && caller === currentDrawingTool) {
-        drawingManager.setMap(null);
-        if (polygon !== null) {
-            polygon.setMap(null);
-        }
+var DrawingTools = (function () {
+    function DrawingTools() {
     }
-    else {
-        drawingManager.setMap(map);
-        drawingManager.setDrawingMode(drawingmode);
-        if (polygon !== null) {
-            polygon.setMap(null);
-        }
-        caller.addClass('selected');
-        currentDrawingTool = caller;
-    }
-    return currentDrawingTool;
-}
-function deselectDrawingTools() {
-    $('#toggle-listings').removeClass('selected');
-    $('#toggle-drawing-polygon').removeClass('selected');
-    $('#toggle-drawing-rectangle').removeClass('selected');
-    $('#toggle-drawing-circle').removeClass('selected');
-}
-function disableDrawing(drawingManager, polygon) {
-    deselectDrawingTools();
-    $('#hand-tool').addClass('selected');
-    if (drawingManager.getMap()) {
-        drawingManager.setMap(null);
-    }
-    if (polygon !== null) {
-        polygon.setMap(null);
-    }
-}
-function searchWithinPolygon(polygon, drawingManager, markers, map, currentDrawingTool) {
-    var markerCount = 0;
-    for (var i = 0; i < markers.length; i++) {
-        if (isWithinCurrentShape(markers[i].marker.getPosition(), polygon, currentDrawingTool)) {
-            markers[i].marker.setMap(map);
-            markerCount++;
+    DrawingTools.Initialise = function (map, markers) {
+        DrawingTools.map = map;
+        DrawingTools.markers = markers;
+        DrawingTools.drawingManager = new google.maps.drawing.DrawingManager({
+            drawingMode: google.maps.drawing.OverlayType.POLYGON,
+            drawingControl: false
+        });
+        $(DrawingTools.handButtonId).on('click', function () {
+            DrawingTools.disableDrawing();
+        });
+        $(DrawingTools.polygonButtonId).on('click', function () {
+            DrawingTools.drawingMode = google.maps.drawing.OverlayType.POLYGON;
+            DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(this));
+        });
+        $(DrawingTools.rectangleButtonId).on('click', function () {
+            DrawingTools.drawingMode = google.maps.drawing.OverlayType.RECTANGLE;
+            DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(this));
+        });
+        $(DrawingTools.circleButtonId).on('click', function () {
+            DrawingTools.drawingMode = google.maps.drawing.OverlayType.CIRCLE;
+            DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(this));
+        });
+        DrawingTools.drawingManager.addListener('overlaycomplete', function (event) {
+            if (DrawingTools.polygon) {
+                DrawingTools.polygon.setMap(null);
+                hideMarkers(DrawingTools.markers);
+            }
+            DrawingTools.polygon = event.overlay;
+            DrawingTools.searchWithinPolygon();
+        });
+        DrawingTools.disableDrawing();
+    };
+    DrawingTools.toggleDrawing = function (caller) {
+        $(DrawingTools.handButtonId).removeClass('selected');
+        DrawingTools.deselectDrawingTools();
+        if (DrawingTools.drawingManager.getMap() && caller === DrawingTools.currentDrawingTool) {
+            DrawingTools.drawingManager.setMap(null);
+            if (DrawingTools.polygon !== null) {
+                DrawingTools.polygon.setMap(null);
+            }
         }
         else {
-            markers[i].marker.setMap(null);
+            DrawingTools.drawingManager.setMap(DrawingTools.map);
+            DrawingTools.drawingManager.setDrawingMode(DrawingTools.drawingMode);
+            if (DrawingTools.polygon !== null) {
+                DrawingTools.polygon.setMap(null);
+            }
+            caller.addClass('selected');
+            DrawingTools.currentDrawingTool = caller;
         }
-    }
-    deselectDrawingTools();
-    if (markerCount > 0) {
-        $('#toggle-listings').addClass('selected');
-    }
-    else {
-        $('#toggle-listings').removeClass('selected');
-    }
-    $('#hand-tool').addClass('selected');
-    if (drawingManager.getMap()) {
-        drawingManager.setMap(null);
-    }
-}
-function isWithinCurrentShape(position, shape, currentDrawingTool) {
-    var currentShape = currentDrawingTool[0].id;
-    if (currentShape) {
-        currentShape = currentShape.split('-').pop();
-        if (currentShape === 'polygon') {
-            return google.maps.geometry.poly.containsLocation(position, shape);
+        return DrawingTools.currentDrawingTool;
+    };
+    DrawingTools.deselectDrawingTools = function () {
+        $(DrawingTools.listingsButtonId).removeClass('selected');
+        $(DrawingTools.polygonButtonId).removeClass('selected');
+        $(DrawingTools.rectangleButtonId).removeClass('selected');
+        $(DrawingTools.circleButtonId).removeClass('selected');
+    };
+    DrawingTools.disableDrawing = function () {
+        DrawingTools.deselectDrawingTools();
+        $(DrawingTools.handButtonId).addClass('selected');
+        if (DrawingTools.drawingManager.getMap()) {
+            DrawingTools.drawingManager.setMap(null);
         }
-        if (currentShape === 'rectangle') {
-            var rect = shape;
-            return rect.getBounds().contains(position);
+        if (DrawingTools.polygon !== null) {
+            DrawingTools.polygon.setMap(null);
         }
-        if (currentShape === 'circle') {
-            var circle = shape;
-            return google.maps.geometry.spherical.computeDistanceBetween(position, circle.getCenter()) <= circle.getRadius();
+    };
+    DrawingTools.searchWithinPolygon = function () {
+        var markerCount = 0;
+        for (var i = 0; i < DrawingTools.markers.length; i++) {
+            if (DrawingTools.isWithinCurrentShape(DrawingTools.markers[i].marker.getPosition())) {
+                DrawingTools.markers[i].marker.setMap(DrawingTools.map);
+                markerCount++;
+            }
+            else {
+                DrawingTools.markers[i].marker.setMap(null);
+            }
         }
-    }
-    return false;
-}
+        DrawingTools.deselectDrawingTools();
+        if (markerCount > 0) {
+            $(DrawingTools.listingsButtonId).addClass('selected');
+        }
+        else {
+            $(DrawingTools.listingsButtonId).removeClass('selected');
+        }
+        $(DrawingTools.handButtonId).addClass('selected');
+        if (DrawingTools.drawingManager.getMap()) {
+            DrawingTools.drawingManager.setMap(null);
+        }
+    };
+    DrawingTools.isWithinCurrentShape = function (position) {
+        var currentShape = DrawingTools.currentDrawingTool[0].id;
+        if (currentShape) {
+            currentShape = currentShape.split('-').pop();
+            if (currentShape === 'polygon') {
+                return google.maps.geometry.poly.containsLocation(position, DrawingTools.polygon);
+            }
+            if (currentShape === 'rectangle') {
+                var rect = DrawingTools.polygon;
+                return rect.getBounds().contains(position);
+            }
+            if (currentShape === 'circle') {
+                var circle = DrawingTools.polygon;
+                return google.maps.geometry.spherical.computeDistanceBetween(position, circle.getCenter()) <= circle.getRadius();
+            }
+        }
+        return false;
+    };
+    return DrawingTools;
+}());
+DrawingTools.currentDrawingTool = null;
+DrawingTools.polygon = null;
+DrawingTools.handButtonId = '#hand-tool';
+DrawingTools.polygonButtonId = '#toggle-drawing-polygon';
+DrawingTools.rectangleButtonId = '#toggle-drawing-rectangle';
+DrawingTools.circleButtonId = '#toggle-drawing-circle';
+DrawingTools.listingsButtonId = '#toggle-listings';
 function displayDirections(origin, markers, directionsDisplay) {
     hideMarkers(markers);
     var directionsService = new google.maps.DirectionsService();

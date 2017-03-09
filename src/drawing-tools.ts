@@ -1,108 +1,166 @@
+// Class handling the display and function of the drawing tools
+class DrawingTools {
+  static map: google.maps.Map;
+  static drawingManager: google.maps.drawing.DrawingManager;
+  static drawingMode: google.maps.drawing.OverlayType;
+  static currentDrawingTool: JQuery = null;
+  static polygon: google.maps.Polygon|google.maps.Rectangle|google.maps.Circle = null;
+  static markers: MarkerWithInfoWindow[];
 
-// This shows and hides (respectively) the drawing options.
-function toggleDrawing(
-  map: google.maps.Map,
-  drawingManager: google.maps.drawing.DrawingManager,
-  drawingmode: google.maps.drawing.OverlayType,
-  caller: JQuery,
-  currentDrawingTool: JQuery,
-  polygon: google.maps.Polygon|google.maps.Rectangle|google.maps.Circle
-) {
-  $('#hand-tool').removeClass('selected');
-  deselectDrawingTools();
-  
-  if (drawingManager.getMap() && caller === currentDrawingTool) {
-    drawingManager.setMap(null);
-    // In case the user drew anything, get rid of the polygon
-    if (polygon !== null) {
-      polygon.setMap(null);
-    }
-  } else {
-    drawingManager.setMap(map);
-    drawingManager.setDrawingMode(drawingmode);
-    if (polygon !== null) {
-      polygon.setMap(null);
-    }
-    caller.addClass('selected');
-    currentDrawingTool = caller;
+  static readonly handButtonId: string = '#hand-tool';
+  static readonly polygonButtonId: string = '#toggle-drawing-polygon';
+  static readonly rectangleButtonId: string = '#toggle-drawing-rectangle';
+  static readonly circleButtonId: string = '#toggle-drawing-circle';
+  static readonly listingsButtonId: string = '#toggle-listings';
+
+  // Initial setup for drawing tools
+  static Initialise(map: google.maps.Map, markers: MarkerWithInfoWindow[])
+  {
+    DrawingTools.map = map;
+    DrawingTools.markers = markers;
+    DrawingTools.drawingManager = new google.maps.drawing.DrawingManager({
+      drawingMode: google.maps.drawing.OverlayType.POLYGON,
+      drawingControl: false
+    });
+
+    $(DrawingTools.handButtonId).on('click', function() {
+      DrawingTools.disableDrawing();
+    });
+
+    $(DrawingTools.polygonButtonId).on('click', function() {
+      DrawingTools.drawingMode = google.maps.drawing.OverlayType.POLYGON;
+      DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(this));
+    });
+    $(DrawingTools.rectangleButtonId).on('click', function() {
+      DrawingTools.drawingMode = google.maps.drawing.OverlayType.RECTANGLE;
+      DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(this));
+    });
+    $(DrawingTools.circleButtonId).on('click', function() {
+     DrawingTools.drawingMode = google.maps.drawing.OverlayType.CIRCLE;
+     DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(this));
+    });
+
+    // Add an event listener so that the polygon is captured, call the
+    // searchWithinPolygon function. This will show the markers in the polygon,
+    // and hide any outside of it.
+    DrawingTools.drawingManager.addListener('overlaycomplete', function(event) {
+      // First, check if there is an existing polygon.
+      // If there is, get rid of it and remove the markers
+      if (DrawingTools.polygon) {
+        DrawingTools.polygon.setMap(null);
+        hideMarkers(DrawingTools.markers);
+      }
+
+      // Switching the drawing mode to the HAND (i.e., no longer drawing).
+      //drawingManager.setDrawingMode(null);
+
+      // Creating a new editable polygon from the overlay.
+      DrawingTools.polygon = event.overlay;
+      //DrawingTools.polygon.setEditable(true);
+
+      // Searching within the polygon.
+      DrawingTools.searchWithinPolygon();
+
+      // Make sure the search is re-done if the poly is changed (only relevant if editable).
+      //DrawingTools.polygon.getPath().addListener('set_at', searchWithinPolygon);
+      //DrawingTools.polygon.getPath().addListener('insert_at', searchWithinPolygon);
+    });
+
+    DrawingTools.disableDrawing();
   }
-  return currentDrawingTool;
-}
 
-// Deselect all drawing tool icons.
-function deselectDrawingTools() {
-  $('#toggle-listings').removeClass('selected');
-  $('#toggle-drawing-polygon').removeClass('selected');
-  $('#toggle-drawing-rectangle').removeClass('selected');
-  $('#toggle-drawing-circle').removeClass('selected');
-}
 
-// Disable drawing functions
-function disableDrawing(
-  drawingManager: google.maps.drawing.DrawingManager,
-  polygon: google.maps.Polygon|google.maps.Rectangle|google.maps.Circle
-) {
-  deselectDrawingTools();
-  $('#hand-tool').addClass('selected');
-  if (drawingManager.getMap()) {
-    drawingManager.setMap(null);
-  }
-  if (polygon !== null) {
-    polygon.setMap(null);
-  }
-}
-
-// This function hides all markers outside the polygon,
-// and shows only the ones within it. This is so that the
-// user can specify an exact area of search.
-function searchWithinPolygon(
-  polygon: google.maps.Polygon|google.maps.Rectangle|google.maps.Circle,
-  drawingManager: google.maps.drawing.DrawingManager,
-  markers: MarkerWithInfoWindow[],
-  map: google.maps.Map,
-  currentDrawingTool: JQuery
-) {
-  var markerCount = 0;
-  for (var i = 0; i < markers.length; i++) {
-    if (isWithinCurrentShape(markers[i].marker.getPosition(), polygon, currentDrawingTool)) {
-      markers[i].marker.setMap(map);
-      markerCount++;
+  // This shows and hides (respectively) the drawing options.
+  static toggleDrawing(
+    caller: JQuery
+  ) {
+    $(DrawingTools.handButtonId).removeClass('selected');
+    DrawingTools.deselectDrawingTools();
+    
+    if (DrawingTools.drawingManager.getMap() && caller === DrawingTools.currentDrawingTool) {
+      DrawingTools.drawingManager.setMap(null);
+      // In case the user drew anything, get rid of the polygon
+      if (DrawingTools.polygon !== null) {
+        DrawingTools.polygon.setMap(null);
+      }
     } else {
-      markers[i].marker.setMap(null);
+      DrawingTools.drawingManager.setMap(DrawingTools.map);
+      DrawingTools.drawingManager.setDrawingMode(DrawingTools.drawingMode);
+      if (DrawingTools.polygon !== null) {
+        DrawingTools.polygon.setMap(null);
+      }
+      caller.addClass('selected');
+      DrawingTools.currentDrawingTool = caller;
+    }
+    return DrawingTools.currentDrawingTool;
+  }
+
+  // Deselect all drawing tool icons.
+  static deselectDrawingTools() {
+    $(DrawingTools.listingsButtonId).removeClass('selected');
+    $(DrawingTools.polygonButtonId).removeClass('selected');
+    $(DrawingTools.rectangleButtonId).removeClass('selected');
+    $(DrawingTools.circleButtonId).removeClass('selected');
+  }
+
+  // Disable drawing functions
+  static disableDrawing() {
+    DrawingTools.deselectDrawingTools();
+    $(DrawingTools.handButtonId).addClass('selected');
+    if (DrawingTools.drawingManager.getMap()) {
+      DrawingTools.drawingManager.setMap(null);
+    }
+    if (DrawingTools.polygon !== null) {
+      DrawingTools.polygon.setMap(null);
     }
   }
-  deselectDrawingTools();
-  if (markerCount > 0) {
-    $('#toggle-listings').addClass('selected');
-  } else {
-    $('#toggle-listings').removeClass('selected');
+
+  // This function hides all markers outside the polygon,
+  // and shows only the ones within it. This is so that the
+  // user can specify an exact area of search.
+  static searchWithinPolygon() {
+    var markerCount = 0;
+    for (var i = 0; i < DrawingTools.markers.length; i++) {
+      if (DrawingTools.isWithinCurrentShape(DrawingTools.markers[i].marker.getPosition())) {
+        DrawingTools.markers[i].marker.setMap(DrawingTools.map);
+        markerCount++;
+      } else {
+        DrawingTools.markers[i].marker.setMap(null);
+      }
+    }
+    DrawingTools.deselectDrawingTools();
+    if (markerCount > 0) {
+      $(DrawingTools.listingsButtonId).addClass('selected');
+    } else {
+      $(DrawingTools.listingsButtonId).removeClass('selected');
+    }
+    $(DrawingTools.handButtonId).addClass('selected');
+    if (DrawingTools.drawingManager.getMap()) {
+      DrawingTools.drawingManager.setMap(null);
+    }
   }
-  $('#hand-tool').addClass('selected');
-  if (drawingManager.getMap()) {
-    drawingManager.setMap(null);
+
+  // Determine if a position is within the current drawing tool
+  static isWithinCurrentShape(
+    position: google.maps.LatLng
+  ) {
+    var currentShape = DrawingTools.currentDrawingTool[0].id;
+    if (currentShape) {
+      currentShape = currentShape.split('-').pop();
+      if (currentShape === 'polygon') {
+        return google.maps.geometry.poly.containsLocation(position, DrawingTools.polygon as google.maps.Polygon);
+      }
+      if (currentShape === 'rectangle') {
+        var rect = DrawingTools.polygon as google.maps.Rectangle;
+        return rect.getBounds().contains(position);
+      }
+      if (currentShape === 'circle') {
+        var circle = DrawingTools.polygon as google.maps.Circle;
+        return google.maps.geometry.spherical.computeDistanceBetween(position, circle.getCenter()) <= circle.getRadius();
+      }
+    }
+    return false;
   }
 }
 
-// Determine if a position is within the current drawing tool
-function isWithinCurrentShape(
-  position: google.maps.LatLng,
-  shape: google.maps.Polygon|google.maps.Rectangle|google.maps.Circle,
-  currentDrawingTool: JQuery
-) {
-  var currentShape = currentDrawingTool[0].id;
-  if (currentShape) {
-    currentShape = currentShape.split('-').pop();
-    if (currentShape === 'polygon') {
-      return google.maps.geometry.poly.containsLocation(position, shape as google.maps.Polygon);
-    }
-    if (currentShape === 'rectangle') {
-      var rect = shape as google.maps.Rectangle;
-      return rect.getBounds().contains(position);
-    }
-    if (currentShape === 'circle') {
-      var circle = shape as google.maps.Circle;
-      return google.maps.geometry.spherical.computeDistanceBetween(position, circle.getCenter()) <= circle.getRadius();
-    }
-  }
-  return false;
-}
+

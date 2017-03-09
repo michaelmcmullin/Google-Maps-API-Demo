@@ -6,10 +6,6 @@ function initMap() {
   // Create a new blank array for all the listing markers.
   var markers: MarkerWithInfoWindow[] = [];
 
-  // This global polygon variable is to ensure only ONE polygon is rendered.
-  var polygon: google.maps.Polygon|google.maps.Rectangle|google.maps.Circle = null;
-  var currentDrawingTool: JQuery = null;
-
   // Create placemarkers array to use in multiple functions to have control
   // over the number of places that show.
   var placeMarkers: PlaceMarker[] = [];
@@ -39,6 +35,7 @@ function initMap() {
   map.setMapTypeId('mono');
   MarkerWithInfoWindow.map = map;
   TransportLayers.Initialise(map);
+  DrawingTools.Initialise(map, markers);
 
   //$('#directions-panel .close').on('click', function() { removeDirectionsPanel(directionsDisplay, markers, map); });
   
@@ -65,10 +62,10 @@ function initMap() {
   var largeInfowindowMarker: google.maps.Marker = null;
 
   // Initialize the drawing manager.
-  var drawingManager: google.maps.drawing.DrawingManager = new google.maps.drawing.DrawingManager({
-      drawingMode: google.maps.drawing.OverlayType.POLYGON,
-      drawingControl: false
-  });
+  //var drawingManager: google.maps.drawing.DrawingManager = new google.maps.drawing.DrawingManager({
+  //    drawingMode: google.maps.drawing.OverlayType.POLYGON,
+  //    drawingControl: false
+  //});
 
   // Style the markers a bit. This will be our listing marker icon.
   var defaultIcon = makeMarkerIcon('0091ff');
@@ -105,21 +102,7 @@ function initMap() {
   $('#toggle-listings').on('click', function() {
     toggleListings(markers, map);
   });
-
-  $('#hand-tool').on('click', function() {
-    disableDrawing(drawingManager, polygon);
-  });
-
-  $('#toggle-drawing-polygon').on('click', function() {
-    currentDrawingTool = toggleDrawing(map, drawingManager, google.maps.drawing.OverlayType.POLYGON, $(this), currentDrawingTool, polygon);
-  });
-  $('#toggle-drawing-rectangle').on('click', function() {
-    currentDrawingTool = toggleDrawing(map, drawingManager, google.maps.drawing.OverlayType.RECTANGLE, $(this), currentDrawingTool, polygon);
-  });
-  $('#toggle-drawing-circle').on('click', function() {
-    currentDrawingTool = toggleDrawing(map, drawingManager, google.maps.drawing.OverlayType.CIRCLE, $(this), currentDrawingTool, polygon);
-  });
-  
+ 
   $('#about-button').on('click', function() {
     $('#about-modal').show();
   });
@@ -141,29 +124,4 @@ function initMap() {
   // "go" more details for that place.
   $('#go-places').on('click', function(){ textSearchPlaces(placeMarkers); });
 
-  // Add an event listener so that the polygon is captured,  call the
-  // searchWithinPolygon function. This will show the markers in the polygon,
-  // and hide any outside of it.
-  drawingManager.addListener('overlaycomplete', function(event) {
-    // First, check if there is an existing polygon.
-    // If there is, get rid of it and remove the markers
-    if (polygon) {
-      polygon.setMap(null);
-      hideMarkers(markers);
-    }
-
-    // Switching the drawing mode to the HAND (i.e., no longer drawing).
-    //drawingManager.setDrawingMode(null);
-
-    // Creating a new editable polygon from the overlay.
-    polygon = event.overlay;
-    //polygon.setEditable(true);
-
-    // Searching within the polygon.
-    searchWithinPolygon(polygon, drawingManager, markers, map, currentDrawingTool);
-
-    // Make sure the search is re-done if the poly is changed (only relevant if editable).
-    //polygon.getPath().addListener('set_at', searchWithinPolygon);
-    //polygon.getPath().addListener('insert_at', searchWithinPolygon);
-  });
 }

@@ -115,12 +115,7 @@ function showListings(
   map.fitBounds(bounds);
 }
 
-// This function will loop through the listings and hide them all.
-function hideMarkers(markers: MarkerWithInfoWindow[]) {
-  for (var i = 0; i < markers.length; i++) {
-    markers[i].marker.setMap(null);
-  }
-}
+
 
 // This function takes in a COLOR, and then creates a new marker
 // icon of that color. The icon will be 21 px wide by 34 high, have an origin
