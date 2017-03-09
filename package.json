@@ -17,7 +17,6 @@
   },
   "homepage": "https://github.com/mrmcnerd/Google-Maps-API-Demo",
   "devDependencies": {
-    "@types/google-maps": "^3.2.0",
     "@types/jquery": "^2.0.40",
     "grunt": "^1.0.1",
     "grunt-contrib-concat": "^1.0.1",

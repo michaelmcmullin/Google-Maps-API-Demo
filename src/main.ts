@@ -1,3 +1,13 @@
+/// <reference path="lib/googlemaps.d.ts" />
+/// <reference path="utilities.ts" />
+/// <reference path="drawing-tools.ts" />
+/// <reference path="search-places.ts" />
+/// <reference path="search-time.ts" />
+/// <reference path="search-zoom.ts" />
+/// <reference path="map-styles.ts" />
+/// <reference path="transport-layers.ts" />
+/// <reference path="listings.ts" />
+
 // Main entry point
 function initMap() {
   // From globals:

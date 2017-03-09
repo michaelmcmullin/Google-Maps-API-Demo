@@ -150,234 +150,6 @@ var styles = [
         ]
     }
 ];
-function initMap() {
-    var map;
-    var markers = [];
-    var placeMarkers = [];
-    var directionsDisplay = null;
-    var styledMapType = new google.maps.StyledMapType(styles, { name: 'Mono' });
-    map = new google.maps.Map($('#map')[0], {
-        center: { lat: 40.7413549, lng: -73.9980244 },
-        zoom: 13,
-        mapTypeControlOptions: {
-            position: google.maps.ControlPosition.TOP_RIGHT,
-            mapTypeIds: ['roadmap', 'satellite', 'hybrid', 'terrain', 'mono']
-        }
-    });
-    map.mapTypes.set('mono', styledMapType);
-    map.setMapTypeId('mono');
-    MarkerWithInfoWindow.map = map;
-    TransportLayers.Initialise(map);
-    DrawingTools.Initialise(map, markers);
-    $('#toggle-search').on('click', function () {
-        $('#search-panel').slideToggle("fast");
-    });
-    var timeAutocomplete = new google.maps.places.Autocomplete($('#search-within-time-text')[0]);
-    var zoomAutocomplete = new google.maps.places.Autocomplete($('#zoom-to-area-text')[0]);
-    zoomAutocomplete.bindTo('bounds', map);
-    var searchBox = new google.maps.places.SearchBox($('#places-search')[0]);
-    searchBox.setBounds(map.getBounds());
-    var largeInfowindow = new google.maps.InfoWindow();
-    var largeInfowindowMarker = null;
-    var defaultIcon = makeMarkerIcon('0091ff');
-    var highlightedIcon = makeMarkerIcon('ffff24');
-    for (var i = 0; i < locations.length; i++) {
-        var position = locations[i].location;
-        var title = locations[i].title;
-        var marker = new google.maps.Marker({
-            position: position,
-            title: title,
-            animation: google.maps.Animation.DROP,
-            icon: defaultIcon
-        });
-        var mwinfowin = new MarkerWithInfoWindow();
-        mwinfowin.marker = marker;
-        markers.push(mwinfowin);
-        addMarkerEvents(map, marker, largeInfowindow, largeInfowindowMarker, defaultIcon, highlightedIcon);
-    }
-    $('#toggle-listings').on('click', function () {
-        toggleListings(markers, map);
-    });
-    $('#about-button').on('click', function () {
-        $('#about-modal').show();
-    });
-    $('#about-modal .close').on('click', function () {
-        $('#about-modal').fadeOut();
-    });
-    $('#zoom-to-area').on('click', function () { zoomToArea(map); });
-    $('#search-within-time').on('click', function () { searchWithinTime(markers, directionsDisplay); });
-    searchBox.addListener('places_changed', function () {
-        searchBoxPlaces(this, placeMarkers);
-    });
-    $('#go-places').on('click', function () { textSearchPlaces(placeMarkers); });
-}
-var locations = [
-    { title: 'Park Ave Penthouse', location: { lat: 40.7713024, lng: -73.9632393 } },
-    { title: 'Chelsea Loft', location: { lat: 40.7444883, lng: -73.9949465 } },
-    { title: 'Union Square Open Floor Plan', location: { lat: 40.7347062, lng: -73.9895759 } },
-    { title: 'East Village Hip Studio', location: { lat: 40.7281777, lng: -73.984377 } },
-    { title: 'TriBeCa Artsy Bachelor Pad', location: { lat: 40.7195264, lng: -74.0089934 } },
-    { title: 'Chinatown Homey Space', location: { lat: 40.7180628, lng: -73.9961237 } }
-];
-function addMarkerEvents(map, marker, infowindow, infowindowMarker, defaultIcon, highlightedIcon) {
-    marker.addListener('click', function () {
-        populateInfoWindow(map, this, infowindow, infowindowMarker);
-    });
-    marker.addListener('mouseover', function () {
-        this.setIcon(highlightedIcon);
-    });
-    marker.addListener('mouseout', function () {
-        this.setIcon(defaultIcon);
-    });
-}
-function populateInfoWindow(map, marker, infowindow, infowindowMarker) {
-    function getStreetView(data, status) {
-        if (status == google.maps.StreetViewStatus.OK) {
-            var nearStreetViewLocation = data.location.latLng;
-            var heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, marker.getPosition());
-            infowindow.setContent('<div>' + marker.getTitle() + '</div><div id="pano"></div>');
-            var panoramaOptions = {
-                position: nearStreetViewLocation,
-                pov: {
-                    heading: heading,
-                    pitch: 30
-                }
-            };
-            var panorama = new google.maps.StreetViewPanorama($('#pano')[0], panoramaOptions);
-        }
-        else {
-            infowindow.setContent('<div>' + marker.getTitle() + '</div><div>No Street View Found</div>');
-        }
-    }
-    if (infowindowMarker != marker) {
-        infowindow.setContent('');
-        infowindowMarker = marker;
-        infowindow.addListener('closeclick', function () {
-            infowindowMarker = null;
-        });
-        var streetViewService = new google.maps.StreetViewService();
-        var radius = 50;
-        streetViewService.getPanoramaByLocation(marker.getPosition(), radius, getStreetView);
-        infowindow.open(map, marker);
-    }
-}
-function toggleListings(markers, map) {
-    var listingButton = $('#toggle-listings');
-    if (listingButton.hasClass('selected')) {
-        listingButton.removeClass('selected');
-        hideMarkers(markers);
-    }
-    else {
-        listingButton.addClass('selected');
-        showListings(markers, map);
-    }
-}
-function showListings(markers, map) {
-    var bounds = new google.maps.LatLngBounds();
-    for (var i = 0; i < markers.length; i++) {
-        markers[i].marker.setMap(map);
-        bounds.extend(markers[i].marker.getPosition());
-    }
-    map.fitBounds(bounds);
-}
-function makeMarkerIcon(markerColor) {
-    var markerImage = {
-        url: 'https://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + markerColor + '|40|_|%E2%80%A2',
-        size: new google.maps.Size(21, 34),
-        origin: new google.maps.Point(0, 0),
-        anchor: new google.maps.Point(10, 34),
-        scaledSize: new google.maps.Size(21, 34)
-    };
-    return markerImage;
-}
-function zoomToArea(map) {
-    var geocoder = new google.maps.Geocoder();
-    var address = $('#zoom-to-area-text').val();
-    if (address === '') {
-        window.alert('You must enter an area, or address.');
-    }
-    else {
-        geocoder.geocode({
-            address: address,
-            componentRestrictions: { locality: 'New York' }
-        }, function (results, status) {
-            if (status == google.maps.GeocoderStatus.OK) {
-                map.setCenter(results[0].geometry.location);
-                map.setZoom(15);
-            }
-            else {
-                window.alert('We could not find that location - try entering a more specific place.');
-            }
-        });
-    }
-}
-function searchWithinTime(markers, directionsDisplay) {
-    var distanceMatrixService = new google.maps.DistanceMatrixService();
-    var address = $('#search-within-time-text').val();
-    if (address === '') {
-        window.alert('You must enter an address.');
-    }
-    else {
-        hideMarkers(markers);
-        var origins = [];
-        for (var i = 0; i < markers.length; i++) {
-            origins[i] = markers[i].marker.getPosition();
-        }
-        var destination = address;
-        var mode = $('#mode').val();
-        distanceMatrixService.getDistanceMatrix({
-            origins: origins,
-            destinations: [destination],
-            travelMode: getTravelMode(mode),
-            unitSystem: google.maps.UnitSystem.IMPERIAL,
-        }, function (response, status) {
-            if (status !== google.maps.DistanceMatrixStatus.OK) {
-                window.alert('Error was: ' + status);
-            }
-            else {
-                displayMarkersWithinTime(response, markers, directionsDisplay);
-            }
-        });
-    }
-}
-function displayMarkersWithinTime(response, markers, directionsDisplay) {
-    var maxDuration = $('#max-duration').val();
-    var origins = response.originAddresses;
-    var destinations = response.destinationAddresses;
-    var atLeastOne = false;
-    for (var i = 0; i < origins.length; i++) {
-        var results = response.rows[i].elements;
-        for (var j = 0; j < results.length; j++) {
-            var element = results[j];
-            if (element.status === google.maps.DistanceMatrixElementStatus.OK) {
-                var distanceText = element.distance.text;
-                var duration = element.duration.value / 60;
-                var durationText = element.duration.text;
-                if (duration <= maxDuration) {
-                    markers[i].marker.setMap(MarkerWithInfoWindow.map);
-                    atLeastOne = true;
-                    var infowindow = new google.maps.InfoWindow({
-                        content: durationText + ' away, ' + distanceText +
-                            '<div><input type="button" value=\"View Route\" id=\"btn_ViewRoute_' + i + '\"></input></div>'
-                    });
-                    var origin = origins[i];
-                    infowindow.open(MarkerWithInfoWindow.map, markers[i].marker);
-                    removeGetRouteInfowindow(markers[i], infowindow);
-                    attachGetRouteEvent($('#btn_ViewRoute_' + i)[0], origin, markers, directionsDisplay);
-                }
-            }
-        }
-    }
-    if (!atLeastOne) {
-        window.alert('We could not find any locations within that distance!');
-    }
-}
-function attachGetRouteEvent(button, origin, markers, directionsDisplay) {
-    google.maps.event.addDomListener(button, 'click', function () { displayDirections(origin, markers, directionsDisplay); });
-}
-function removeGetRouteInfowindow(marker, infowindow) {
-    google.maps.event.addListener(marker.marker, 'click', function () { infowindow.close(); });
-}
 var PlaceMarker = (function (_super) {
     __extends(PlaceMarker, _super);
     function PlaceMarker() {
@@ -522,6 +294,277 @@ function previousPhoto() {
         $('#' + PlaceMarker.currentPlace.place_id + '_photo').attr('src', PlaceMarker.currentPlace.photos[next].getUrl({ maxHeight: 100, maxWidth: 200 }));
         PlaceMarker.currentPhoto = next;
     }
+}
+function searchWithinTime(markers, directionsDisplay) {
+    var distanceMatrixService = new google.maps.DistanceMatrixService();
+    var address = $('#search-within-time-text').val();
+    if (address === '') {
+        window.alert('You must enter an address.');
+    }
+    else {
+        hideMarkers(markers);
+        var origins = [];
+        for (var i = 0; i < markers.length; i++) {
+            origins[i] = markers[i].marker.getPosition();
+        }
+        var destination = address;
+        var mode = $('#mode').val();
+        distanceMatrixService.getDistanceMatrix({
+            origins: origins,
+            destinations: [destination],
+            travelMode: getTravelMode(mode),
+            unitSystem: google.maps.UnitSystem.IMPERIAL,
+        }, function (response, status) {
+            if (status !== google.maps.DistanceMatrixStatus.OK) {
+                window.alert('Error was: ' + status);
+            }
+            else {
+                displayMarkersWithinTime(response, markers, directionsDisplay);
+            }
+        });
+    }
+}
+function displayMarkersWithinTime(response, markers, directionsDisplay) {
+    var maxDuration = $('#max-duration').val();
+    var origins = response.originAddresses;
+    var destinations = response.destinationAddresses;
+    var atLeastOne = false;
+    for (var i = 0; i < origins.length; i++) {
+        var results = response.rows[i].elements;
+        for (var j = 0; j < results.length; j++) {
+            var element = results[j];
+            if (element.status === google.maps.DistanceMatrixElementStatus.OK) {
+                var distanceText = element.distance.text;
+                var duration = element.duration.value / 60;
+                var durationText = element.duration.text;
+                if (duration <= maxDuration) {
+                    markers[i].marker.setMap(MarkerWithInfoWindow.map);
+                    atLeastOne = true;
+                    var infowindow = new google.maps.InfoWindow({
+                        content: durationText + ' away, ' + distanceText +
+                            '<div><input type="button" value=\"View Route\" id=\"btn_ViewRoute_' + i + '\"></input></div>'
+                    });
+                    var origin = origins[i];
+                    infowindow.open(MarkerWithInfoWindow.map, markers[i].marker);
+                    removeGetRouteInfowindow(markers[i], infowindow);
+                    attachGetRouteEvent($('#btn_ViewRoute_' + i)[0], origin, markers, directionsDisplay);
+                }
+            }
+        }
+    }
+    if (!atLeastOne) {
+        window.alert('We could not find any locations within that distance!');
+    }
+}
+function attachGetRouteEvent(button, origin, markers, directionsDisplay) {
+    google.maps.event.addDomListener(button, 'click', function () { displayDirections(origin, markers, directionsDisplay); });
+}
+function removeGetRouteInfowindow(marker, infowindow) {
+    google.maps.event.addListener(marker.marker, 'click', function () { infowindow.close(); });
+}
+function zoomToArea(map) {
+    var geocoder = new google.maps.Geocoder();
+    var address = $('#zoom-to-area-text').val();
+    if (address === '') {
+        window.alert('You must enter an area, or address.');
+    }
+    else {
+        geocoder.geocode({
+            address: address,
+            componentRestrictions: { locality: 'New York' }
+        }, function (results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                map.setCenter(results[0].geometry.location);
+                map.setZoom(15);
+            }
+            else {
+                window.alert('We could not find that location - try entering a more specific place.');
+            }
+        });
+    }
+}
+var TransportLayers = (function () {
+    function TransportLayers() {
+    }
+    TransportLayers.Initialise = function (map) {
+        TransportLayers.map = map;
+        TransportLayers.trafficLayer = new google.maps.TrafficLayer();
+        TransportLayers.transitLayer = new google.maps.TransitLayer();
+        TransportLayers.bikeLayer = new google.maps.BicyclingLayer();
+        TransportLayers.hideLayers();
+        $(TransportLayers.trafficButtonId).on('click', function () {
+            TransportLayers.toggleLayer(TransportLayers.trafficLayer, TransportLayers.trafficButtonId);
+        });
+        $(TransportLayers.transitButtonId).on('click', function () {
+            TransportLayers.toggleLayer(TransportLayers.transitLayer, TransportLayers.transitButtonId);
+        });
+        $(TransportLayers.bicycleButtonId).on('click', function () {
+            TransportLayers.toggleLayer(TransportLayers.bikeLayer, TransportLayers.bicycleButtonId);
+        });
+    };
+    TransportLayers.hideLayers = function () {
+        TransportLayers.trafficLayer.setMap(null);
+        TransportLayers.transitLayer.setMap(null);
+        TransportLayers.bikeLayer.setMap(null);
+        $(TransportLayers.trafficButtonId).removeClass('selected');
+        $(TransportLayers.transitButtonId).removeClass('selected');
+        $(TransportLayers.bicycleButtonId).removeClass('selected');
+    };
+    TransportLayers.toggleLayer = function (layer, buttonId) {
+        if (layer.getMap() === null) {
+            TransportLayers.hideLayers();
+            layer.setMap(TransportLayers.map);
+            $(buttonId).addClass('selected');
+        }
+        else {
+            layer.setMap(null);
+            $(buttonId).removeClass('selected');
+        }
+    };
+    return TransportLayers;
+}());
+TransportLayers.trafficButtonId = '#toggle-traffic';
+TransportLayers.transitButtonId = '#toggle-transit';
+TransportLayers.bicycleButtonId = '#toggle-bicycling';
+var locations = [
+    { title: 'Park Ave Penthouse', location: { lat: 40.7713024, lng: -73.9632393 } },
+    { title: 'Chelsea Loft', location: { lat: 40.7444883, lng: -73.9949465 } },
+    { title: 'Union Square Open Floor Plan', location: { lat: 40.7347062, lng: -73.9895759 } },
+    { title: 'East Village Hip Studio', location: { lat: 40.7281777, lng: -73.984377 } },
+    { title: 'TriBeCa Artsy Bachelor Pad', location: { lat: 40.7195264, lng: -74.0089934 } },
+    { title: 'Chinatown Homey Space', location: { lat: 40.7180628, lng: -73.9961237 } }
+];
+function addMarkerEvents(map, marker, infowindow, infowindowMarker, defaultIcon, highlightedIcon) {
+    marker.addListener('click', function () {
+        populateInfoWindow(map, this, infowindow, infowindowMarker);
+    });
+    marker.addListener('mouseover', function () {
+        this.setIcon(highlightedIcon);
+    });
+    marker.addListener('mouseout', function () {
+        this.setIcon(defaultIcon);
+    });
+}
+function populateInfoWindow(map, marker, infowindow, infowindowMarker) {
+    function getStreetView(data, status) {
+        if (status == google.maps.StreetViewStatus.OK) {
+            var nearStreetViewLocation = data.location.latLng;
+            var heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, marker.getPosition());
+            infowindow.setContent('<div>' + marker.getTitle() + '</div><div id="pano"></div>');
+            var panoramaOptions = {
+                position: nearStreetViewLocation,
+                pov: {
+                    heading: heading,
+                    pitch: 30
+                }
+            };
+            var panorama = new google.maps.StreetViewPanorama($('#pano')[0], panoramaOptions);
+        }
+        else {
+            infowindow.setContent('<div>' + marker.getTitle() + '</div><div>No Street View Found</div>');
+        }
+    }
+    if (infowindowMarker != marker) {
+        infowindow.setContent('');
+        infowindowMarker = marker;
+        infowindow.addListener('closeclick', function () {
+            infowindowMarker = null;
+        });
+        var streetViewService = new google.maps.StreetViewService();
+        var radius = 50;
+        streetViewService.getPanoramaByLocation(marker.getPosition(), radius, getStreetView);
+        infowindow.open(map, marker);
+    }
+}
+function toggleListings(markers, map) {
+    var listingButton = $('#toggle-listings');
+    if (listingButton.hasClass('selected')) {
+        listingButton.removeClass('selected');
+        hideMarkers(markers);
+    }
+    else {
+        listingButton.addClass('selected');
+        showListings(markers, map);
+    }
+}
+function showListings(markers, map) {
+    var bounds = new google.maps.LatLngBounds();
+    for (var i = 0; i < markers.length; i++) {
+        markers[i].marker.setMap(map);
+        bounds.extend(markers[i].marker.getPosition());
+    }
+    map.fitBounds(bounds);
+}
+function makeMarkerIcon(markerColor) {
+    var markerImage = {
+        url: 'https://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + markerColor + '|40|_|%E2%80%A2',
+        size: new google.maps.Size(21, 34),
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(10, 34),
+        scaledSize: new google.maps.Size(21, 34)
+    };
+    return markerImage;
+}
+function initMap() {
+    var map;
+    var markers = [];
+    var placeMarkers = [];
+    var directionsDisplay = null;
+    var styledMapType = new google.maps.StyledMapType(styles, { name: 'Mono' });
+    map = new google.maps.Map($('#map')[0], {
+        center: { lat: 40.7413549, lng: -73.9980244 },
+        zoom: 13,
+        mapTypeControlOptions: {
+            position: google.maps.ControlPosition.TOP_RIGHT,
+            mapTypeIds: ['roadmap', 'satellite', 'hybrid', 'terrain', 'mono']
+        }
+    });
+    map.mapTypes.set('mono', styledMapType);
+    map.setMapTypeId('mono');
+    MarkerWithInfoWindow.map = map;
+    TransportLayers.Initialise(map);
+    DrawingTools.Initialise(map, markers);
+    $('#toggle-search').on('click', function () {
+        $('#search-panel').slideToggle("fast");
+    });
+    var timeAutocomplete = new google.maps.places.Autocomplete($('#search-within-time-text')[0]);
+    var zoomAutocomplete = new google.maps.places.Autocomplete($('#zoom-to-area-text')[0]);
+    zoomAutocomplete.bindTo('bounds', map);
+    var searchBox = new google.maps.places.SearchBox($('#places-search')[0]);
+    searchBox.setBounds(map.getBounds());
+    var largeInfowindow = new google.maps.InfoWindow();
+    var largeInfowindowMarker = null;
+    var defaultIcon = makeMarkerIcon('0091ff');
+    var highlightedIcon = makeMarkerIcon('ffff24');
+    for (var i = 0; i < locations.length; i++) {
+        var position = locations[i].location;
+        var title = locations[i].title;
+        var marker = new google.maps.Marker({
+            position: position,
+            title: title,
+            animation: google.maps.Animation.DROP,
+            icon: defaultIcon
+        });
+        var mwinfowin = new MarkerWithInfoWindow();
+        mwinfowin.marker = marker;
+        markers.push(mwinfowin);
+        addMarkerEvents(map, marker, largeInfowindow, largeInfowindowMarker, defaultIcon, highlightedIcon);
+    }
+    $('#toggle-listings').on('click', function () {
+        toggleListings(markers, map);
+    });
+    $('#about-button').on('click', function () {
+        $('#about-modal').show();
+    });
+    $('#about-modal .close').on('click', function () {
+        $('#about-modal').fadeOut();
+    });
+    $('#zoom-to-area').on('click', function () { zoomToArea(map); });
+    $('#search-within-time').on('click', function () { searchWithinTime(markers, directionsDisplay); });
+    searchBox.addListener('places_changed', function () {
+        searchBoxPlaces(this, placeMarkers);
+    });
+    $('#go-places').on('click', function () { textSearchPlaces(placeMarkers); });
 }
 var DrawingTools = (function () {
     function DrawingTools() {
@@ -731,47 +774,4 @@ function removeDirectionsPanel(directionsDisplay, markers) {
     $('#directions-panel').hide(200);
     searchWithinTime(markers, directionsDisplay);
 }
-var TransportLayers = (function () {
-    function TransportLayers() {
-    }
-    TransportLayers.Initialise = function (map) {
-        TransportLayers.map = map;
-        TransportLayers.trafficLayer = new google.maps.TrafficLayer();
-        TransportLayers.transitLayer = new google.maps.TransitLayer();
-        TransportLayers.bikeLayer = new google.maps.BicyclingLayer();
-        TransportLayers.hideLayers();
-        $(TransportLayers.trafficButtonId).on('click', function () {
-            TransportLayers.toggleLayer(TransportLayers.trafficLayer, TransportLayers.trafficButtonId);
-        });
-        $(TransportLayers.transitButtonId).on('click', function () {
-            TransportLayers.toggleLayer(TransportLayers.transitLayer, TransportLayers.transitButtonId);
-        });
-        $(TransportLayers.bicycleButtonId).on('click', function () {
-            TransportLayers.toggleLayer(TransportLayers.bikeLayer, TransportLayers.bicycleButtonId);
-        });
-    };
-    TransportLayers.hideLayers = function () {
-        TransportLayers.trafficLayer.setMap(null);
-        TransportLayers.transitLayer.setMap(null);
-        TransportLayers.bikeLayer.setMap(null);
-        $(TransportLayers.trafficButtonId).removeClass('selected');
-        $(TransportLayers.transitButtonId).removeClass('selected');
-        $(TransportLayers.bicycleButtonId).removeClass('selected');
-    };
-    TransportLayers.toggleLayer = function (layer, buttonId) {
-        if (layer.getMap() === null) {
-            TransportLayers.hideLayers();
-            layer.setMap(TransportLayers.map);
-            $(buttonId).addClass('selected');
-        }
-        else {
-            layer.setMap(null);
-            $(buttonId).removeClass('selected');
-        }
-    };
-    return TransportLayers;
-}());
-TransportLayers.trafficButtonId = '#toggle-traffic';
-TransportLayers.transitButtonId = '#toggle-transit';
-TransportLayers.bicycleButtonId = '#toggle-bicycling';
 //# sourceMappingURL=maps.js.map

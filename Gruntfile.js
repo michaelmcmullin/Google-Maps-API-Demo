@@ -23,28 +23,9 @@ module.exports = function(grunt) {
         }]
       }
     },
-    concat: {
-      dist: {
-        src: [
-          'src/imports.ts',
-          'src/globals.ts',
-          'src/map-styles.ts',
-          'src/main.ts',
-          'src/listings.ts',
-          'src/search-zoom.ts',
-          'src/search-time.ts',
-          'src/search-places.ts',
-          'src/drawing-tools.ts',
-          'src/directions-panel.ts',
-          'src/transport-layers.ts'
-          ],
-        dest: 'tmp/maps.ts',
-      },
-    },
     ts: {
       default:{
         src: [
-          'src/imports.ts',
           'src/utilities.ts',
           'src/map-styles.ts',
           'src/main.ts',
@@ -56,7 +37,6 @@ module.exports = function(grunt) {
           'src/directions-panel.ts',
           'src/transport-layers.ts'
         ],
-        reference: 'src/imports.ts',
         out: 'js/maps.js'
       },
       options: {
