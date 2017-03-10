@@ -669,14 +669,7 @@ function initMap() {
     ListingMarker.Initialise(map);
     TransportLayers.Initialise(map);
     DrawingTools.Initialise(map, markers);
-    $('#toggle-search').on('click', function () {
-        $('#search-panel').slideToggle("fast");
-    });
-    var timeAutocomplete = new google.maps.places.Autocomplete($('#search-within-time-text')[0]);
-    var zoomAutocomplete = new google.maps.places.Autocomplete($('#zoom-to-area-text')[0]);
-    zoomAutocomplete.bindTo('bounds', map);
-    var searchBox = new google.maps.places.SearchBox($('#places-search')[0]);
-    searchBox.setBounds(map.getBounds());
+    SearchPanel.Initialise(map, markers, placeMarkers, directionsDisplay);
     for (var i = 0; i < locations.length; i++) {
         var position = locations[i].location;
         var title = locations[i].title;
@@ -692,13 +685,52 @@ function initMap() {
     $('#about-modal .close').on('click', function () {
         $('#about-modal').fadeOut();
     });
-    $('#zoom-to-area').on('click', function () { zoomToArea(map); });
-    $('#search-within-time').on('click', function () { searchWithinTime(markers, directionsDisplay); });
-    searchBox.addListener('places_changed', function () {
-        searchBoxPlaces(this, placeMarkers);
-    });
-    $('#go-places').on('click', function () { textSearchPlaces(placeMarkers); });
 }
+var SearchPanel = (function () {
+    function SearchPanel() {
+    }
+    SearchPanel.Initialise = function (map, markers, placeMarkers, directionsDisplay) {
+        $(SearchPanel.searchButton).on('click', function () {
+            $(SearchPanel.searchPanel).slideToggle("fast");
+        });
+        var timeAutocomplete = new google.maps.places.Autocomplete($(SearchPanel.searchTimeText)[0]);
+        var zoomAutocomplete = new google.maps.places.Autocomplete($(SearchPanel.searchZoomText)[0]);
+        zoomAutocomplete.bindTo('bounds', map);
+        var searchBox = new google.maps.places.SearchBox($(SearchPanel.searchPlacesText)[0]);
+        searchBox.setBounds(map.getBounds());
+        $(SearchPanel.searchZoomButton).on('click', function () {
+            zoomToArea(map);
+            SearchPanel.hide();
+        });
+        $(SearchPanel.searchTimeButton).on('click', function () {
+            searchWithinTime(markers, directionsDisplay);
+            SearchPanel.hide();
+        });
+        searchBox.addListener('places_changed', function () {
+            searchBoxPlaces(this, placeMarkers);
+            SearchPanel.hide();
+        });
+        $(SearchPanel.searchPlacesButton).on('click', function () {
+            textSearchPlaces(placeMarkers);
+            SearchPanel.hide();
+        });
+    };
+    SearchPanel.show = function () {
+        $(SearchPanel.searchPanel).slideDown("fast");
+    };
+    SearchPanel.hide = function () {
+        $(SearchPanel.searchPanel).slideUp("fast");
+    };
+    return SearchPanel;
+}());
+SearchPanel.searchButton = '#toggle-search';
+SearchPanel.searchPanel = '#search-panel';
+SearchPanel.searchZoomText = '#zoom-to-area-text';
+SearchPanel.searchZoomButton = '#zoom-to-area';
+SearchPanel.searchTimeText = '#search-within-time-text';
+SearchPanel.searchTimeButton = '#search-within-time';
+SearchPanel.searchPlacesText = '#places-search';
+SearchPanel.searchPlacesButton = '#go-places';
 function displayDirections(origin, markers, directionsDisplay) {
     hideMarkers(markers);
     var directionsService = new google.maps.DirectionsService();
@@ -722,7 +754,7 @@ function displayDirections(origin, markers, directionsDisplay) {
             });
             populateDirectionsPanel(response);
             $('#directions-panel').show(200);
-            $('#search-panel').slideUp('fast');
+            SearchPanel.hide();
             directionsDisplay.addListener('directions_changed', function () {
                 populateDirectionsPanel(directionsDisplay.getDirections());
             });

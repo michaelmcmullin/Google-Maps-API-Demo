@@ -43,32 +43,10 @@ function initMap() {
   ListingMarker.Initialise(map);
   TransportLayers.Initialise(map);
   DrawingTools.Initialise(map, markers);
+  SearchPanel.Initialise(map, markers, placeMarkers, directionsDisplay);
 
   //$('#directions-panel .close').on('click', function() { removeDirectionsPanel(directionsDisplay, markers, map); });
   
-  $('#toggle-search').on('click', function() {
-    $('#search-panel').slideToggle("fast");
-  });
-
-  // This autocomplete is for use in the search within time entry box.
-  var timeAutocomplete = new google.maps.places.Autocomplete(<HTMLInputElement> $('#search-within-time-text')[0]);
-
-  // This autocomplete is for use in the geocoder entry box.
-  var zoomAutocomplete = new google.maps.places.Autocomplete(<HTMLInputElement> $('#zoom-to-area-text')[0]);
-
-  // Bias the boundaries within the map for the zoom to area text.
-  zoomAutocomplete.bindTo('bounds', map);
-
-  // Create a searchbox in order to execute a places search
-  var searchBox = new google.maps.places.SearchBox(<HTMLInputElement> $('#places-search')[0]);
-
-  // Bias the searchbox to within the bounds of the map.
-  searchBox.setBounds(map.getBounds());
-
-  //var largeInfowindow: google.maps.InfoWindow = new google.maps.InfoWindow();
-  //var largeInfowindowMarker: google.maps.Marker = null;
-
-
   // The following group uses the location array to create an array of markers on initialize.
   for (var i = 0; i < locations.length; i++) {
     // Get the position from the location array.
@@ -79,13 +57,7 @@ function initMap() {
     var listingMarker = new ListingMarker(position, title);
 
     // Push the marker to our array of markers.
-    //var mwinfowin: MarkerWithInfoWindow = new MarkerWithInfoWindow();
-    //mwinfowin.marker = marker;
     markers.push(listingMarker);
-
-    // Create an onclick, mouseover and mouseout events to open the large
-    // infowindow at each marker.
-    //addMarkerEvents(map, marker, largeInfowindow, largeInfowindowMarker, defaultIcon, highlightedIcon);
   }
 
   $('#toggle-listings').on('click', function() {
@@ -99,18 +71,4 @@ function initMap() {
     $('#about-modal').fadeOut();
   });
  
-
-  $('#zoom-to-area').on('click', function(){ zoomToArea(map); });
-  $('#search-within-time').on('click', function(){ searchWithinTime(markers, directionsDisplay); });
-
-  // Listen for the event fired when the user selects a prediction from the
-  // picklist and retrieve more details for that place.
-  searchBox.addListener('places_changed', function() {
-    searchBoxPlaces(this, placeMarkers);
-  });
-
-  // Listen for the event fired when the user selects a prediction and clicks
-  // "go" more details for that place.
-  $('#go-places').on('click', function(){ textSearchPlaces(placeMarkers); });
-
 }

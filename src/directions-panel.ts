@@ -32,7 +32,7 @@ function displayDirections(
         );
         populateDirectionsPanel(response);
         $('#directions-panel').show(200);
-        $('#search-panel').slideUp('fast');
+        SearchPanel.hide();
 
         directionsDisplay.addListener('directions_changed', function(){
           populateDirectionsPanel(directionsDisplay.getDirections());

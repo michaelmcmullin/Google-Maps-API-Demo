@@ -1,3 +1,4 @@
+// Class to handle the search panel element
 class SearchPanel {
   static readonly searchButton: string = '#toggle-search';
   static readonly searchPanel: string = '#search-panel';

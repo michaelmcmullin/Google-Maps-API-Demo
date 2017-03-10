@@ -30,6 +30,7 @@ module.exports = function(grunt) {
           'src/map-styles.ts',
           'src/main.ts',
           'src/listings.ts',
+          'src/search-panel.ts',
           'src/search-zoom.ts',
           'src/search-time.ts',
           'src/search-places.ts',
