@@ -59,6 +59,7 @@ class ListingMarker extends MarkerWithInfoWindow {
   ) {
     // Create an onclick event to open the large infowindow at each marker.
     this.marker.addListener('click', function() {
+      removeInfoWindow();
       ListingMarker.currentMarker = marker;
       ListingMarker.currentInfoWindow = infowindow;
       ListingMarker.populateInfoWindow();
@@ -102,10 +103,7 @@ class ListingMarker extends MarkerWithInfoWindow {
     ListingMarker.currentInfoWindow.setContent('');
 
     // Make sure the marker property is cleared if the infowindow is closed.
-    ListingMarker.currentInfoWindow.addListener('closeclick', function() {
-      ListingMarker.currentMarker = null;
-      ListingMarker.currentInfoWindow = null;
-    });
+    ListingMarker.currentInfoWindow.addListener('closeclick', removeInfoWindow);
     var streetViewService = new google.maps.StreetViewService();
     var radius = 50;
 
@@ -116,6 +114,14 @@ class ListingMarker extends MarkerWithInfoWindow {
     // Open the infowindow on the correct marker.
     ListingMarker.currentInfoWindow.open(ListingMarker.map, ListingMarker.currentMarker);
   }
+}
+
+// Remove the currently active info window.
+function removeInfoWindow() {
+  if (ListingMarker.currentInfoWindow !== null)
+    ListingMarker.currentInfoWindow.close();
+  ListingMarker.currentMarker = null;
+  ListingMarker.currentInfoWindow = null;
 }
 
 // Toggle the display of available listings.

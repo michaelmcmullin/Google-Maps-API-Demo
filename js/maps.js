@@ -605,6 +605,7 @@ var ListingMarker = (function (_super) {
     };
     ListingMarker.prototype.addMarkerEvents = function (marker, infowindow) {
         this.marker.addListener('click', function () {
+            removeInfoWindow();
             ListingMarker.currentMarker = marker;
             ListingMarker.currentInfoWindow = infowindow;
             ListingMarker.populateInfoWindow();
@@ -636,10 +637,7 @@ var ListingMarker = (function (_super) {
             }
         }
         ListingMarker.currentInfoWindow.setContent('');
-        ListingMarker.currentInfoWindow.addListener('closeclick', function () {
-            ListingMarker.currentMarker = null;
-            ListingMarker.currentInfoWindow = null;
-        });
+        ListingMarker.currentInfoWindow.addListener('closeclick', removeInfoWindow);
         var streetViewService = new google.maps.StreetViewService();
         var radius = 50;
         streetViewService.getPanoramaByLocation(ListingMarker.currentMarker.getPosition(), radius, getStreetView);
@@ -649,6 +647,12 @@ var ListingMarker = (function (_super) {
 }(MarkerWithInfoWindow));
 ListingMarker.currentMarker = null;
 ListingMarker.currentInfoWindow = null;
+function removeInfoWindow() {
+    if (ListingMarker.currentInfoWindow !== null)
+        ListingMarker.currentInfoWindow.close();
+    ListingMarker.currentMarker = null;
+    ListingMarker.currentInfoWindow = null;
+}
 function toggleListings(markers, map) {
     var listingButton = $('#toggle-listings');
     if (listingButton.hasClass('selected')) {
