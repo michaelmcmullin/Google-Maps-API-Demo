@@ -10,7 +10,6 @@
 
 // Main entry point
 function initMap() {
-  // From globals:
   var map: google.maps.Map;
 
   // Create a new blank array for all the listing markers.
@@ -23,9 +22,6 @@ function initMap() {
   // Route layers
   var directionsDisplay: google.maps.DirectionsRenderer = null;
   
-  // End Globals
-
-
   var styledMapType = new google.maps.StyledMapType(
     styles,
     {name: 'Mono'}
@@ -44,6 +40,7 @@ function initMap() {
   map.mapTypes.set('mono', styledMapType);
   map.setMapTypeId('mono');
   MarkerWithInfoWindow.map = map;
+  ListingMarker.Initialise(map);
   TransportLayers.Initialise(map);
   DrawingTools.Initialise(map, markers);
 
@@ -68,21 +65,9 @@ function initMap() {
   // Bias the searchbox to within the bounds of the map.
   searchBox.setBounds(map.getBounds());
 
-  var largeInfowindow: google.maps.InfoWindow = new google.maps.InfoWindow();
-  var largeInfowindowMarker: google.maps.Marker = null;
+  //var largeInfowindow: google.maps.InfoWindow = new google.maps.InfoWindow();
+  //var largeInfowindowMarker: google.maps.Marker = null;
 
-  // Initialize the drawing manager.
-  //var drawingManager: google.maps.drawing.DrawingManager = new google.maps.drawing.DrawingManager({
-  //    drawingMode: google.maps.drawing.OverlayType.POLYGON,
-  //    drawingControl: false
-  //});
-
-  // Style the markers a bit. This will be our listing marker icon.
-  var defaultIcon = makeMarkerIcon('0091ff');
-
-  // Create a "highlighted location" marker color for when the user
-  // mouses over the marker.
-  var highlightedIcon = makeMarkerIcon('ffff24');
 
   // The following group uses the location array to create an array of markers on initialize.
   for (var i = 0; i < locations.length; i++) {
@@ -91,22 +76,16 @@ function initMap() {
     var title = locations[i].title;
 
     // Create a marker per location, and put into markers array.
-    var marker = new google.maps.Marker({
-      position: position,
-      title: title,
-      animation: google.maps.Animation.DROP,
-      icon: defaultIcon
-      // id: i
-    });
+    var listingMarker = new ListingMarker(position, title);
 
     // Push the marker to our array of markers.
-    var mwinfowin: MarkerWithInfoWindow = new MarkerWithInfoWindow();
-    mwinfowin.marker = marker;
-    markers.push(mwinfowin);
+    //var mwinfowin: MarkerWithInfoWindow = new MarkerWithInfoWindow();
+    //mwinfowin.marker = marker;
+    markers.push(listingMarker);
 
     // Create an onclick, mouseover and mouseout events to open the large
     // infowindow at each marker.
-    addMarkerEvents(map, marker, largeInfowindow, largeInfowindowMarker, defaultIcon, highlightedIcon);
+    //addMarkerEvents(map, marker, largeInfowindow, largeInfowindowMarker, defaultIcon, highlightedIcon);
   }
 
   $('#toggle-listings').on('click', function() {

@@ -9,80 +9,112 @@ var locations = [
   {title: 'Chinatown Homey Space', location: {lat: 40.7180628, lng: -73.9961237}}
 ];
 
+class ListingMarker extends MarkerWithInfoWindow {
+  static defaultIcon;
+  static highlightedIcon;
+  static currentMarker: google.maps.Marker = null;
+  static currentInfoWindow: google.maps.InfoWindow = null;
 
-// Function to add events to a given marker.
-function addMarkerEvents(
-  map: google.maps.Map,
-  marker: google.maps.Marker,
-  infowindow: google.maps.InfoWindow,
-  infowindowMarker: google.maps.Marker,
-  defaultIcon: google.maps.Icon,
-  highlightedIcon: google.maps.Icon
-) {
-  // Create an onclick event to open the large infowindow at each marker.
-  marker.addListener('click', function() {
-    populateInfoWindow(map, this, infowindow, infowindowMarker);
-  });
-
-  // Two event listeners - one for mouseover, one for mouseout,
-  // to change the colors back and forth.
-  marker.addListener('mouseover', function() {
-    this.setIcon(highlightedIcon);
-  });
-  marker.addListener('mouseout', function() {
-    this.setIcon(defaultIcon);
-  });
-}
-
-// This function populates the infowindow when the marker is clicked. We'll only allow
-// one infowindow which will open at the marker that is clicked, and populate based
-// on that markers position.
-function populateInfoWindow(
-  map: google.maps.Map,
-  marker: google.maps.Marker,
-  infowindow: google.maps.InfoWindow,
-  infowindowMarker: google.maps.Marker
-) {
-  // In case the status is OK, which means the pano was found, compute the
-  // position of the streetview image, then calculate the heading, then get a
-  // panorama from that and set the options
-  function getStreetView(data, status) {
-    if (status == google.maps.StreetViewStatus.OK) {
-      var nearStreetViewLocation = data.location.latLng;
-      var heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, marker.getPosition());
-      infowindow.setContent('<div>' + marker.getTitle() + '</div><div id="pano"></div>');
-      var panoramaOptions = {
-        position: nearStreetViewLocation,
-        pov: {
-          heading: heading,
-          pitch: 30
-        }
-      };
-      var panorama = new google.maps.StreetViewPanorama($('#pano')[0], panoramaOptions);
-    } else {
-      infowindow.setContent('<div>' + marker.getTitle() + '</div><div>No Street View Found</div>');
-    }
+  constructor(position, title: string) {
+    super();
+    this.marker = new google.maps.Marker({
+      position: position,
+      title: title,
+      animation: google.maps.Animation.DROP,
+      icon: ListingMarker.defaultIcon
+    });
+    this.infowindow = new google.maps.InfoWindow();
+    this.addMarkerEvents(this.marker, this.infowindow);
   }
 
-  // Check to make sure the infowindow is not already opened on this marker.
-  if (infowindowMarker != marker) {
-    // Clear the infowindow content to give the streetview time to load.
-    infowindow.setContent('');
-    infowindowMarker = marker;
+  static Initialise(map: google.maps.Map) {
+    ListingMarker.map = map;
+
+    // Style the markers a bit. This will be our listing marker icon.
+    ListingMarker.defaultIcon = ListingMarker.makeMarkerIcon('0091ff');
+
+    // Create a "highlighted location" marker color for when the user
+    // mouses over the marker.
+    ListingMarker.highlightedIcon = ListingMarker.makeMarkerIcon('ffff24');
+  }
+
+  // This function takes in a COLOR, and then creates a new marker
+  // icon of that color. The icon will be 21 px wide by 34 high, have an origin
+  // of 0, 0 and be anchored at 10, 34).
+  static makeMarkerIcon(markerColor: string) {
+    var markerImage = {
+      url: 'https://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor + '|40|_|%E2%80%A2',
+      size: new google.maps.Size(21, 34),
+      origin: new google.maps.Point(0, 0),
+      anchor: new google.maps.Point(10, 34),
+      scaledSize: new google.maps.Size(21,34)
+    };
+    return markerImage;
+  }
+
+  // Function to add events to a given marker.
+  addMarkerEvents(
+    marker: google.maps.Marker,
+    infowindow: google.maps.InfoWindow
+  ) {
+    // Create an onclick event to open the large infowindow at each marker.
+    this.marker.addListener('click', function() {
+      ListingMarker.currentMarker = marker;
+      ListingMarker.currentInfoWindow = infowindow;
+      ListingMarker.populateInfoWindow();
+    });
+
+    // Two event listeners - one for mouseover, one for mouseout,
+    // to change the colors back and forth.
+    this.marker.addListener('mouseover', function() {
+      this.setIcon(ListingMarker.highlightedIcon);
+    });
+    this.marker.addListener('mouseout', function() {
+      this.setIcon(ListingMarker.defaultIcon);
+    });
+  }
+
+  // This function populates the infowindow when the marker is clicked. We'll only allow
+  // one infowindow which will open at the marker that is clicked, and populate based
+  // on that markers position.
+  static populateInfoWindow() {
+    // In case the status is OK, which means the pano was found, compute the
+    // position of the streetview image, then calculate the heading, then get a
+    // panorama from that and set the options
+    function getStreetView(data, status) {
+      if (status == google.maps.StreetViewStatus.OK) {
+        var nearStreetViewLocation = data.location.latLng;
+        var heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, ListingMarker.currentMarker.getPosition());
+        ListingMarker.currentInfoWindow.setContent('<div>' + ListingMarker.currentMarker.getTitle() + '</div><div id="pano"></div>');
+        var panoramaOptions = {
+          position: nearStreetViewLocation,
+          pov: {
+            heading: heading,
+            pitch: 30
+          }
+        };
+        var panorama = new google.maps.StreetViewPanorama($('#pano')[0], panoramaOptions);
+      } else {
+        ListingMarker.currentInfoWindow.setContent('<div>' + ListingMarker.currentMarker.getTitle() + '</div><div>No Street View Found</div>');
+      }
+    }
+
+    ListingMarker.currentInfoWindow.setContent('');
 
     // Make sure the marker property is cleared if the infowindow is closed.
-    infowindow.addListener('closeclick', function() {
-      infowindowMarker = null;
+    ListingMarker.currentInfoWindow.addListener('closeclick', function() {
+      ListingMarker.currentMarker = null;
+      ListingMarker.currentInfoWindow = null;
     });
     var streetViewService = new google.maps.StreetViewService();
     var radius = 50;
 
     // Use streetview service to get the closest streetview image within
     // 50 meters of the markers position
-    streetViewService.getPanoramaByLocation(marker.getPosition(), radius, getStreetView);
+    streetViewService.getPanoramaByLocation(ListingMarker.currentMarker.getPosition(), radius, getStreetView);
 
     // Open the infowindow on the correct marker.
-    infowindow.open(map, marker);
+    ListingMarker.currentInfoWindow.open(ListingMarker.map, ListingMarker.currentMarker);
   }
 }
 
@@ -117,16 +149,4 @@ function showListings(
 
 
 
-// This function takes in a COLOR, and then creates a new marker
-// icon of that color. The icon will be 21 px wide by 34 high, have an origin
-// of 0, 0 and be anchored at 10, 34).
-function makeMarkerIcon(markerColor: string) {
-  var markerImage = {
-    url: 'https://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor + '|40|_|%E2%80%A2',
-    size: new google.maps.Size(21, 34),
-    origin: new google.maps.Point(0, 0),
-    anchor: new google.maps.Point(10, 34),
-    scaledSize: new google.maps.Size(21,34)
-  };
-  return markerImage;
-}
+

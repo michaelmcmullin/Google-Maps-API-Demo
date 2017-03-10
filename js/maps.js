@@ -150,6 +150,127 @@ var styles = [
         ]
     }
 ];
+var DrawingTools = (function () {
+    function DrawingTools() {
+    }
+    DrawingTools.Initialise = function (map, markers) {
+        DrawingTools.map = map;
+        DrawingTools.markers = markers;
+        DrawingTools.drawingManager = new google.maps.drawing.DrawingManager({
+            drawingMode: google.maps.drawing.OverlayType.POLYGON,
+            drawingControl: false
+        });
+        $(DrawingTools.handButtonId).on('click', function () {
+            DrawingTools.disableDrawing();
+        });
+        $(DrawingTools.polygonButtonId).on('click', function () {
+            DrawingTools.drawingMode = google.maps.drawing.OverlayType.POLYGON;
+            DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(this));
+        });
+        $(DrawingTools.rectangleButtonId).on('click', function () {
+            DrawingTools.drawingMode = google.maps.drawing.OverlayType.RECTANGLE;
+            DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(this));
+        });
+        $(DrawingTools.circleButtonId).on('click', function () {
+            DrawingTools.drawingMode = google.maps.drawing.OverlayType.CIRCLE;
+            DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(this));
+        });
+        DrawingTools.drawingManager.addListener('overlaycomplete', function (event) {
+            if (DrawingTools.polygon) {
+                DrawingTools.polygon.setMap(null);
+                hideMarkers(DrawingTools.markers);
+            }
+            DrawingTools.polygon = event.overlay;
+            DrawingTools.searchWithinPolygon();
+        });
+        DrawingTools.disableDrawing();
+    };
+    DrawingTools.toggleDrawing = function (caller) {
+        $(DrawingTools.handButtonId).removeClass('selected');
+        DrawingTools.deselectDrawingTools();
+        if (DrawingTools.drawingManager.getMap() && caller === DrawingTools.currentDrawingTool) {
+            DrawingTools.drawingManager.setMap(null);
+            if (DrawingTools.polygon !== null) {
+                DrawingTools.polygon.setMap(null);
+            }
+        }
+        else {
+            DrawingTools.drawingManager.setMap(DrawingTools.map);
+            DrawingTools.drawingManager.setDrawingMode(DrawingTools.drawingMode);
+            if (DrawingTools.polygon !== null) {
+                DrawingTools.polygon.setMap(null);
+            }
+            caller.addClass('selected');
+            DrawingTools.currentDrawingTool = caller;
+        }
+        return DrawingTools.currentDrawingTool;
+    };
+    DrawingTools.deselectDrawingTools = function () {
+        $(DrawingTools.listingsButtonId).removeClass('selected');
+        $(DrawingTools.polygonButtonId).removeClass('selected');
+        $(DrawingTools.rectangleButtonId).removeClass('selected');
+        $(DrawingTools.circleButtonId).removeClass('selected');
+    };
+    DrawingTools.disableDrawing = function () {
+        DrawingTools.deselectDrawingTools();
+        $(DrawingTools.handButtonId).addClass('selected');
+        if (DrawingTools.drawingManager.getMap()) {
+            DrawingTools.drawingManager.setMap(null);
+        }
+        if (DrawingTools.polygon !== null) {
+            DrawingTools.polygon.setMap(null);
+        }
+    };
+    DrawingTools.searchWithinPolygon = function () {
+        var markerCount = 0;
+        for (var i = 0; i < DrawingTools.markers.length; i++) {
+            if (DrawingTools.isWithinCurrentShape(DrawingTools.markers[i].marker.getPosition())) {
+                DrawingTools.markers[i].marker.setMap(DrawingTools.map);
+                markerCount++;
+            }
+            else {
+                DrawingTools.markers[i].marker.setMap(null);
+            }
+        }
+        DrawingTools.deselectDrawingTools();
+        if (markerCount > 0) {
+            $(DrawingTools.listingsButtonId).addClass('selected');
+        }
+        else {
+            $(DrawingTools.listingsButtonId).removeClass('selected');
+        }
+        $(DrawingTools.handButtonId).addClass('selected');
+        if (DrawingTools.drawingManager.getMap()) {
+            DrawingTools.drawingManager.setMap(null);
+        }
+    };
+    DrawingTools.isWithinCurrentShape = function (position) {
+        var currentShape = DrawingTools.currentDrawingTool[0].id;
+        if (currentShape) {
+            currentShape = currentShape.split('-').pop();
+            if (currentShape === 'polygon') {
+                return google.maps.geometry.poly.containsLocation(position, DrawingTools.polygon);
+            }
+            if (currentShape === 'rectangle') {
+                var rect = DrawingTools.polygon;
+                return rect.getBounds().contains(position);
+            }
+            if (currentShape === 'circle') {
+                var circle = DrawingTools.polygon;
+                return google.maps.geometry.spherical.computeDistanceBetween(position, circle.getCenter()) <= circle.getRadius();
+            }
+        }
+        return false;
+    };
+    return DrawingTools;
+}());
+DrawingTools.currentDrawingTool = null;
+DrawingTools.polygon = null;
+DrawingTools.handButtonId = '#hand-tool';
+DrawingTools.polygonButtonId = '#toggle-drawing-polygon';
+DrawingTools.rectangleButtonId = '#toggle-drawing-rectangle';
+DrawingTools.circleButtonId = '#toggle-drawing-circle';
+DrawingTools.listingsButtonId = '#toggle-listings';
 var PlaceMarker = (function (_super) {
     __extends(PlaceMarker, _super);
     function PlaceMarker() {
@@ -434,48 +555,81 @@ var locations = [
     { title: 'TriBeCa Artsy Bachelor Pad', location: { lat: 40.7195264, lng: -74.0089934 } },
     { title: 'Chinatown Homey Space', location: { lat: 40.7180628, lng: -73.9961237 } }
 ];
-function addMarkerEvents(map, marker, infowindow, infowindowMarker, defaultIcon, highlightedIcon) {
-    marker.addListener('click', function () {
-        populateInfoWindow(map, this, infowindow, infowindowMarker);
-    });
-    marker.addListener('mouseover', function () {
-        this.setIcon(highlightedIcon);
-    });
-    marker.addListener('mouseout', function () {
-        this.setIcon(defaultIcon);
-    });
-}
-function populateInfoWindow(map, marker, infowindow, infowindowMarker) {
-    function getStreetView(data, status) {
-        if (status == google.maps.StreetViewStatus.OK) {
-            var nearStreetViewLocation = data.location.latLng;
-            var heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, marker.getPosition());
-            infowindow.setContent('<div>' + marker.getTitle() + '</div><div id="pano"></div>');
-            var panoramaOptions = {
-                position: nearStreetViewLocation,
-                pov: {
-                    heading: heading,
-                    pitch: 30
-                }
-            };
-            var panorama = new google.maps.StreetViewPanorama($('#pano')[0], panoramaOptions);
-        }
-        else {
-            infowindow.setContent('<div>' + marker.getTitle() + '</div><div>No Street View Found</div>');
-        }
+var ListingMarker = (function (_super) {
+    __extends(ListingMarker, _super);
+    function ListingMarker(position, title) {
+        var _this = _super.call(this) || this;
+        _this.marker = new google.maps.Marker({
+            position: position,
+            title: title,
+            animation: google.maps.Animation.DROP,
+            icon: ListingMarker.defaultIcon
+        });
+        _this.infowindow = new google.maps.InfoWindow();
+        _this.addMarkerEvents(_this.marker, _this.infowindow);
+        return _this;
     }
-    if (infowindowMarker != marker) {
-        infowindow.setContent('');
-        infowindowMarker = marker;
-        infowindow.addListener('closeclick', function () {
-            infowindowMarker = null;
+    ListingMarker.Initialise = function (map) {
+        ListingMarker.map = map;
+        ListingMarker.defaultIcon = ListingMarker.makeMarkerIcon('0091ff');
+        ListingMarker.highlightedIcon = ListingMarker.makeMarkerIcon('ffff24');
+    };
+    ListingMarker.makeMarkerIcon = function (markerColor) {
+        var markerImage = {
+            url: 'https://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + markerColor + '|40|_|%E2%80%A2',
+            size: new google.maps.Size(21, 34),
+            origin: new google.maps.Point(0, 0),
+            anchor: new google.maps.Point(10, 34),
+            scaledSize: new google.maps.Size(21, 34)
+        };
+        return markerImage;
+    };
+    ListingMarker.prototype.addMarkerEvents = function (marker, infowindow) {
+        this.marker.addListener('click', function () {
+            ListingMarker.currentMarker = marker;
+            ListingMarker.currentInfoWindow = infowindow;
+            ListingMarker.populateInfoWindow();
+        });
+        this.marker.addListener('mouseover', function () {
+            this.setIcon(ListingMarker.highlightedIcon);
+        });
+        this.marker.addListener('mouseout', function () {
+            this.setIcon(ListingMarker.defaultIcon);
+        });
+    };
+    ListingMarker.populateInfoWindow = function () {
+        function getStreetView(data, status) {
+            if (status == google.maps.StreetViewStatus.OK) {
+                var nearStreetViewLocation = data.location.latLng;
+                var heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, ListingMarker.currentMarker.getPosition());
+                ListingMarker.currentInfoWindow.setContent('<div>' + ListingMarker.currentMarker.getTitle() + '</div><div id="pano"></div>');
+                var panoramaOptions = {
+                    position: nearStreetViewLocation,
+                    pov: {
+                        heading: heading,
+                        pitch: 30
+                    }
+                };
+                var panorama = new google.maps.StreetViewPanorama($('#pano')[0], panoramaOptions);
+            }
+            else {
+                ListingMarker.currentInfoWindow.setContent('<div>' + ListingMarker.currentMarker.getTitle() + '</div><div>No Street View Found</div>');
+            }
+        }
+        ListingMarker.currentInfoWindow.setContent('');
+        ListingMarker.currentInfoWindow.addListener('closeclick', function () {
+            ListingMarker.currentMarker = null;
+            ListingMarker.currentInfoWindow = null;
         });
         var streetViewService = new google.maps.StreetViewService();
         var radius = 50;
-        streetViewService.getPanoramaByLocation(marker.getPosition(), radius, getStreetView);
-        infowindow.open(map, marker);
-    }
-}
+        streetViewService.getPanoramaByLocation(ListingMarker.currentMarker.getPosition(), radius, getStreetView);
+        ListingMarker.currentInfoWindow.open(ListingMarker.map, ListingMarker.currentMarker);
+    };
+    return ListingMarker;
+}(MarkerWithInfoWindow));
+ListingMarker.currentMarker = null;
+ListingMarker.currentInfoWindow = null;
 function toggleListings(markers, map) {
     var listingButton = $('#toggle-listings');
     if (listingButton.hasClass('selected')) {
@@ -495,16 +649,6 @@ function showListings(markers, map) {
     }
     map.fitBounds(bounds);
 }
-function makeMarkerIcon(markerColor) {
-    var markerImage = {
-        url: 'https://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + markerColor + '|40|_|%E2%80%A2',
-        size: new google.maps.Size(21, 34),
-        origin: new google.maps.Point(0, 0),
-        anchor: new google.maps.Point(10, 34),
-        scaledSize: new google.maps.Size(21, 34)
-    };
-    return markerImage;
-}
 function initMap() {
     var map;
     var markers = [];
@@ -522,6 +666,7 @@ function initMap() {
     map.mapTypes.set('mono', styledMapType);
     map.setMapTypeId('mono');
     MarkerWithInfoWindow.map = map;
+    ListingMarker.Initialise(map);
     TransportLayers.Initialise(map);
     DrawingTools.Initialise(map, markers);
     $('#toggle-search').on('click', function () {
@@ -532,23 +677,11 @@ function initMap() {
     zoomAutocomplete.bindTo('bounds', map);
     var searchBox = new google.maps.places.SearchBox($('#places-search')[0]);
     searchBox.setBounds(map.getBounds());
-    var largeInfowindow = new google.maps.InfoWindow();
-    var largeInfowindowMarker = null;
-    var defaultIcon = makeMarkerIcon('0091ff');
-    var highlightedIcon = makeMarkerIcon('ffff24');
     for (var i = 0; i < locations.length; i++) {
         var position = locations[i].location;
         var title = locations[i].title;
-        var marker = new google.maps.Marker({
-            position: position,
-            title: title,
-            animation: google.maps.Animation.DROP,
-            icon: defaultIcon
-        });
-        var mwinfowin = new MarkerWithInfoWindow();
-        mwinfowin.marker = marker;
-        markers.push(mwinfowin);
-        addMarkerEvents(map, marker, largeInfowindow, largeInfowindowMarker, defaultIcon, highlightedIcon);
+        var listingMarker = new ListingMarker(position, title);
+        markers.push(listingMarker);
     }
     $('#toggle-listings').on('click', function () {
         toggleListings(markers, map);
@@ -566,127 +699,6 @@ function initMap() {
     });
     $('#go-places').on('click', function () { textSearchPlaces(placeMarkers); });
 }
-var DrawingTools = (function () {
-    function DrawingTools() {
-    }
-    DrawingTools.Initialise = function (map, markers) {
-        DrawingTools.map = map;
-        DrawingTools.markers = markers;
-        DrawingTools.drawingManager = new google.maps.drawing.DrawingManager({
-            drawingMode: google.maps.drawing.OverlayType.POLYGON,
-            drawingControl: false
-        });
-        $(DrawingTools.handButtonId).on('click', function () {
-            DrawingTools.disableDrawing();
-        });
-        $(DrawingTools.polygonButtonId).on('click', function () {
-            DrawingTools.drawingMode = google.maps.drawing.OverlayType.POLYGON;
-            DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(this));
-        });
-        $(DrawingTools.rectangleButtonId).on('click', function () {
-            DrawingTools.drawingMode = google.maps.drawing.OverlayType.RECTANGLE;
-            DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(this));
-        });
-        $(DrawingTools.circleButtonId).on('click', function () {
-            DrawingTools.drawingMode = google.maps.drawing.OverlayType.CIRCLE;
-            DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(this));
-        });
-        DrawingTools.drawingManager.addListener('overlaycomplete', function (event) {
-            if (DrawingTools.polygon) {
-                DrawingTools.polygon.setMap(null);
-                hideMarkers(DrawingTools.markers);
-            }
-            DrawingTools.polygon = event.overlay;
-            DrawingTools.searchWithinPolygon();
-        });
-        DrawingTools.disableDrawing();
-    };
-    DrawingTools.toggleDrawing = function (caller) {
-        $(DrawingTools.handButtonId).removeClass('selected');
-        DrawingTools.deselectDrawingTools();
-        if (DrawingTools.drawingManager.getMap() && caller === DrawingTools.currentDrawingTool) {
-            DrawingTools.drawingManager.setMap(null);
-            if (DrawingTools.polygon !== null) {
-                DrawingTools.polygon.setMap(null);
-            }
-        }
-        else {
-            DrawingTools.drawingManager.setMap(DrawingTools.map);
-            DrawingTools.drawingManager.setDrawingMode(DrawingTools.drawingMode);
-            if (DrawingTools.polygon !== null) {
-                DrawingTools.polygon.setMap(null);
-            }
-            caller.addClass('selected');
-            DrawingTools.currentDrawingTool = caller;
-        }
-        return DrawingTools.currentDrawingTool;
-    };
-    DrawingTools.deselectDrawingTools = function () {
-        $(DrawingTools.listingsButtonId).removeClass('selected');
-        $(DrawingTools.polygonButtonId).removeClass('selected');
-        $(DrawingTools.rectangleButtonId).removeClass('selected');
-        $(DrawingTools.circleButtonId).removeClass('selected');
-    };
-    DrawingTools.disableDrawing = function () {
-        DrawingTools.deselectDrawingTools();
-        $(DrawingTools.handButtonId).addClass('selected');
-        if (DrawingTools.drawingManager.getMap()) {
-            DrawingTools.drawingManager.setMap(null);
-        }
-        if (DrawingTools.polygon !== null) {
-            DrawingTools.polygon.setMap(null);
-        }
-    };
-    DrawingTools.searchWithinPolygon = function () {
-        var markerCount = 0;
-        for (var i = 0; i < DrawingTools.markers.length; i++) {
-            if (DrawingTools.isWithinCurrentShape(DrawingTools.markers[i].marker.getPosition())) {
-                DrawingTools.markers[i].marker.setMap(DrawingTools.map);
-                markerCount++;
-            }
-            else {
-                DrawingTools.markers[i].marker.setMap(null);
-            }
-        }
-        DrawingTools.deselectDrawingTools();
-        if (markerCount > 0) {
-            $(DrawingTools.listingsButtonId).addClass('selected');
-        }
-        else {
-            $(DrawingTools.listingsButtonId).removeClass('selected');
-        }
-        $(DrawingTools.handButtonId).addClass('selected');
-        if (DrawingTools.drawingManager.getMap()) {
-            DrawingTools.drawingManager.setMap(null);
-        }
-    };
-    DrawingTools.isWithinCurrentShape = function (position) {
-        var currentShape = DrawingTools.currentDrawingTool[0].id;
-        if (currentShape) {
-            currentShape = currentShape.split('-').pop();
-            if (currentShape === 'polygon') {
-                return google.maps.geometry.poly.containsLocation(position, DrawingTools.polygon);
-            }
-            if (currentShape === 'rectangle') {
-                var rect = DrawingTools.polygon;
-                return rect.getBounds().contains(position);
-            }
-            if (currentShape === 'circle') {
-                var circle = DrawingTools.polygon;
-                return google.maps.geometry.spherical.computeDistanceBetween(position, circle.getCenter()) <= circle.getRadius();
-            }
-        }
-        return false;
-    };
-    return DrawingTools;
-}());
-DrawingTools.currentDrawingTool = null;
-DrawingTools.polygon = null;
-DrawingTools.handButtonId = '#hand-tool';
-DrawingTools.polygonButtonId = '#toggle-drawing-polygon';
-DrawingTools.rectangleButtonId = '#toggle-drawing-rectangle';
-DrawingTools.circleButtonId = '#toggle-drawing-circle';
-DrawingTools.listingsButtonId = '#toggle-listings';
 function displayDirections(origin, markers, directionsDisplay) {
     hideMarkers(markers);
     var directionsService = new google.maps.DirectionsService();
