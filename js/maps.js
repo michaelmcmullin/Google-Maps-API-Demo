@@ -40,7 +40,7 @@ var MarkerWithInfoWindow = (function () {
 var Init = (function () {
     function Init() {
     }
-    Init.Initialise = function (markers, placeMarkers, directionsDisplay) {
+    Init.Map = function () {
         var styledMapType = new google.maps.StyledMapType(Init.styles, { name: 'Mono' });
         var map = new google.maps.Map($('#map')[0], {
             center: { lat: 40.7413549, lng: -73.9980244 },
@@ -52,11 +52,6 @@ var Init = (function () {
         });
         map.mapTypes.set('mono', styledMapType);
         map.setMapTypeId('mono');
-        MarkerWithInfoWindow.map = map;
-        ListingMarker.Initialise(map);
-        TransportLayers.Initialise(map);
-        DrawingTools.Initialise(map, markers);
-        SearchPanel.Initialise(map, markers, placeMarkers, directionsDisplay);
         return map;
     };
     return Init;
@@ -723,7 +718,12 @@ function initMap() {
     var markers = [];
     var placeMarkers = [];
     var directionsDisplay = null;
-    map = Init.Initialise(markers, placeMarkers, directionsDisplay);
+    map = Init.Map();
+    MarkerWithInfoWindow.map = map;
+    ListingMarker.Initialise(map);
+    TransportLayers.Initialise(map);
+    DrawingTools.Initialise(map, markers);
+    SearchPanel.Initialise(map, markers, placeMarkers, directionsDisplay);
     for (var i = 0; i < locations.length; i++) {
         var position = locations[i].location;
         var title = locations[i].title;

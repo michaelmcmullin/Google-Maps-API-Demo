@@ -24,7 +24,13 @@ function initMap() {
   var directionsDisplay: google.maps.DirectionsRenderer = null;
 
   // Initialise the map and UI elements
-  map = Init.Initialise(markers, placeMarkers, directionsDisplay);  
+  map = Init.Map();  
+
+  MarkerWithInfoWindow.map = map;
+  ListingMarker.Initialise(map);
+  TransportLayers.Initialise(map);
+  DrawingTools.Initialise(map, markers);
+  SearchPanel.Initialise(map, markers, placeMarkers, directionsDisplay);
 
   //$('#directions-panel .close').on('click', function() { removeDirectionsPanel(directionsDisplay, markers, map); });
   

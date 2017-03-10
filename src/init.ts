@@ -1,10 +1,6 @@
 // Class to initialise the map and other elements
 class Init {
-  static Initialise(
-    markers: MarkerWithInfoWindow[],
-    placeMarkers: PlaceMarker[],
-    directionsDisplay: google.maps.DirectionsRenderer
-  ) {
+  static Map() {
     var styledMapType = new google.maps.StyledMapType(
       Init.styles,
       {name: 'Mono'}
@@ -22,11 +18,6 @@ class Init {
     });
     map.mapTypes.set('mono', styledMapType);
     map.setMapTypeId('mono');
-    MarkerWithInfoWindow.map = map;
-    ListingMarker.Initialise(map);
-    TransportLayers.Initialise(map);
-    DrawingTools.Initialise(map, markers);
-    SearchPanel.Initialise(map, markers, placeMarkers, directionsDisplay);
 
     return map;
   }
