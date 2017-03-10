@@ -1,12 +1,13 @@
 /// <reference path="lib/googlemaps.d.ts" />
 /// <reference path="utilities.ts" />
+/// <reference path="init.ts" />
 /// <reference path="drawing-tools.ts" />
 /// <reference path="search-places.ts" />
 /// <reference path="search-time.ts" />
 /// <reference path="search-zoom.ts" />
-/// <reference path="map-styles.ts" />
 /// <reference path="transport-layers.ts" />
 /// <reference path="listings.ts" />
+/// <reference path="search-panel.ts" />
 
 // Main entry point
 function initMap() {
@@ -21,29 +22,9 @@ function initMap() {
 
   // Route layers
   var directionsDisplay: google.maps.DirectionsRenderer = null;
-  
-  var styledMapType = new google.maps.StyledMapType(
-    styles,
-    {name: 'Mono'}
-  );
 
-  // Constructor creates a new map - only center and zoom are required.
-  map = new google.maps.Map($('#map')[0], {
-      center: {lat: 40.7413549, lng: -73.9980244},
-      zoom: 13,
-      mapTypeControlOptions: {
-        //style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
-        position: google.maps.ControlPosition.TOP_RIGHT,
-        mapTypeIds: ['roadmap', 'satellite', 'hybrid', 'terrain', 'mono']
-      }
-  });
-  map.mapTypes.set('mono', styledMapType);
-  map.setMapTypeId('mono');
-  MarkerWithInfoWindow.map = map;
-  ListingMarker.Initialise(map);
-  TransportLayers.Initialise(map);
-  DrawingTools.Initialise(map, markers);
-  SearchPanel.Initialise(map, markers, placeMarkers, directionsDisplay);
+  // Initialise the map and UI elements
+  map = Init.Initialise(markers, placeMarkers, directionsDisplay);  
 
   //$('#directions-panel .close').on('click', function() { removeDirectionsPanel(directionsDisplay, markers, map); });
   

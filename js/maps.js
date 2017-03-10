@@ -37,7 +37,31 @@ var MarkerWithInfoWindow = (function () {
     };
     return MarkerWithInfoWindow;
 }());
-var styles = [
+var Init = (function () {
+    function Init() {
+    }
+    Init.Initialise = function (markers, placeMarkers, directionsDisplay) {
+        var styledMapType = new google.maps.StyledMapType(Init.styles, { name: 'Mono' });
+        var map = new google.maps.Map($('#map')[0], {
+            center: { lat: 40.7413549, lng: -73.9980244 },
+            zoom: 13,
+            mapTypeControlOptions: {
+                position: google.maps.ControlPosition.TOP_RIGHT,
+                mapTypeIds: ['roadmap', 'satellite', 'hybrid', 'terrain', 'mono']
+            }
+        });
+        map.mapTypes.set('mono', styledMapType);
+        map.setMapTypeId('mono');
+        MarkerWithInfoWindow.map = map;
+        ListingMarker.Initialise(map);
+        TransportLayers.Initialise(map);
+        DrawingTools.Initialise(map, markers);
+        SearchPanel.Initialise(map, markers, placeMarkers, directionsDisplay);
+        return map;
+    };
+    return Init;
+}());
+Init.styles = [
     {
         "featureType": "administrative",
         "elementType": "labels.text.fill",
@@ -649,43 +673,6 @@ function showListings(markers, map) {
     }
     map.fitBounds(bounds);
 }
-function initMap() {
-    var map;
-    var markers = [];
-    var placeMarkers = [];
-    var directionsDisplay = null;
-    var styledMapType = new google.maps.StyledMapType(styles, { name: 'Mono' });
-    map = new google.maps.Map($('#map')[0], {
-        center: { lat: 40.7413549, lng: -73.9980244 },
-        zoom: 13,
-        mapTypeControlOptions: {
-            position: google.maps.ControlPosition.TOP_RIGHT,
-            mapTypeIds: ['roadmap', 'satellite', 'hybrid', 'terrain', 'mono']
-        }
-    });
-    map.mapTypes.set('mono', styledMapType);
-    map.setMapTypeId('mono');
-    MarkerWithInfoWindow.map = map;
-    ListingMarker.Initialise(map);
-    TransportLayers.Initialise(map);
-    DrawingTools.Initialise(map, markers);
-    SearchPanel.Initialise(map, markers, placeMarkers, directionsDisplay);
-    for (var i = 0; i < locations.length; i++) {
-        var position = locations[i].location;
-        var title = locations[i].title;
-        var listingMarker = new ListingMarker(position, title);
-        markers.push(listingMarker);
-    }
-    $('#toggle-listings').on('click', function () {
-        toggleListings(markers, map);
-    });
-    $('#about-button').on('click', function () {
-        $('#about-modal').show();
-    });
-    $('#about-modal .close').on('click', function () {
-        $('#about-modal').fadeOut();
-    });
-}
 var SearchPanel = (function () {
     function SearchPanel() {
     }
@@ -731,6 +718,28 @@ SearchPanel.searchTimeText = '#search-within-time-text';
 SearchPanel.searchTimeButton = '#search-within-time';
 SearchPanel.searchPlacesText = '#places-search';
 SearchPanel.searchPlacesButton = '#go-places';
+function initMap() {
+    var map;
+    var markers = [];
+    var placeMarkers = [];
+    var directionsDisplay = null;
+    map = Init.Initialise(markers, placeMarkers, directionsDisplay);
+    for (var i = 0; i < locations.length; i++) {
+        var position = locations[i].location;
+        var title = locations[i].title;
+        var listingMarker = new ListingMarker(position, title);
+        markers.push(listingMarker);
+    }
+    $('#toggle-listings').on('click', function () {
+        toggleListings(markers, map);
+    });
+    $('#about-button').on('click', function () {
+        $('#about-modal').show();
+    });
+    $('#about-modal .close').on('click', function () {
+        $('#about-modal').fadeOut();
+    });
+}
 function displayDirections(origin, markers, directionsDisplay) {
     hideMarkers(markers);
     var directionsService = new google.maps.DirectionsService();
