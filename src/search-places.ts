@@ -7,7 +7,7 @@ class PlaceMarker extends MarkerWithInfoWindow {
 
   // Sets the infowindow associated with this PlaceMarker as
   // the currently active infowindow.
-  setAsActiveInfoWindow() {
+  setAsActiveInfoWindow() : void {
     if (PlaceMarker.activeInfoWindow) {
       PlaceMarker.activeInfoWindow.close();
     }
@@ -21,7 +21,7 @@ class PlaceMarker extends MarkerWithInfoWindow {
 function searchBoxPlaces(
   searchBox: google.maps.places.SearchBox,
   placeMarkers: PlaceMarker[]
-) {
+) : void {
   hideMarkers(placeMarkers);
   var places = searchBox.getPlaces();
   if (places.length === 0) {
@@ -36,7 +36,7 @@ function searchBoxPlaces(
 // It will do a nearby search using the entered query string or place.
 function textSearchPlaces(
   placeMarkers: PlaceMarker[]
-) {
+) : void {
   var bounds = MarkerWithInfoWindow.map.getBounds();
   hideMarkers(placeMarkers);
   var placesService = new google.maps.places.PlacesService(MarkerWithInfoWindow.map);
@@ -55,7 +55,7 @@ function textSearchPlaces(
 function createMarkersForPlaces(
   places: google.maps.places.PlaceResult[],
   placeMarkers: PlaceMarker[]
-) {
+) : void {
   var bounds = new google.maps.LatLngBounds();
   for (var i = 0; i < places.length; i++) {
     var place = places[i];
@@ -83,15 +83,6 @@ function createMarkersForPlaces(
     placeMarker.marker = marker;
     placeMarker.infowindow = placeInfoWindow;
 
-    // If a marker is clicked, do a place details search on it in the next function.
-    //marker.addListener('click', function() {
-    //   if (placeInfoWindow.marker == this) {
-    //      console.log("This infowindow already is on this marker!");
-    //    } else {
-    //      getPlacesDetails(this, placeInfoWindow);
-    //    }
-    //  }
-    //);
     addPlaceMarkerEvents(placeMarker, place.place_id);
     placeMarkers.push(placeMarker);
     if (place.geometry.viewport) {
@@ -108,14 +99,10 @@ function createMarkersForPlaces(
 function addPlaceMarkerEvents(
   placeMarker: PlaceMarker,
   place_id: string
-) {
+) : void {
   // If a marker is clicked, do a place details search on it in the next function.
   placeMarker.marker.addListener('click', function() {
-      //if (infowindow.marker == this) {
-      //  console.log("This infowindow already is on this marker!");
-      //} else {
-        getPlacesDetails(placeMarker, place_id);
-      //}
+      getPlacesDetails(placeMarker, place_id);
     }
   );
 }
@@ -126,7 +113,7 @@ function addPlaceMarkerEvents(
 function getPlacesDetails(
   placeMarker: PlaceMarker,
   place_id: string
-) {
+) : void {
   var service = new google.maps.places.PlacesService(MarkerWithInfoWindow.map);
   service.getDetails({
       placeId: place_id
@@ -184,7 +171,7 @@ function getPlacesDetails(
 }
 
 // Get next photo
-function nextPhoto() {
+function nextPhoto() : void {
   if (PlaceMarker.currentPlace) {
     var totalPhotos = PlaceMarker.currentPlace.photos.length;
     var next = PlaceMarker.currentPhoto + 1;
@@ -200,7 +187,7 @@ function nextPhoto() {
 }
 
 // Get previous photo
-function previousPhoto() {
+function previousPhoto() : void {
   if (PlaceMarker.currentPlace) {
     var totalPhotos = PlaceMarker.currentPlace.photos.length;
     var next = PlaceMarker.currentPhoto - 1;
