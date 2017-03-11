@@ -1,9 +1,16 @@
 
+/**
+ * Handles the directions panel 
+ */
 class DirectionsPanel {
-
-  // This function is in response to the user selecting "show route" on one
-  // of the markers within the calculated distance. This will display the route
-  // on the map.
+  /**
+   * This function is in response to the user selecting "show route" on one of
+   * the markers within the calculated distance. This will display the route on
+   * the map.
+   * @param origin - The starting address for directions
+   * @param markers - An array of markers representing our listings 
+   * @param directionsDisplay - Helps render the directions on the map 
+   */
   static displayDirections(
     origin: string,
     markers: MarkerWithInfoWindow[],
@@ -49,15 +56,22 @@ class DirectionsPanel {
     $('#directions-panel .close').on('click', function() { DirectionsPanel.removeDirectionsPanel(directionsDisplay, markers); });
   }
 
-  // Clear the existing directions from the map so that new directions don't
-  // get too cluttered.
+  /**
+   * Clear the existing directions from the map so that new directions don't
+   * get too cluttered.
+   * @param directionsDisplay - Helps render the directions on the map
+   */
   static clearExistingDirections(
     directionsDisplay: google.maps.DirectionsRenderer
   ) : void {
     directionsDisplay.setMap(null);
   }
 
-  // Display directions in a separate panel
+  /**
+   * Display directions in a separate panel
+   * @param directions - The directions response retrieved from the directions
+   * server.
+   */
   static populateDirectionsPanel(
     directions: google.maps.DirectionsResult
   ) : void {
@@ -95,7 +109,10 @@ class DirectionsPanel {
     $('#directions').html(text);
   }
 
-  // Function to retrieve an appropriate icon for a given maneuver
+  /**
+   * Function to retrieve an appropriate icon for a given maneuver
+   * @param instructions - The text instructions for a specific directions step.
+   */
   static getManeuverIcon(
     instructions: string
   ) : string {
@@ -116,7 +133,11 @@ class DirectionsPanel {
     }
   }
 
-  // Remove the directions panel
+  /**
+   * Remove the directions panel
+   * @param directionsDisplay - Helps render the directions on the map
+   * @param markers - An array of markers representing our listings
+   */
   static removeDirectionsPanel(
     directionsDisplay: google.maps.DirectionsRenderer,
     markers: MarkerWithInfoWindow[]
