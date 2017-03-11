@@ -1,5 +1,11 @@
-// Class to initialise the map and other elements
+/**
+ * Initialises the map and other elements
+ */
 class Init {
+  /**
+   * Initial setup of the main map, setting its style, position, zoom level,
+   * and other controls.
+   */
   static Map() {
     var styledMapType = new google.maps.StyledMapType(
       Init.styles,
@@ -22,6 +28,9 @@ class Init {
     return map;
   }
 
+  /**
+   * Custom styles for the main map.
+   */
   static styles = [
     {
       "featureType": "administrative",
