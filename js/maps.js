@@ -505,7 +505,7 @@ function displayMarkersWithinTime(response, markers, directionsDisplay) {
     }
 }
 function attachGetRouteEvent(button, origin, markers, directionsDisplay) {
-    google.maps.event.addDomListener(button, 'click', function () { displayDirections(origin, markers, directionsDisplay); });
+    google.maps.event.addDomListener(button, 'click', function () { DirectionsPanel.displayDirections(origin, markers, directionsDisplay); });
 }
 function removeGetRouteInfowindow(marker) {
     google.maps.event.addListener(marker.marker, 'click', function () { marker.infowindow.close(); });
@@ -753,91 +753,96 @@ function initMap() {
         $('#about-modal').fadeOut();
     });
 }
-function displayDirections(origin, markers, directionsDisplay) {
-    hideMarkers(markers);
-    var directionsService = new google.maps.DirectionsService();
-    var destinationAddress = $('#search-within-time-text').val();
-    var mode = $('#mode').val();
-    directionsService.route({
-        origin: origin,
-        destination: destinationAddress,
-        travelMode: getTravelMode(mode)
-    }, function (response, status) {
-        if (status === google.maps.DirectionsStatus.OK) {
-            if (directionsDisplay)
-                clearExistingDirections(directionsDisplay);
-            directionsDisplay = new google.maps.DirectionsRenderer({
-                map: MarkerWithInfoWindow.map,
-                directions: response,
-                draggable: true,
-                polylineOptions: {
-                    strokeColor: 'green'
-                }
-            });
-            populateDirectionsPanel(response);
-            $('#directions-panel').show(200);
-            SearchPanel.hide();
-            directionsDisplay.addListener('directions_changed', function () {
-                populateDirectionsPanel(directionsDisplay.getDirections());
-            });
-        }
-        else {
-            window.alert('Directions request failed due to ' + status);
-        }
-    });
-    $('#directions-panel .close').on('click', function () { removeDirectionsPanel(directionsDisplay, markers); });
-}
-function clearExistingDirections(directionsDisplay) {
-    directionsDisplay.setMap(null);
-}
-function populateDirectionsPanel(directions) {
-    var steps = directions.routes[0].legs[0].steps;
-    var distance = directions.routes[0].legs[0].distance;
-    var duration = directions.routes[0].legs[0].duration;
-    var origin = directions.routes[0].legs[0].start_address;
-    var destination = directions.routes[0].legs[0].end_address;
-    var text = '<strong>From:</strong> ' + origin;
-    text += '<br><strong>To:</strong> ' + destination;
-    text += '<br><strong>Total Journey:</strong> ' + distance.text;
-    text += ' (about ' + duration.text + ')';
-    text += '<ul class="list-group top-row-margin">';
-    for (var i = 0; i < steps.length; i++) {
-        var stepDistance = steps[i].distance;
-        var stepDuration = steps[i].duration;
-        text += '<li class="list-group-item">' +
-            '<div class="row"><div class="col-md-2">' +
-            getManeuverIcon(steps[i].instructions) +
-            '</div>' +
-            '<div class="col-md-10">' +
-            steps[i].instructions +
-            '<div class="text-right"><small>Travel for ' +
-            stepDistance.text +
-            ' (' +
-            stepDuration.text +
-            ')</small></div></div></div></li>';
+var DirectionsPanel = (function () {
+    function DirectionsPanel() {
     }
-    text += '</ul>';
-    $('#directions').html(text);
-}
-function getManeuverIcon(instructions) {
-    var maneuver = '';
-    if (instructions.indexOf('Turn <b>left</b>') > -1)
-        maneuver = 'turn-left';
-    else if (instructions.indexOf('Turn <b>right</b>') > -1)
-        maneuver = 'turn-right';
-    switch (maneuver) {
-        case 'turn-left':
-            return '<i class="material-icons" aria-hidden="true">arrow_back</i>';
-        case 'turn-right':
-            return '<i class="material-icons" aria-hidden="true">arrow_forward</i>';
-        default:
-            return '';
-    }
-}
-function removeDirectionsPanel(directionsDisplay, markers) {
-    if (directionsDisplay)
-        clearExistingDirections(directionsDisplay);
-    $('#directions-panel').hide(200);
-    searchWithinTime(markers, directionsDisplay);
-}
+    DirectionsPanel.displayDirections = function (origin, markers, directionsDisplay) {
+        hideMarkers(markers);
+        var directionsService = new google.maps.DirectionsService();
+        var destinationAddress = $('#search-within-time-text').val();
+        var mode = $('#mode').val();
+        directionsService.route({
+            origin: origin,
+            destination: destinationAddress,
+            travelMode: getTravelMode(mode)
+        }, function (response, status) {
+            if (status === google.maps.DirectionsStatus.OK) {
+                if (directionsDisplay)
+                    DirectionsPanel.clearExistingDirections(directionsDisplay);
+                directionsDisplay = new google.maps.DirectionsRenderer({
+                    map: MarkerWithInfoWindow.map,
+                    directions: response,
+                    draggable: true,
+                    polylineOptions: {
+                        strokeColor: 'green'
+                    }
+                });
+                DirectionsPanel.populateDirectionsPanel(response);
+                $('#directions-panel').show(200);
+                SearchPanel.hide();
+                directionsDisplay.addListener('directions_changed', function () {
+                    DirectionsPanel.populateDirectionsPanel(directionsDisplay.getDirections());
+                });
+            }
+            else {
+                window.alert('Directions request failed due to ' + status);
+            }
+        });
+        $('#directions-panel .close').on('click', function () { DirectionsPanel.removeDirectionsPanel(directionsDisplay, markers); });
+    };
+    DirectionsPanel.clearExistingDirections = function (directionsDisplay) {
+        directionsDisplay.setMap(null);
+    };
+    DirectionsPanel.populateDirectionsPanel = function (directions) {
+        var steps = directions.routes[0].legs[0].steps;
+        var distance = directions.routes[0].legs[0].distance;
+        var duration = directions.routes[0].legs[0].duration;
+        var origin = directions.routes[0].legs[0].start_address;
+        var destination = directions.routes[0].legs[0].end_address;
+        var text = '<strong>From:</strong> ' + origin;
+        text += '<br><strong>To:</strong> ' + destination;
+        text += '<br><strong>Total Journey:</strong> ' + distance.text;
+        text += ' (about ' + duration.text + ')';
+        text += '<ul class="list-group top-row-margin">';
+        for (var i = 0; i < steps.length; i++) {
+            var stepDistance = steps[i].distance;
+            var stepDuration = steps[i].duration;
+            text += '<li class="list-group-item">' +
+                '<div class="row"><div class="col-md-2">' +
+                DirectionsPanel.getManeuverIcon(steps[i].instructions) +
+                '</div>' +
+                '<div class="col-md-10">' +
+                steps[i].instructions +
+                '<div class="text-right"><small>Travel for ' +
+                stepDistance.text +
+                ' (' +
+                stepDuration.text +
+                ')</small></div></div></div></li>';
+        }
+        text += '</ul>';
+        $('#directions').html(text);
+    };
+    DirectionsPanel.getManeuverIcon = function (instructions) {
+        var maneuver = '';
+        if (instructions.indexOf('Turn <b>left</b>') > -1)
+            maneuver = 'turn-left';
+        else if (instructions.indexOf('Turn <b>right</b>') > -1)
+            maneuver = 'turn-right';
+        switch (maneuver) {
+            case 'turn-left':
+                return '<i class="material-icons" aria-hidden="true">arrow_back</i>';
+            case 'turn-right':
+                return '<i class="material-icons" aria-hidden="true">arrow_forward</i>';
+            default:
+                return '';
+        }
+    };
+    DirectionsPanel.removeDirectionsPanel = function (directionsDisplay, markers) {
+        if (directionsDisplay)
+            DirectionsPanel.clearExistingDirections(directionsDisplay);
+        $('#directions-panel').hide(200);
+        searchWithinTime(markers, directionsDisplay);
+    };
+    return DirectionsPanel;
+}());
 //# sourceMappingURL=maps.js.map

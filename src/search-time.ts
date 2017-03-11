@@ -106,7 +106,7 @@ function attachGetRouteEvent(
   directionsDisplay: google.maps.DirectionsRenderer
 ) {
   google.maps.event.addDomListener(button, 'click',
-      function() { displayDirections(origin, markers, directionsDisplay) });
+      function() { DirectionsPanel.displayDirections(origin, markers, directionsDisplay) });
 }
 
 // Attach a 'close' event to remove the 'get route' infowindow when the
