@@ -1,3 +1,4 @@
+
 class DirectionsPanel {
 
   // This function is in response to the user selecting "show route" on one
@@ -7,7 +8,7 @@ class DirectionsPanel {
     origin: string,
     markers: MarkerWithInfoWindow[],
     directionsDisplay: google.maps.DirectionsRenderer
-  ) {
+  ) : void {
     hideMarkers(markers);
     var directionsService = new google.maps.DirectionsService();
     // Get the destination address from the user entered value.
@@ -52,14 +53,14 @@ class DirectionsPanel {
   // get too cluttered.
   static clearExistingDirections(
     directionsDisplay: google.maps.DirectionsRenderer
-  ) {
+  ) : void {
     directionsDisplay.setMap(null);
   }
 
   // Display directions in a separate panel
   static populateDirectionsPanel(
     directions: google.maps.DirectionsResult
-  ) {
+  ) : void {
     var steps = directions.routes[0].legs[0].steps;
     var distance = directions.routes[0].legs[0].distance;
     var duration = directions.routes[0].legs[0].duration;
@@ -97,7 +98,7 @@ class DirectionsPanel {
   // Function to retrieve an appropriate icon for a given maneuver
   static getManeuverIcon(
     instructions: string
-  ) {
+  ) : string {
     var maneuver: string = '';
 
     // This is a bit of a hack to get around the lack of documented support for
@@ -119,8 +120,9 @@ class DirectionsPanel {
   static removeDirectionsPanel(
     directionsDisplay: google.maps.DirectionsRenderer,
     markers: MarkerWithInfoWindow[]
-  ) {
-    if (directionsDisplay) DirectionsPanel.clearExistingDirections(directionsDisplay);
+  ) : void {
+    if (directionsDisplay)
+      DirectionsPanel.clearExistingDirections(directionsDisplay);
     $('#directions-panel').hide(200);
     searchWithinTime(markers, directionsDisplay);
   }
