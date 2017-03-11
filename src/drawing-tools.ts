@@ -1,4 +1,6 @@
-// Class handling the display and function of the drawing tools
+/**
+ * Class handling the display and function of the drawing tools
+ */
 class DrawingTools {
   static map: google.maps.Map;
   static drawingManager: google.maps.drawing.DrawingManager;
@@ -13,8 +15,12 @@ class DrawingTools {
   static readonly circleButtonId: string = '#toggle-drawing-circle';
   static readonly listingsButtonId: string = '#toggle-listings';
 
-  // Initial setup for drawing tools
-  static Initialise(map: google.maps.Map, markers: MarkerWithInfoWindow[])
+  /**
+   * Initial setup for drawing tools
+   * @param map - The map to use for the drawing tools
+   * @param markers - A list of markers containing available listings
+   */
+  static Initialise(map: google.maps.Map, markers: MarkerWithInfoWindow[]) : void
   {
     DrawingTools.map = map;
     DrawingTools.markers = markers;
@@ -69,11 +75,11 @@ class DrawingTools {
     DrawingTools.disableDrawing();
   }
 
-
-  // This shows and hides (respectively) the drawing options.
-  static toggleDrawing(
-    caller: JQuery
-  ) {
+  /**
+   * This shows and hides (respectively) the drawing options.
+   * @param caller - The jQuery drawing tool selected which triggers this function.
+   */
+  static toggleDrawing(caller: JQuery) : JQuery {
     $(DrawingTools.handButtonId).removeClass('selected');
     DrawingTools.deselectDrawingTools();
     
@@ -95,23 +101,29 @@ class DrawingTools {
     return DrawingTools.currentDrawingTool;
   }
 
-  // Deselect all drawing tool icons.
-  static deselectDrawingTools() {
+  /**
+   * Deselect all drawing tool icons.
+   */
+  static deselectDrawingTools() : void {
     $(DrawingTools.listingsButtonId).removeClass('selected');
     $(DrawingTools.polygonButtonId).removeClass('selected');
     $(DrawingTools.rectangleButtonId).removeClass('selected');
     $(DrawingTools.circleButtonId).removeClass('selected');
   }
 
-  // Disable drawing functions
-  static disableDrawing() {
+  /**
+   * Disable drawing functions
+   */
+  static disableDrawing() : void {
     DrawingTools.deselectDrawingTools();
     $(DrawingTools.handButtonId).addClass('selected');
     DrawingTools.clearPolygons();
   }
 
-  // Clear any polygons on screen
-  static clearPolygons() {
+  /**
+   * Clear any polygons on screen
+   */
+  static clearPolygons() : void {
     if (DrawingTools.drawingManager.getMap()) {
       DrawingTools.drawingManager.setMap(null);
     }
@@ -120,10 +132,12 @@ class DrawingTools {
     }
   }
 
-  // This function hides all markers outside the polygon,
-  // and shows only the ones within it. This is so that the
-  // user can specify an exact area of search.
-  static searchWithinPolygon() {
+  /**
+   * This function hides all markers outside the polygon, and shows only the
+   * ones within it. This is so that the user can specify an exact area of
+   * search.
+   */
+  static searchWithinPolygon() : void {
     var markerCount = 0;
     for (var i = 0; i < DrawingTools.markers.length; i++) {
       if (DrawingTools.isWithinCurrentShape(DrawingTools.markers[i].marker.getPosition())) {
@@ -145,10 +159,11 @@ class DrawingTools {
     }
   }
 
-  // Determine if a position is within the current drawing tool
-  static isWithinCurrentShape(
-    position: google.maps.LatLng
-  ) {
+  /**
+   * Determine if a position is within the current drawing tool
+   * @param position - The co-ordinates to compare with the current shape.
+   */
+  static isWithinCurrentShape(position: google.maps.LatLng) : boolean {
     var currentShape = DrawingTools.currentDrawingTool[0].id;
     if (currentShape) {
       currentShape = currentShape.split('-').pop();

@@ -9,7 +9,10 @@
 /// <reference path="listings.ts" />
 /// <reference path="search-panel.ts" />
 
-// Main entry point
+/**
+ * The main entry point, the callback function referenced by the Google Maps 
+ * API.
+ */
 function initMap() {
   var map: google.maps.Map;
 
