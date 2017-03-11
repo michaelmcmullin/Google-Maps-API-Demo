@@ -107,6 +107,11 @@ class DrawingTools {
   static disableDrawing() {
     DrawingTools.deselectDrawingTools();
     $(DrawingTools.handButtonId).addClass('selected');
+    DrawingTools.clearPolygons();
+  }
+
+  // Clear any polygons on screen
+  static clearPolygons() {
     if (DrawingTools.drawingManager.getMap()) {
       DrawingTools.drawingManager.setMap(null);
     }

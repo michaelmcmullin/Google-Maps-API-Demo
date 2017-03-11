@@ -48,6 +48,7 @@ function initMap() {
   }
 
   $('#toggle-listings').on('click', function() {
+    DrawingTools.clearPolygons();
     toggleListings(markers, map);
   });
  

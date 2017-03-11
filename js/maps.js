@@ -237,6 +237,9 @@ var DrawingTools = (function () {
     DrawingTools.disableDrawing = function () {
         DrawingTools.deselectDrawingTools();
         $(DrawingTools.handButtonId).addClass('selected');
+        DrawingTools.clearPolygons();
+    };
+    DrawingTools.clearPolygons = function () {
         if (DrawingTools.drawingManager.getMap()) {
             DrawingTools.drawingManager.setMap(null);
         }
@@ -740,6 +743,7 @@ function initMap() {
         markers.push(listingMarker);
     }
     $('#toggle-listings').on('click', function () {
+        DrawingTools.clearPolygons();
         toggleListings(markers, map);
     });
     $('#about-button').on('click', function () {
