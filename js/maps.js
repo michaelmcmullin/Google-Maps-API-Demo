@@ -22,6 +22,10 @@ function getTravelMode(mode) {
 }
 function hideMarkers(markers) {
     for (var i = 0; i < markers.length; i++) {
+        if (markers[i].infowindow !== null)
+            markers[i].infowindow.close();
+        removeInfoWindow();
+        markers[i].infowindow = null;
         markers[i].marker.setMap(null);
     }
 }
@@ -480,13 +484,14 @@ function displayMarkersWithinTime(response, markers, directionsDisplay) {
                 if (duration <= maxDuration) {
                     markers[i].marker.setMap(MarkerWithInfoWindow.map);
                     atLeastOne = true;
-                    var infowindow = new google.maps.InfoWindow({
-                        content: durationText + ' away, ' + distanceText +
-                            '<div><input type="button" value=\"View Route\" id=\"btn_ViewRoute_' + i + '\"></input></div>'
-                    });
+                    if (markers[i].infowindow === null)
+                        markers[i].infowindow = new google.maps.InfoWindow({
+                            content: durationText + ' away, ' + distanceText +
+                                '<div><input type="button" value=\"View Route\" id=\"btn_ViewRoute_' + i + '\"></input></div>'
+                        });
                     var origin = origins[i];
-                    infowindow.open(MarkerWithInfoWindow.map, markers[i].marker);
-                    removeGetRouteInfowindow(markers[i], infowindow);
+                    markers[i].infowindow.open(MarkerWithInfoWindow.map, markers[i].marker);
+                    removeGetRouteInfowindow(markers[i]);
                     attachGetRouteEvent($('#btn_ViewRoute_' + i)[0], origin, markers, directionsDisplay);
                 }
             }
@@ -499,8 +504,8 @@ function displayMarkersWithinTime(response, markers, directionsDisplay) {
 function attachGetRouteEvent(button, origin, markers, directionsDisplay) {
     google.maps.event.addDomListener(button, 'click', function () { displayDirections(origin, markers, directionsDisplay); });
 }
-function removeGetRouteInfowindow(marker, infowindow) {
-    google.maps.event.addListener(marker.marker, 'click', function () { infowindow.close(); });
+function removeGetRouteInfowindow(marker) {
+    google.maps.event.addListener(marker.marker, 'click', function () { marker.infowindow.close(); });
 }
 function zoomToArea(map) {
     var geocoder = new google.maps.Geocoder();

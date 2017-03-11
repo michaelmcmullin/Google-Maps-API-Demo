@@ -17,6 +17,10 @@ function getTravelMode(mode: string) {
 // This function will loop through the listings and hide them all.
 function hideMarkers(markers: MarkerWithInfoWindow[]) {
   for (var i = 0; i < markers.length; i++) {
+    if (markers[i].infowindow !== null)
+      markers[i].infowindow.close();
+    removeInfoWindow();
+    markers[i].infowindow = null;
     markers[i].marker.setMap(null);
   }
 }

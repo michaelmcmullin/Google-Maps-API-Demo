@@ -77,18 +77,19 @@ function displayMarkersWithinTime(
 
           // Create a mini infowindow to open immediately and contain the
           // distance and duration
-          var infowindow = new google.maps.InfoWindow({
-              content: durationText + ' away, ' + distanceText +
-                '<div><input type="button" value=\"View Route\" id=\"btn_ViewRoute_' + i + '\"></input></div>'
-            }
-          );
+          if (markers[i].infowindow === null)
+            markers[i].infowindow = new google.maps.InfoWindow({
+                content: durationText + ' away, ' + distanceText +
+                  '<div><input type="button" value=\"View Route\" id=\"btn_ViewRoute_' + i + '\"></input></div>'
+              }
+            );
           var origin = origins[i];
-          infowindow.open(MarkerWithInfoWindow.map, markers[i].marker);
+          markers[i].infowindow.open(MarkerWithInfoWindow.map, markers[i].marker);
           // Put this in so that this small window closes if the user clicks
           // the marker, when the big infowindow opens
           //markers[i].infowindow = infowindow;
           //google.maps.event.addListener(markers[i], 'click', function() { this.infowindow.close(); });
-          removeGetRouteInfowindow(markers[i], infowindow);
+          removeGetRouteInfowindow(markers[i]);
           attachGetRouteEvent($('#btn_ViewRoute_' + i)[0], origin, markers, directionsDisplay);
         }
       }
@@ -111,8 +112,7 @@ function attachGetRouteEvent(
 // Attach a 'close' event to remove the 'get route' infowindow when the
 // associated marker is clicked.
 function removeGetRouteInfowindow(
-  marker: MarkerWithInfoWindow,
-  infowindow: google.maps.InfoWindow
+  marker: MarkerWithInfoWindow
 ) {
-  google.maps.event.addListener(marker.marker, 'click', function() { infowindow.close(); });
+  google.maps.event.addListener(marker.marker, 'click', function() { marker.infowindow.close(); });
 }
