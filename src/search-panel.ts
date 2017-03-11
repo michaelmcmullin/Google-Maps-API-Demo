@@ -15,6 +15,13 @@ class SearchPanel {
   static readonly searchPlacesButton: string = '#go-places';
 
 
+  /**
+   * Initialise all the controls in the search panel
+   * @param map - The map to use for the various search functions.
+   * @param markers - An array of markers representing the propery listings.
+   * @param placeMarkers - An array of places searched for.
+   * @param directionsDisplay - Helps render directions on the map
+   */
   static Initialise(
     map: google.maps.Map,
     markers: MarkerWithInfoWindow[],
@@ -68,12 +75,16 @@ class SearchPanel {
     });
   }
 
-  // Slide the search panel down so it's visible
+  /**
+   * Slide the search panel down so it's visible
+   */
   static show() : void {
     $(SearchPanel.searchPanel).slideDown("fast")
   }
 
-  // Slide the search panel up so it's hidden
+  /**
+   * Slide the search panel up so it's hidden
+   */
   static hide() : void {
     $(SearchPanel.searchPanel).slideUp("fast")
   }
