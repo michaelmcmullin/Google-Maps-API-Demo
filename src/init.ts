@@ -6,7 +6,7 @@ class Init {
    * Initial setup of the main map, setting its style, position, zoom level,
    * and other controls.
    */
-  static Map() {
+  static Map() : google.maps.Map {
     var styledMapType = new google.maps.StyledMapType(
       Init.styles,
       {name: 'Mono'}
@@ -17,7 +17,6 @@ class Init {
         center: {lat: 40.7413549, lng: -73.9980244},
         zoom: 13,
         mapTypeControlOptions: {
-          //style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
           position: google.maps.ControlPosition.TOP_RIGHT,
           mapTypeIds: ['roadmap', 'satellite', 'hybrid', 'terrain', 'mono']
         }
