@@ -1,4 +1,6 @@
-// Class to handle the search panel element
+/**
+ * Handles the search panel element
+ */
 class SearchPanel {
   static readonly searchButton: string = '#toggle-search';
   static readonly searchPanel: string = '#search-panel';
@@ -12,12 +14,13 @@ class SearchPanel {
   static readonly searchPlacesText: string = '#places-search';
   static readonly searchPlacesButton: string = '#go-places';
 
+
   static Initialise(
     map: google.maps.Map,
-    markers,
-    placeMarkers,
-    directionsDisplay
-  ) {
+    markers: MarkerWithInfoWindow[],
+    placeMarkers: PlaceMarker[],
+    directionsDisplay: google.maps.DirectionsRenderer
+  ) : void {
     $(SearchPanel.searchButton).on('click', function() {
       $(SearchPanel.searchPanel).slideToggle("fast");
     });
@@ -66,12 +69,12 @@ class SearchPanel {
   }
 
   // Slide the search panel down so it's visible
-  static show() {
+  static show() : void {
     $(SearchPanel.searchPanel).slideDown("fast")
   }
 
   // Slide the search panel up so it's hidden
-  static hide() {
+  static hide() : void {
     $(SearchPanel.searchPanel).slideUp("fast")
   }
 }
