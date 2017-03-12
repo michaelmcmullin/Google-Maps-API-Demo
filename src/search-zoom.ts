@@ -1,7 +1,13 @@
+/**
+ * Handles the 'zoom to area' search.
+ */
 class ZoomSearch {
-  // This function takes the input value in the find nearby area text input
-  // locates it, and then zooms into that area. This is so that the user can
-  // show all listings, then decide to focus on one area of the map.
+  /**
+   * This function takes the input value in the 'find nearby area' text input,
+   * locates it, and then zooms into that area. This is so that the user can
+   * show all listings, then decide to focus on one area of the map.
+   * @param map - The map to search on.
+   */
   static zoomToArea(map: google.maps.Map) {
     // Initialize the geocoder.
     var geocoder = new google.maps.Geocoder();
