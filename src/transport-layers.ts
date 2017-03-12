@@ -10,7 +10,7 @@ class TransportLayers {
   static readonly bicycleButtonId: string = '#toggle-bicycling';
 
   // Initial setup for transport layers
-  static Initialise(map: google.maps.Map) {
+  static Initialise(map: google.maps.Map) : void {
     TransportLayers.map = map;
     TransportLayers.trafficLayer = new google.maps.TrafficLayer();
     TransportLayers.transitLayer = new google.maps.TransitLayer();
@@ -30,7 +30,7 @@ class TransportLayers {
   }
 
   // Hide all of the transport layers, and reset their toggle buttons
-  static hideLayers() {
+  static hideLayers() : void {
     TransportLayers.trafficLayer.setMap(null);
     TransportLayers.transitLayer.setMap(null);
     TransportLayers.bikeLayer.setMap(null);
@@ -44,7 +44,7 @@ class TransportLayers {
   static toggleLayer(
     layer: google.maps.TrafficLayer|google.maps.TransitLayer|google.maps.BicyclingLayer,
     buttonId: string
-  ) {
+  ) : void {
     if (layer.getMap() === null) {
       TransportLayers.hideLayers();
       layer.setMap(TransportLayers.map);
