@@ -37,13 +37,6 @@ var Utilities = (function () {
 var MarkerWithInfoWindow = (function () {
     function MarkerWithInfoWindow() {
     }
-    MarkerWithInfoWindow.prototype.setMarker = function (newMarker) {
-        this.marker = newMarker;
-    };
-    MarkerWithInfoWindow.prototype.clearMarkers = function () {
-        this.marker = null;
-        this.infowindow = null;
-    };
     return MarkerWithInfoWindow;
 }());
 var Init = (function () {
