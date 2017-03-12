@@ -1,7 +1,14 @@
+/**
+ * Handles searches of listings within a certain time distance of a given place.
+ */
 class TimeSearch {
-  // This function allows the user to input a desired travel time, in
-  // minutes, and a travel mode, and a location - and only show the listings
-  // that are within that travel time (via that travel mode) of the location
+  /**
+   * This function allows the user to input a desired travel time, in
+   * minutes, and a travel mode, and a location - and only show the listings
+   * that are within that travel time (via that travel mode) of the location
+   * @param markers - An array of markers for all listings.
+   * @param directionsDisplay - Helps render directions on the map.
+   */
   static searchWithinTime(
     markers: MarkerWithInfoWindow[],
     directionsDisplay: google.maps.DirectionsRenderer
@@ -43,8 +50,16 @@ class TimeSearch {
     }
   }
 
-  // This function will go through each of the results, and,
-  // if the distance is LESS than the value in the picker, show it on the map.
+  /**
+   * This function will go through each of the results, and, if the distance is
+   * LESS than the value in the picker, show it on the map.
+   * @param response - The response to a DistanceMatrixService request,
+   * consisting of the formatted origin and destination addresses, and a
+   * sequence of DistanceMatrixResponseRows, one for each corresponding origin
+   * address.
+   * @param markers - An array of markers for all listings.
+   * @param directionsDisplay - Helps render directions on the map.
+   */
   static displayMarkersWithinTime(
     response: google.maps.DistanceMatrixResponse,
     markers: MarkerWithInfoWindow[],
@@ -97,7 +112,14 @@ class TimeSearch {
     if (!atLeastOne) { window.alert('We could not find any locations within that distance!'); }
   }
 
-  // Attach a 'get route' click event to each button.
+  /**
+   * Attach a 'get route' click event to each button.
+   * @param button - The button that triggers the 'get route' click event.
+   * @param origin - The start address to calculate route from (the destination
+   * is calculated from the search box value)
+   * @param markers - An array of markers for all listings.
+   * @param directionsDisplay - Helps render directions on the map.
+   */
   static attachGetRouteEvent(
     button: HTMLElement,
     origin: string,
@@ -108,8 +130,11 @@ class TimeSearch {
         function() { DirectionsPanel.displayDirections(origin, markers, directionsDisplay) });
   }
 
-  // Attach a 'close' event to remove the 'get route' infowindow when the
-  // associated marker is clicked.
+  /**
+   * Attach a 'close' event to remove the 'get route' infowindow when the
+   * associated marker is clicked.
+   * @param marker : The marker whose infowindow should be closed.
+   */
   static removeGetRouteInfowindow(
     marker: MarkerWithInfoWindow
   ) : void {
