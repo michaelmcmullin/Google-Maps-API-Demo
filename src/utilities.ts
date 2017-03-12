@@ -1,7 +1,10 @@
+/**
+ * General utilities used throughout the application
+ */
 class Utilities {
   // Convert a string representation of a travel mode to a 
   // correctly typed TravelMode enumeration.
-  static getTravelMode(mode: string) {
+  static getTravelMode(mode: string) : google.maps.TravelMode {
     switch(mode.toUpperCase())
     {
       case 'DRIVING':
@@ -16,7 +19,7 @@ class Utilities {
   }
 
   // This function will loop through the listings and hide them all.
-  static hideMarkers(markers: MarkerWithInfoWindow[]) {
+  static hideMarkers(markers: MarkerWithInfoWindow[]) : void {
     for (var i = 0; i < markers.length; i++) {
       if (markers[i].infowindow !== null)
         markers[i].infowindow.close();
@@ -33,11 +36,11 @@ class MarkerWithInfoWindow {
   marker: google.maps.Marker;
   infowindow: google.maps.InfoWindow;
 
-  setMarker(newMarker: google.maps.Marker) {
+  setMarker(newMarker: google.maps.Marker) : void {
     this.marker = newMarker;
   }
 
-  clearMarkers() {
+  clearMarkers() : void {
     this.marker = null;
     this.infowindow = null;
   }
