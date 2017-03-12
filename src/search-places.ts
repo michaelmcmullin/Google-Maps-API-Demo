@@ -1,12 +1,15 @@
-// Add some place-specific information to the MarkerWithInfoWindow
-// class.
+/**
+ * Add some place-specific information to the MarkerWithInfoWindow class
+ */
 class PlaceMarker extends MarkerWithInfoWindow {
   static activeInfoWindow: google.maps.InfoWindow;
   static currentPlace: google.maps.places.PlaceResult = null;
   static currentPhoto: number = 0;
 
-  // Sets the infowindow associated with this PlaceMarker as
-  // the currently active infowindow.
+  /**
+   * Sets the infowindow associated with this PlaceMarker as the currently
+   * active infowindow.
+   */
   setAsActiveInfoWindow() : void {
     if (PlaceMarker.activeInfoWindow) {
       PlaceMarker.activeInfoWindow.close();
@@ -15,8 +18,13 @@ class PlaceMarker extends MarkerWithInfoWindow {
     PlaceMarker.activeInfoWindow = this.infowindow;
   }
 
-  // This function fires when the user selects a searchbox picklist item.
-  // It will do a nearby search using the selected query string or place.
+  /**
+   * Fires when the user selects a searchbox picklist item. It will do a nearby
+   * search using the selected query string or place.
+   * @param searchBox - A service to provide query predictions based on a user's
+   * text input.
+   * @param placeMarkers - An array of places searched for.
+   */
   static searchBoxPlaces(
     searchBox: google.maps.places.SearchBox,
     placeMarkers: PlaceMarker[]
@@ -31,8 +39,11 @@ class PlaceMarker extends MarkerWithInfoWindow {
     }
   }
 
-  // This function fires when the user select "go" on the places search.
-  // It will do a nearby search using the entered query string or place.
+  /**
+   * This function fires when the user select "go" on the places search. It will
+   * do a nearby search using the entered query string or place.
+   * @param placeMarkers - An array of place result markers.
+   */
   static textSearchPlaces(
     placeMarkers: PlaceMarker[]
   ) : void {
@@ -50,7 +61,11 @@ class PlaceMarker extends MarkerWithInfoWindow {
     );
   }
 
-  // This function creates markers for each place found in either places search.
+  /**
+   * This function creates markers for each place found in either places search.
+   * @param places - An array of information about place results.
+   * @param placeMarkers - An array of place result markers.
+   */
   static createMarkersForPlaces(
     places: google.maps.places.PlaceResult[],
     placeMarkers: PlaceMarker[]
@@ -94,7 +109,11 @@ class PlaceMarker extends MarkerWithInfoWindow {
     MarkerWithInfoWindow.map.fitBounds(bounds);
   }
 
-  // Function to add an event to a place marker.
+  /**
+   * Function to add an event to a place marker.
+   * @param placeMarker - The place marker to add a click event to.
+   * @param place_id - Unique ID of the place to add a click event to.
+   */
   static addPlaceMarkerEvents(
     placeMarker: PlaceMarker,
     place_id: string
@@ -106,9 +125,13 @@ class PlaceMarker extends MarkerWithInfoWindow {
     );
   }
 
-  // This is the PLACE DETAILS search - it's the most detailed so it's only
-  // executed when a marker is selected, indicating the user wants more
-  // details about that place.
+  /**
+   * This is the PLACE DETAILS search - it's the most detailed so it's only
+   * executed when a marker is selected, indicating the user wants more
+   * details about that place.
+   * @param placeMarker - The place marker the user has clicked.
+   * @param place_id - Unique ID of the place get details for.
+   */
   static getPlacesDetails(
     placeMarker: PlaceMarker,
     place_id: string
@@ -169,7 +192,10 @@ class PlaceMarker extends MarkerWithInfoWindow {
     );
   }
 
-  // Get next photo
+  /**
+   * If a place infowindow has photos available, this method fetches the next
+   * one if there are multiple photos.
+   */
   static nextPhoto() : void {
     if (PlaceMarker.currentPlace) {
       var totalPhotos = PlaceMarker.currentPlace.photos.length;
@@ -185,7 +211,10 @@ class PlaceMarker extends MarkerWithInfoWindow {
     }
   }
 
-  // Get previous photo
+  /**
+   * If a place infowindow has photos available, this method fetches the
+   * previous one if there are multiple photos.
+   */
   static previousPhoto() : void {
     if (PlaceMarker.currentPlace) {
       var totalPhotos = PlaceMarker.currentPlace.photos.length;
