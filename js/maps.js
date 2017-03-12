@@ -22,6 +22,7 @@ var Utilities = (function () {
             case 'WALKING':
                 return google.maps.TravelMode.WALKING;
         }
+        return null;
     };
     Utilities.hideMarkers = function (markers) {
         for (var i = 0; i < markers.length; i++) {

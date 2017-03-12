@@ -20,6 +20,7 @@ class Utilities {
       case 'WALKING':
         return google.maps.TravelMode.WALKING;
     }
+    return null;
   }
 
   /**
