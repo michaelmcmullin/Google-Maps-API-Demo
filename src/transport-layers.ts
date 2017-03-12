@@ -1,5 +1,6 @@
-// Class containing functionality for dealing with the display of traffic,
-// transit and bike layers.
+/**
+ * Handle the display of traffic, transit and bike layers.
+ */
 class TransportLayers {
   static map: google.maps.Map; 
   static trafficLayer: google.maps.TrafficLayer;
@@ -9,7 +10,10 @@ class TransportLayers {
   static readonly transitButtonId: string = '#toggle-transit';
   static readonly bicycleButtonId: string = '#toggle-bicycling';
 
-  // Initial setup for transport layers
+  /**
+   * Initial setup for transport layers
+   * @param map - The map to use tranport layers on.
+   */
   static Initialise(map: google.maps.Map) : void {
     TransportLayers.map = map;
     TransportLayers.trafficLayer = new google.maps.TrafficLayer();
@@ -29,7 +33,9 @@ class TransportLayers {
     });
   }
 
-  // Hide all of the transport layers, and reset their toggle buttons
+  /**
+   * Hide all of the transport layers, and reset their toggle buttons
+   */
   static hideLayers() : void {
     TransportLayers.trafficLayer.setMap(null);
     TransportLayers.transitLayer.setMap(null);
@@ -40,7 +46,10 @@ class TransportLayers {
     $(TransportLayers.bicycleButtonId).removeClass('selected');
   }
 
-  // Toggle a transport layer and button
+  /** Toggle a transport layer and button
+   * @param layer - The type of transport layer to toggle.
+   * @param buttonId - The button in the toolbar that was clicked.
+   */
   static toggleLayer(
     layer: google.maps.TrafficLayer|google.maps.TransitLayer|google.maps.BicyclingLayer,
     buttonId: string
