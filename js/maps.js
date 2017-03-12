@@ -515,27 +515,32 @@ var TimeSearch = (function () {
     };
     return TimeSearch;
 }());
-function zoomToArea(map) {
-    var geocoder = new google.maps.Geocoder();
-    var address = $('#zoom-to-area-text').val();
-    if (address === '') {
-        window.alert('You must enter an area, or address.');
+var ZoomSearch = (function () {
+    function ZoomSearch() {
     }
-    else {
-        geocoder.geocode({
-            address: address,
-            componentRestrictions: { locality: 'New York' }
-        }, function (results, status) {
-            if (status == google.maps.GeocoderStatus.OK) {
-                map.setCenter(results[0].geometry.location);
-                map.setZoom(15);
-            }
-            else {
-                window.alert('We could not find that location - try entering a more specific place.');
-            }
-        });
-    }
-}
+    ZoomSearch.zoomToArea = function (map) {
+        var geocoder = new google.maps.Geocoder();
+        var address = $('#zoom-to-area-text').val();
+        if (address === '') {
+            window.alert('You must enter an area, or address.');
+        }
+        else {
+            geocoder.geocode({
+                address: address,
+                componentRestrictions: { locality: 'New York' }
+            }, function (results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    map.setCenter(results[0].geometry.location);
+                    map.setZoom(15);
+                }
+                else {
+                    window.alert('We could not find that location - try entering a more specific place.');
+                }
+            });
+        }
+    };
+    return ZoomSearch;
+}());
 var TransportLayers = (function () {
     function TransportLayers() {
     }
@@ -698,7 +703,7 @@ var SearchPanel = (function () {
         var searchBox = new google.maps.places.SearchBox($(SearchPanel.searchPlacesText)[0]);
         searchBox.setBounds(map.getBounds());
         $(SearchPanel.searchZoomButton).on('click', function () {
-            zoomToArea(map);
+            ZoomSearch.zoomToArea(map);
             SearchPanel.hide();
         });
         $(SearchPanel.searchTimeButton).on('click', function () {

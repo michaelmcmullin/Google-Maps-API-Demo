@@ -51,7 +51,7 @@ class SearchPanel {
     searchBox.setBounds(map.getBounds());
 
     $(SearchPanel.searchZoomButton).on('click', function() {
-      zoomToArea(map);
+      ZoomSearch.zoomToArea(map);
       SearchPanel.hide();
     });
 
