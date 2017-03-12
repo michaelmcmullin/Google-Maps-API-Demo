@@ -309,139 +309,139 @@ var PlaceMarker = (function (_super) {
         PlaceMarker.currentPhoto = 0;
         PlaceMarker.activeInfoWindow = this.infowindow;
     };
+    PlaceMarker.searchBoxPlaces = function (searchBox, placeMarkers) {
+        hideMarkers(placeMarkers);
+        var places = searchBox.getPlaces();
+        if (places.length === 0) {
+            window.alert('We did not find any places matching that search!');
+        }
+        else {
+            PlaceMarker.createMarkersForPlaces(places, placeMarkers);
+        }
+    };
+    PlaceMarker.textSearchPlaces = function (placeMarkers) {
+        var bounds = MarkerWithInfoWindow.map.getBounds();
+        hideMarkers(placeMarkers);
+        var placesService = new google.maps.places.PlacesService(MarkerWithInfoWindow.map);
+        placesService.textSearch({
+            query: $('#places-search').val(),
+            bounds: bounds
+        }, function (results, status) {
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+                PlaceMarker.createMarkersForPlaces(results, placeMarkers);
+            }
+        });
+    };
+    PlaceMarker.createMarkersForPlaces = function (places, placeMarkers) {
+        var bounds = new google.maps.LatLngBounds();
+        for (var i = 0; i < places.length; i++) {
+            var place = places[i];
+            var icon = {
+                url: place.icon,
+                size: new google.maps.Size(35, 35),
+                origin: new google.maps.Point(0, 0),
+                anchor: new google.maps.Point(15, 34),
+                scaledSize: new google.maps.Size(25, 25)
+            };
+            var marker = new google.maps.Marker({
+                map: MarkerWithInfoWindow.map,
+                icon: icon,
+                title: place.name,
+                position: place.geometry.location
+            });
+            var placeInfoWindow = new google.maps.InfoWindow();
+            var placeMarker = new PlaceMarker();
+            placeMarker.marker = marker;
+            placeMarker.infowindow = placeInfoWindow;
+            PlaceMarker.addPlaceMarkerEvents(placeMarker, place.place_id);
+            placeMarkers.push(placeMarker);
+            if (place.geometry.viewport) {
+                bounds.union(place.geometry.viewport);
+            }
+            else {
+                bounds.extend(place.geometry.location);
+            }
+        }
+        MarkerWithInfoWindow.map.fitBounds(bounds);
+    };
+    PlaceMarker.addPlaceMarkerEvents = function (placeMarker, place_id) {
+        placeMarker.marker.addListener('click', function () {
+            PlaceMarker.getPlacesDetails(placeMarker, place_id);
+        });
+    };
+    PlaceMarker.getPlacesDetails = function (placeMarker, place_id) {
+        var service = new google.maps.places.PlacesService(MarkerWithInfoWindow.map);
+        service.getDetails({
+            placeId: place_id
+        }, function (place, status) {
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+                placeMarker.setAsActiveInfoWindow();
+                var innerHTML = '<div>';
+                if (place.name) {
+                    innerHTML += '<strong>' + place.name + '</strong>';
+                }
+                if (place.formatted_address) {
+                    innerHTML += '<br>' + place.formatted_address;
+                }
+                if (place.formatted_phone_number) {
+                    innerHTML += '<br>' + place.formatted_phone_number;
+                }
+                if (place.opening_hours) {
+                    innerHTML += '<br><br><strong>Hours:</strong><br>' +
+                        place.opening_hours.weekday_text[0] + '<br>' +
+                        place.opening_hours.weekday_text[1] + '<br>' +
+                        place.opening_hours.weekday_text[2] + '<br>' +
+                        place.opening_hours.weekday_text[3] + '<br>' +
+                        place.opening_hours.weekday_text[4] + '<br>' +
+                        place.opening_hours.weekday_text[5] + '<br>' +
+                        place.opening_hours.weekday_text[6];
+                }
+                if (place.photos) {
+                    innerHTML += '<br><br><img id="' + place.place_id + '_photo" src="' + place.photos[0].getUrl({ maxHeight: 100, maxWidth: 200 }) + '">';
+                    if (place.photos.length > 1) {
+                        innerHTML += '<br>';
+                        innerHTML += place.photos.length + ' photos: ';
+                        innerHTML += '<a onclick="PlaceMarker.previousPhoto()">Prev</a> ';
+                        innerHTML += '<a onclick="PlaceMarker.nextPhoto()">Next</a>';
+                    }
+                }
+                innerHTML += '</div>';
+                PlaceMarker.activeInfoWindow.setContent(innerHTML);
+                PlaceMarker.currentPlace = place;
+                PlaceMarker.activeInfoWindow.open(MarkerWithInfoWindow.map, placeMarker.marker);
+                PlaceMarker.activeInfoWindow.addListener('closeclick', function () {
+                    placeMarker.marker = null;
+                    PlaceMarker.activeInfoWindow = null;
+                    PlaceMarker.currentPlace = null;
+                    PlaceMarker.currentPhoto = 0;
+                });
+            }
+        });
+    };
+    PlaceMarker.nextPhoto = function () {
+        if (PlaceMarker.currentPlace) {
+            var totalPhotos = PlaceMarker.currentPlace.photos.length;
+            var next = PlaceMarker.currentPhoto + 1;
+            if (next >= totalPhotos)
+                next = 0;
+            $('#' + PlaceMarker.currentPlace.place_id + '_photo').attr('src', PlaceMarker.currentPlace.photos[next].getUrl({ maxHeight: 100, maxWidth: 200 }));
+            PlaceMarker.currentPhoto = next;
+        }
+    };
+    PlaceMarker.previousPhoto = function () {
+        if (PlaceMarker.currentPlace) {
+            var totalPhotos = PlaceMarker.currentPlace.photos.length;
+            var next = PlaceMarker.currentPhoto - 1;
+            if (next < 0)
+                next = totalPhotos - 1;
+            $('#' + PlaceMarker.currentPlace.place_id + '_photo').attr('src', PlaceMarker.currentPlace.photos[next].getUrl({ maxHeight: 100, maxWidth: 200 }));
+            PlaceMarker.currentPhoto = next;
+        }
+    };
     return PlaceMarker;
 }(MarkerWithInfoWindow));
 PlaceMarker.currentPlace = null;
 PlaceMarker.currentPhoto = 0;
-function searchBoxPlaces(searchBox, placeMarkers) {
-    hideMarkers(placeMarkers);
-    var places = searchBox.getPlaces();
-    if (places.length === 0) {
-        window.alert('We did not find any places matching that search!');
-    }
-    else {
-        createMarkersForPlaces(places, placeMarkers);
-    }
-}
-function textSearchPlaces(placeMarkers) {
-    var bounds = MarkerWithInfoWindow.map.getBounds();
-    hideMarkers(placeMarkers);
-    var placesService = new google.maps.places.PlacesService(MarkerWithInfoWindow.map);
-    placesService.textSearch({
-        query: $('#places-search').val(),
-        bounds: bounds
-    }, function (results, status) {
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-            createMarkersForPlaces(results, placeMarkers);
-        }
-    });
-}
-function createMarkersForPlaces(places, placeMarkers) {
-    var bounds = new google.maps.LatLngBounds();
-    for (var i = 0; i < places.length; i++) {
-        var place = places[i];
-        var icon = {
-            url: place.icon,
-            size: new google.maps.Size(35, 35),
-            origin: new google.maps.Point(0, 0),
-            anchor: new google.maps.Point(15, 34),
-            scaledSize: new google.maps.Size(25, 25)
-        };
-        var marker = new google.maps.Marker({
-            map: MarkerWithInfoWindow.map,
-            icon: icon,
-            title: place.name,
-            position: place.geometry.location
-        });
-        var placeInfoWindow = new google.maps.InfoWindow();
-        var placeMarker = new PlaceMarker();
-        placeMarker.marker = marker;
-        placeMarker.infowindow = placeInfoWindow;
-        addPlaceMarkerEvents(placeMarker, place.place_id);
-        placeMarkers.push(placeMarker);
-        if (place.geometry.viewport) {
-            bounds.union(place.geometry.viewport);
-        }
-        else {
-            bounds.extend(place.geometry.location);
-        }
-    }
-    MarkerWithInfoWindow.map.fitBounds(bounds);
-}
-function addPlaceMarkerEvents(placeMarker, place_id) {
-    placeMarker.marker.addListener('click', function () {
-        getPlacesDetails(placeMarker, place_id);
-    });
-}
-function getPlacesDetails(placeMarker, place_id) {
-    var service = new google.maps.places.PlacesService(MarkerWithInfoWindow.map);
-    service.getDetails({
-        placeId: place_id
-    }, function (place, status) {
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-            placeMarker.setAsActiveInfoWindow();
-            var innerHTML = '<div>';
-            if (place.name) {
-                innerHTML += '<strong>' + place.name + '</strong>';
-            }
-            if (place.formatted_address) {
-                innerHTML += '<br>' + place.formatted_address;
-            }
-            if (place.formatted_phone_number) {
-                innerHTML += '<br>' + place.formatted_phone_number;
-            }
-            if (place.opening_hours) {
-                innerHTML += '<br><br><strong>Hours:</strong><br>' +
-                    place.opening_hours.weekday_text[0] + '<br>' +
-                    place.opening_hours.weekday_text[1] + '<br>' +
-                    place.opening_hours.weekday_text[2] + '<br>' +
-                    place.opening_hours.weekday_text[3] + '<br>' +
-                    place.opening_hours.weekday_text[4] + '<br>' +
-                    place.opening_hours.weekday_text[5] + '<br>' +
-                    place.opening_hours.weekday_text[6];
-            }
-            if (place.photos) {
-                innerHTML += '<br><br><img id="' + place.place_id + '_photo" src="' + place.photos[0].getUrl({ maxHeight: 100, maxWidth: 200 }) + '">';
-                if (place.photos.length > 1) {
-                    innerHTML += '<br>';
-                    innerHTML += place.photos.length + ' photos: ';
-                    innerHTML += '<a onclick="previousPhoto()">Prev</a> ';
-                    innerHTML += '<a onclick="nextPhoto()">Next</a>';
-                }
-            }
-            innerHTML += '</div>';
-            PlaceMarker.activeInfoWindow.setContent(innerHTML);
-            PlaceMarker.currentPlace = place;
-            PlaceMarker.activeInfoWindow.open(MarkerWithInfoWindow.map, placeMarker.marker);
-            PlaceMarker.activeInfoWindow.addListener('closeclick', function () {
-                placeMarker.marker = null;
-                PlaceMarker.activeInfoWindow = null;
-                PlaceMarker.currentPlace = null;
-                PlaceMarker.currentPhoto = 0;
-            });
-        }
-    });
-}
-function nextPhoto() {
-    if (PlaceMarker.currentPlace) {
-        var totalPhotos = PlaceMarker.currentPlace.photos.length;
-        var next = PlaceMarker.currentPhoto + 1;
-        if (next >= totalPhotos)
-            next = 0;
-        $('#' + PlaceMarker.currentPlace.place_id + '_photo').attr('src', PlaceMarker.currentPlace.photos[next].getUrl({ maxHeight: 100, maxWidth: 200 }));
-        PlaceMarker.currentPhoto = next;
-    }
-}
-function previousPhoto() {
-    if (PlaceMarker.currentPlace) {
-        var totalPhotos = PlaceMarker.currentPlace.photos.length;
-        var next = PlaceMarker.currentPhoto - 1;
-        if (next < 0)
-            next = totalPhotos - 1;
-        $('#' + PlaceMarker.currentPlace.place_id + '_photo').attr('src', PlaceMarker.currentPlace.photos[next].getUrl({ maxHeight: 100, maxWidth: 200 }));
-        PlaceMarker.currentPhoto = next;
-    }
-}
 function searchWithinTime(markers, directionsDisplay) {
     var distanceMatrixService = new google.maps.DistanceMatrixService();
     var address = $('#search-within-time-text').val();
@@ -701,11 +701,11 @@ var SearchPanel = (function () {
             SearchPanel.hide();
         });
         searchBox.addListener('places_changed', function () {
-            searchBoxPlaces(this, placeMarkers);
+            PlaceMarker.searchBoxPlaces(this, placeMarkers);
             SearchPanel.hide();
         });
         $(SearchPanel.searchPlacesButton).on('click', function () {
-            textSearchPlaces(placeMarkers);
+            PlaceMarker.textSearchPlaces(placeMarkers);
             SearchPanel.hide();
         });
     };

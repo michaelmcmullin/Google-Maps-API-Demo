@@ -63,14 +63,14 @@ class SearchPanel {
     // Listen for the event fired when the user selects a prediction from the
     // picklist and retrieve more details for that place.
     searchBox.addListener('places_changed', function() {
-      searchBoxPlaces(this, placeMarkers);
+      PlaceMarker.searchBoxPlaces(this, placeMarkers);
       SearchPanel.hide();
     });
 
     // Listen for the event fired when the user selects a prediction and clicks
     // "go" more details for that place.
     $(SearchPanel.searchPlacesButton).on('click', function() {
-      textSearchPlaces(placeMarkers);
+      PlaceMarker.textSearchPlaces(placeMarkers);
       SearchPanel.hide();
     });
   }
