@@ -442,74 +442,79 @@ var PlaceMarker = (function (_super) {
 }(MarkerWithInfoWindow));
 PlaceMarker.currentPlace = null;
 PlaceMarker.currentPhoto = 0;
-function searchWithinTime(markers, directionsDisplay) {
-    var distanceMatrixService = new google.maps.DistanceMatrixService();
-    var address = $('#search-within-time-text').val();
-    if (address === '') {
-        window.alert('You must enter an address.');
+var TimeSearch = (function () {
+    function TimeSearch() {
     }
-    else {
-        hideMarkers(markers);
-        var origins = [];
-        for (var i = 0; i < markers.length; i++) {
-            origins[i] = markers[i].marker.getPosition();
+    TimeSearch.searchWithinTime = function (markers, directionsDisplay) {
+        var distanceMatrixService = new google.maps.DistanceMatrixService();
+        var address = $('#search-within-time-text').val();
+        if (address === '') {
+            window.alert('You must enter an address.');
         }
-        var destination = address;
-        var mode = $('#mode').val();
-        distanceMatrixService.getDistanceMatrix({
-            origins: origins,
-            destinations: [destination],
-            travelMode: getTravelMode(mode),
-            unitSystem: google.maps.UnitSystem.IMPERIAL,
-        }, function (response, status) {
-            if (status !== google.maps.DistanceMatrixStatus.OK) {
-                window.alert('Error was: ' + status);
+        else {
+            hideMarkers(markers);
+            var origins = [];
+            for (var i = 0; i < markers.length; i++) {
+                origins[i] = markers[i].marker.getPosition();
             }
-            else {
-                displayMarkersWithinTime(response, markers, directionsDisplay);
-            }
-        });
-    }
-}
-function displayMarkersWithinTime(response, markers, directionsDisplay) {
-    var maxDuration = $('#max-duration').val();
-    var origins = response.originAddresses;
-    var destinations = response.destinationAddresses;
-    var atLeastOne = false;
-    for (var i = 0; i < origins.length; i++) {
-        var results = response.rows[i].elements;
-        for (var j = 0; j < results.length; j++) {
-            var element = results[j];
-            if (element.status === google.maps.DistanceMatrixElementStatus.OK) {
-                var distanceText = element.distance.text;
-                var duration = element.duration.value / 60;
-                var durationText = element.duration.text;
-                if (duration <= maxDuration) {
-                    markers[i].marker.setMap(MarkerWithInfoWindow.map);
-                    atLeastOne = true;
-                    if (markers[i].infowindow === null)
-                        markers[i].infowindow = new google.maps.InfoWindow({
-                            content: durationText + ' away, ' + distanceText +
-                                '<div><input type="button" value=\"View Route\" id=\"btn_ViewRoute_' + i + '\"></input></div>'
-                        });
-                    var origin = origins[i];
-                    markers[i].infowindow.open(MarkerWithInfoWindow.map, markers[i].marker);
-                    removeGetRouteInfowindow(markers[i]);
-                    attachGetRouteEvent($('#btn_ViewRoute_' + i)[0], origin, markers, directionsDisplay);
+            var destination = address;
+            var mode = $('#mode').val();
+            distanceMatrixService.getDistanceMatrix({
+                origins: origins,
+                destinations: [destination],
+                travelMode: getTravelMode(mode),
+                unitSystem: google.maps.UnitSystem.IMPERIAL,
+            }, function (response, status) {
+                if (status !== google.maps.DistanceMatrixStatus.OK) {
+                    window.alert('Error was: ' + status);
+                }
+                else {
+                    TimeSearch.displayMarkersWithinTime(response, markers, directionsDisplay);
+                }
+            });
+        }
+    };
+    TimeSearch.displayMarkersWithinTime = function (response, markers, directionsDisplay) {
+        var maxDuration = $('#max-duration').val();
+        var origins = response.originAddresses;
+        var destinations = response.destinationAddresses;
+        var atLeastOne = false;
+        for (var i = 0; i < origins.length; i++) {
+            var results = response.rows[i].elements;
+            for (var j = 0; j < results.length; j++) {
+                var element = results[j];
+                if (element.status === google.maps.DistanceMatrixElementStatus.OK) {
+                    var distanceText = element.distance.text;
+                    var duration = element.duration.value / 60;
+                    var durationText = element.duration.text;
+                    if (duration <= maxDuration) {
+                        markers[i].marker.setMap(MarkerWithInfoWindow.map);
+                        atLeastOne = true;
+                        if (markers[i].infowindow === null)
+                            markers[i].infowindow = new google.maps.InfoWindow({
+                                content: durationText + ' away, ' + distanceText +
+                                    '<div><input type="button" value=\"View Route\" id=\"btn_ViewRoute_' + i + '\"></input></div>'
+                            });
+                        var origin = origins[i];
+                        markers[i].infowindow.open(MarkerWithInfoWindow.map, markers[i].marker);
+                        TimeSearch.removeGetRouteInfowindow(markers[i]);
+                        TimeSearch.attachGetRouteEvent($('#btn_ViewRoute_' + i)[0], origin, markers, directionsDisplay);
+                    }
                 }
             }
         }
-    }
-    if (!atLeastOne) {
-        window.alert('We could not find any locations within that distance!');
-    }
-}
-function attachGetRouteEvent(button, origin, markers, directionsDisplay) {
-    google.maps.event.addDomListener(button, 'click', function () { DirectionsPanel.displayDirections(origin, markers, directionsDisplay); });
-}
-function removeGetRouteInfowindow(marker) {
-    google.maps.event.addListener(marker.marker, 'click', function () { marker.infowindow.close(); });
-}
+        if (!atLeastOne) {
+            window.alert('We could not find any locations within that distance!');
+        }
+    };
+    TimeSearch.attachGetRouteEvent = function (button, origin, markers, directionsDisplay) {
+        google.maps.event.addDomListener(button, 'click', function () { DirectionsPanel.displayDirections(origin, markers, directionsDisplay); });
+    };
+    TimeSearch.removeGetRouteInfowindow = function (marker) {
+        google.maps.event.addListener(marker.marker, 'click', function () { marker.infowindow.close(); });
+    };
+    return TimeSearch;
+}());
 function zoomToArea(map) {
     var geocoder = new google.maps.Geocoder();
     var address = $('#zoom-to-area-text').val();
@@ -697,7 +702,7 @@ var SearchPanel = (function () {
             SearchPanel.hide();
         });
         $(SearchPanel.searchTimeButton).on('click', function () {
-            searchWithinTime(markers, directionsDisplay);
+            TimeSearch.searchWithinTime(markers, directionsDisplay);
             SearchPanel.hide();
         });
         searchBox.addListener('places_changed', function () {
@@ -841,7 +846,7 @@ var DirectionsPanel = (function () {
         if (directionsDisplay)
             DirectionsPanel.clearExistingDirections(directionsDisplay);
         $('#directions-panel').hide(200);
-        searchWithinTime(markers, directionsDisplay);
+        TimeSearch.searchWithinTime(markers, directionsDisplay);
     };
     return DirectionsPanel;
 }());

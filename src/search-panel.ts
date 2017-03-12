@@ -56,7 +56,7 @@ class SearchPanel {
     });
 
     $(SearchPanel.searchTimeButton).on('click', function() {
-      searchWithinTime(markers, directionsDisplay);
+      TimeSearch.searchWithinTime(markers, directionsDisplay);
       SearchPanel.hide();
     });
 

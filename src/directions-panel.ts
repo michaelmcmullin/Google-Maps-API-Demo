@@ -145,7 +145,7 @@ class DirectionsPanel {
     if (directionsDisplay)
       DirectionsPanel.clearExistingDirections(directionsDisplay);
     $('#directions-panel').hide(200);
-    searchWithinTime(markers, directionsDisplay);
+    TimeSearch.searchWithinTime(markers, directionsDisplay);
   }
 
 }
