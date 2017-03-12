@@ -29,7 +29,7 @@ class PlaceMarker extends MarkerWithInfoWindow {
     searchBox: google.maps.places.SearchBox,
     placeMarkers: PlaceMarker[]
   ) : void {
-    hideMarkers(placeMarkers);
+    Utilities.hideMarkers(placeMarkers);
     var places = searchBox.getPlaces();
     if (places.length === 0) {
       window.alert('We did not find any places matching that search!');
@@ -48,7 +48,7 @@ class PlaceMarker extends MarkerWithInfoWindow {
     placeMarkers: PlaceMarker[]
   ) : void {
     var bounds = MarkerWithInfoWindow.map.getBounds();
-    hideMarkers(placeMarkers);
+    Utilities.hideMarkers(placeMarkers);
     var placesService = new google.maps.places.PlacesService(MarkerWithInfoWindow.map);
     placesService.textSearch({
         query: $('#places-search').val(),

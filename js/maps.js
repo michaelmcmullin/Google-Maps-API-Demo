@@ -8,27 +8,32 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-function getTravelMode(mode) {
-    switch (mode.toUpperCase()) {
-        case 'DRIVING':
-            return google.maps.TravelMode.DRIVING;
-        case 'BICYCLING':
-            return google.maps.TravelMode.BICYCLING;
-        case 'TRANSIT':
-            return google.maps.TravelMode.TRANSIT;
-        case 'WALKING':
-            return google.maps.TravelMode.WALKING;
+var Utilities = (function () {
+    function Utilities() {
     }
-}
-function hideMarkers(markers) {
-    for (var i = 0; i < markers.length; i++) {
-        if (markers[i].infowindow !== null)
-            markers[i].infowindow.close();
-        removeInfoWindow();
-        markers[i].infowindow = null;
-        markers[i].marker.setMap(null);
-    }
-}
+    Utilities.getTravelMode = function (mode) {
+        switch (mode.toUpperCase()) {
+            case 'DRIVING':
+                return google.maps.TravelMode.DRIVING;
+            case 'BICYCLING':
+                return google.maps.TravelMode.BICYCLING;
+            case 'TRANSIT':
+                return google.maps.TravelMode.TRANSIT;
+            case 'WALKING':
+                return google.maps.TravelMode.WALKING;
+        }
+    };
+    Utilities.hideMarkers = function (markers) {
+        for (var i = 0; i < markers.length; i++) {
+            if (markers[i].infowindow !== null)
+                markers[i].infowindow.close();
+            removeInfoWindow();
+            markers[i].infowindow = null;
+            markers[i].marker.setMap(null);
+        }
+    };
+    return Utilities;
+}());
 var MarkerWithInfoWindow = (function () {
     function MarkerWithInfoWindow() {
     }
@@ -201,7 +206,7 @@ var DrawingTools = (function () {
         DrawingTools.drawingManager.addListener('overlaycomplete', function (event) {
             if (DrawingTools.polygon) {
                 DrawingTools.polygon.setMap(null);
-                hideMarkers(DrawingTools.markers);
+                Utilities.hideMarkers(DrawingTools.markers);
             }
             DrawingTools.polygon = event.overlay;
             DrawingTools.searchWithinPolygon();
@@ -310,7 +315,7 @@ var PlaceMarker = (function (_super) {
         PlaceMarker.activeInfoWindow = this.infowindow;
     };
     PlaceMarker.searchBoxPlaces = function (searchBox, placeMarkers) {
-        hideMarkers(placeMarkers);
+        Utilities.hideMarkers(placeMarkers);
         var places = searchBox.getPlaces();
         if (places.length === 0) {
             window.alert('We did not find any places matching that search!');
@@ -321,7 +326,7 @@ var PlaceMarker = (function (_super) {
     };
     PlaceMarker.textSearchPlaces = function (placeMarkers) {
         var bounds = MarkerWithInfoWindow.map.getBounds();
-        hideMarkers(placeMarkers);
+        Utilities.hideMarkers(placeMarkers);
         var placesService = new google.maps.places.PlacesService(MarkerWithInfoWindow.map);
         placesService.textSearch({
             query: $('#places-search').val(),
@@ -452,7 +457,7 @@ var TimeSearch = (function () {
             window.alert('You must enter an address.');
         }
         else {
-            hideMarkers(markers);
+            Utilities.hideMarkers(markers);
             var origins = [];
             for (var i = 0; i < markers.length; i++) {
                 origins[i] = markers[i].marker.getPosition();
@@ -462,7 +467,7 @@ var TimeSearch = (function () {
             distanceMatrixService.getDistanceMatrix({
                 origins: origins,
                 destinations: [destination],
-                travelMode: getTravelMode(mode),
+                travelMode: Utilities.getTravelMode(mode),
                 unitSystem: google.maps.UnitSystem.IMPERIAL,
             }, function (response, status) {
                 if (status !== google.maps.DistanceMatrixStatus.OK) {
@@ -675,7 +680,7 @@ function toggleListings(markers, map) {
     var listingButton = $('#toggle-listings');
     if (listingButton.hasClass('selected')) {
         listingButton.removeClass('selected');
-        hideMarkers(markers);
+        Utilities.hideMarkers(markers);
     }
     else {
         listingButton.addClass('selected');
@@ -767,14 +772,14 @@ var DirectionsPanel = (function () {
     function DirectionsPanel() {
     }
     DirectionsPanel.displayDirections = function (origin, markers, directionsDisplay) {
-        hideMarkers(markers);
+        Utilities.hideMarkers(markers);
         var directionsService = new google.maps.DirectionsService();
         var destinationAddress = $('#search-within-time-text').val();
         var mode = $('#mode').val();
         directionsService.route({
             origin: origin,
             destination: destinationAddress,
-            travelMode: getTravelMode(mode)
+            travelMode: Utilities.getTravelMode(mode)
         }, function (response, status) {
             if (status === google.maps.DirectionsStatus.OK) {
                 if (directionsDisplay)

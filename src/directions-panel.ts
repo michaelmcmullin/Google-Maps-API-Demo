@@ -16,7 +16,7 @@ class DirectionsPanel {
     markers: MarkerWithInfoWindow[],
     directionsDisplay: google.maps.DirectionsRenderer
   ) : void {
-    hideMarkers(markers);
+    Utilities.hideMarkers(markers);
     var directionsService = new google.maps.DirectionsService();
     // Get the destination address from the user entered value.
     var destinationAddress = $('#search-within-time-text').val();
@@ -27,7 +27,7 @@ class DirectionsPanel {
         origin: origin,
         // The destination is user entered address.
         destination: destinationAddress,
-        travelMode: getTravelMode(mode)
+        travelMode: Utilities.getTravelMode(mode)
       }, function(response, status) {
         if (status === google.maps.DirectionsStatus.OK) {
           if (directionsDisplay) DirectionsPanel.clearExistingDirections(directionsDisplay);

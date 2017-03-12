@@ -54,7 +54,7 @@ class DrawingTools {
       // If there is, get rid of it and remove the markers
       if (DrawingTools.polygon) {
         DrawingTools.polygon.setMap(null);
-        hideMarkers(DrawingTools.markers);
+        Utilities.hideMarkers(DrawingTools.markers);
       }
 
       // Switching the drawing mode to the HAND (i.e., no longer drawing).

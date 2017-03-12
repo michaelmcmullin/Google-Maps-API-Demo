@@ -132,7 +132,7 @@ function toggleListings(
   var listingButton = $('#toggle-listings');
   if (listingButton.hasClass('selected')) {
     listingButton.removeClass('selected');
-    hideMarkers(markers);
+    Utilities.hideMarkers(markers);
   } else {
     listingButton.addClass('selected');
     showListings(markers, map);

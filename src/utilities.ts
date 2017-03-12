@@ -1,27 +1,29 @@
-// Convert a string representation of a travel mode to a 
-// correctly typed TravelMode enumeration.
-function getTravelMode(mode: string) {
-  switch(mode.toUpperCase())
-  {
-    case 'DRIVING':
-      return google.maps.TravelMode.DRIVING;
-    case 'BICYCLING':
-      return google.maps.TravelMode.BICYCLING;
-    case 'TRANSIT':
-      return google.maps.TravelMode.TRANSIT;
-    case 'WALKING':
-      return google.maps.TravelMode.WALKING;
+class Utilities {
+  // Convert a string representation of a travel mode to a 
+  // correctly typed TravelMode enumeration.
+  static getTravelMode(mode: string) {
+    switch(mode.toUpperCase())
+    {
+      case 'DRIVING':
+        return google.maps.TravelMode.DRIVING;
+      case 'BICYCLING':
+        return google.maps.TravelMode.BICYCLING;
+      case 'TRANSIT':
+        return google.maps.TravelMode.TRANSIT;
+      case 'WALKING':
+        return google.maps.TravelMode.WALKING;
+    }
   }
-}
 
-// This function will loop through the listings and hide them all.
-function hideMarkers(markers: MarkerWithInfoWindow[]) {
-  for (var i = 0; i < markers.length; i++) {
-    if (markers[i].infowindow !== null)
-      markers[i].infowindow.close();
-    removeInfoWindow();
-    markers[i].infowindow = null;
-    markers[i].marker.setMap(null);
+  // This function will loop through the listings and hide them all.
+  static hideMarkers(markers: MarkerWithInfoWindow[]) {
+    for (var i = 0; i < markers.length; i++) {
+      if (markers[i].infowindow !== null)
+        markers[i].infowindow.close();
+      removeInfoWindow();
+      markers[i].infowindow = null;
+      markers[i].marker.setMap(null);
+    }
   }
 }
 

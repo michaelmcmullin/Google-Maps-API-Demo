@@ -21,7 +21,7 @@ class TimeSearch {
     if (address === '') {
       window.alert('You must enter an address.');
     } else {
-      hideMarkers(markers);
+      Utilities.hideMarkers(markers);
       // Use the distance matrix service to calculate the duration of the
       // routes between all our markers, and the destination address entered
       // by the user. Then put all the origins into an origin matrix.
@@ -37,7 +37,7 @@ class TimeSearch {
       distanceMatrixService.getDistanceMatrix({
           origins: origins,
           destinations: [destination],
-          travelMode: getTravelMode(mode),
+          travelMode: Utilities.getTravelMode(mode),
           unitSystem: google.maps.UnitSystem.IMPERIAL,
         }, function(response, status) {
           if (status !== google.maps.DistanceMatrixStatus.OK) {
