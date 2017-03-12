@@ -5,7 +5,7 @@ class TimeSearch {
   static searchWithinTime(
     markers: MarkerWithInfoWindow[],
     directionsDisplay: google.maps.DirectionsRenderer
-  ) {
+  ) : void {
     // Initialize the distance matrix service.
     var distanceMatrixService = new google.maps.DistanceMatrixService();
     var address = $('#search-within-time-text').val();
@@ -49,7 +49,7 @@ class TimeSearch {
     response: google.maps.DistanceMatrixResponse,
     markers: MarkerWithInfoWindow[],
     directionsDisplay: google.maps.DirectionsRenderer
-  ) {
+  ) : void {
     var maxDuration = $('#max-duration').val();
     var origins = response.originAddresses;
     var destinations = response.destinationAddresses;
@@ -88,8 +88,6 @@ class TimeSearch {
             markers[i].infowindow.open(MarkerWithInfoWindow.map, markers[i].marker);
             // Put this in so that this small window closes if the user clicks
             // the marker, when the big infowindow opens
-            //markers[i].infowindow = infowindow;
-            //google.maps.event.addListener(markers[i], 'click', function() { this.infowindow.close(); });
             TimeSearch.removeGetRouteInfowindow(markers[i]);
             TimeSearch.attachGetRouteEvent($('#btn_ViewRoute_' + i)[0], origin, markers, directionsDisplay);
           }
@@ -105,7 +103,7 @@ class TimeSearch {
     origin: string,
     markers: MarkerWithInfoWindow[],
     directionsDisplay: google.maps.DirectionsRenderer
-  ) {
+  ) : void {
     google.maps.event.addDomListener(button, 'click',
         function() { DirectionsPanel.displayDirections(origin, markers, directionsDisplay) });
   }
@@ -114,7 +112,7 @@ class TimeSearch {
   // associated marker is clicked.
   static removeGetRouteInfowindow(
     marker: MarkerWithInfoWindow
-  ) {
+  ) : void {
     google.maps.event.addListener(marker.marker, 'click', function() { marker.infowindow.close(); });
   }
 }
