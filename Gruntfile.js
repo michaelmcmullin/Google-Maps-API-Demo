@@ -27,6 +27,7 @@ module.exports = function(grunt) {
       default:{
         src: [
           'src/utilities.ts',
+          'src/MarkerWithInfoWindow.ts',
           'src/init.ts',
           'src/main.ts',
           'src/listings.ts',
@@ -45,6 +46,20 @@ module.exports = function(grunt) {
           target: 'es5' //or es3 
       }
     },
+    tslint: {
+      options: {
+          configuration: "src/tslint.json",
+          // If set to true, tslint errors will be reported, but not fail the task 
+          // If set to false, tslint errors will be reported, and the task will fail 
+          force: false,
+          fix: false
+      },
+      files: {
+          src: [
+              "src/*.ts"
+          ]
+      }
+    },
     watch: {
       css: {
         files: '**/*.scss',
@@ -56,6 +71,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-ts');
+  grunt.loadNpmTasks("grunt-tslint");
 	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.registerTask('default',['sass', 'cssmin', 'ts']);
+	grunt.registerTask('default',['sass', 'cssmin', 'ts', 'tslint']);
 }

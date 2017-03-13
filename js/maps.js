@@ -13,24 +13,27 @@ var Utilities = (function () {
     }
     Utilities.getTravelMode = function (mode) {
         switch (mode.toUpperCase()) {
-            case 'DRIVING':
+            case "DRIVING":
                 return google.maps.TravelMode.DRIVING;
-            case 'BICYCLING':
+            case "BICYCLING":
                 return google.maps.TravelMode.BICYCLING;
-            case 'TRANSIT':
+            case "TRANSIT":
                 return google.maps.TravelMode.TRANSIT;
-            case 'WALKING':
+            case "WALKING":
                 return google.maps.TravelMode.WALKING;
+            default:
+                return null;
         }
-        return null;
     };
     Utilities.hideMarkers = function (markers) {
-        for (var i = 0; i < markers.length; i++) {
-            if (markers[i].infowindow !== null)
-                markers[i].infowindow.close();
+        for (var _i = 0, markers_1 = markers; _i < markers_1.length; _i++) {
+            var marker = markers_1[_i];
+            if (marker.infowindow !== null) {
+                marker.infowindow.close();
+            }
             removeInfoWindow();
-            markers[i].infowindow = null;
-            markers[i].marker.setMap(null);
+            marker.infowindow = null;
+            marker.marker.setMap(null);
         }
     };
     return Utilities;
