@@ -9,43 +9,43 @@ class TimeSearch {
    * @param markers - An array of markers for all listings.
    * @param directionsDisplay - Helps render directions on the map.
    */
-  static searchWithinTime(
+  public static searchWithinTime(
     markers: MarkerWithInfoWindow[],
-    directionsDisplay: google.maps.DirectionsRenderer
-  ) : void {
+    directionsDisplay: google.maps.DirectionsRenderer,
+  ): void {
     // Initialize the distance matrix service.
-    var distanceMatrixService = new google.maps.DistanceMatrixService();
-    var address = $('#search-within-time-text').val();
+    const distanceMatrixService = new google.maps.DistanceMatrixService();
+    const address = $("#search-within-time-text").val();
 
     // Check to make sure the place entered isn't blank.
-    if (address === '') {
-      window.alert('You must enter an address.');
+    if (address === "") {
+      window.alert("You must enter an address.");
     } else {
       Utilities.hideMarkers(markers);
       // Use the distance matrix service to calculate the duration of the
       // routes between all our markers, and the destination address entered
       // by the user. Then put all the origins into an origin matrix.
-      var origins = [];
-      for (var i = 0; i < markers.length; i++) {
+      const origins = [];
+      for (let i = 0; i < markers.length; i++) {
         origins[i] = markers[i].marker.getPosition();
       }
-      var destination = address;
-      var mode: string = $('#mode').val();
+      const destination = address;
+      const mode: string = $("#mode").val();
 
       // Now that both the origins and destination are defined, get all the
       // info for the distances between them.
       distanceMatrixService.getDistanceMatrix({
-          origins: origins,
           destinations: [destination],
+          origins,
           travelMode: Utilities.getTravelMode(mode),
           unitSystem: google.maps.UnitSystem.IMPERIAL,
-        }, function(response, status) {
+        }, (response, status) => {
           if (status !== google.maps.DistanceMatrixStatus.OK) {
-            window.alert('Error was: ' + status);
+            window.alert("Error was: " + status);
           } else {
             TimeSearch.displayMarkersWithinTime(response, markers, directionsDisplay);
           }
-        }
+        },
       );
     }
   }
@@ -60,56 +60,57 @@ class TimeSearch {
    * @param markers - An array of markers for all listings.
    * @param directionsDisplay - Helps render directions on the map.
    */
-  static displayMarkersWithinTime(
+  public static displayMarkersWithinTime(
     response: google.maps.DistanceMatrixResponse,
     markers: MarkerWithInfoWindow[],
-    directionsDisplay: google.maps.DirectionsRenderer
-  ) : void {
-    var maxDuration = $('#max-duration').val();
-    var origins = response.originAddresses;
-    var destinations = response.destinationAddresses;
+    directionsDisplay: google.maps.DirectionsRenderer,
+  ): void {
+    const maxDuration = $("#max-duration").val();
+    const origins = response.originAddresses;
+    const destinations = response.destinationAddresses;
     // Parse through the results, and get the distance and duration of each.
     // Because there might be  multiple origins and destinations we have a nested loop
     // Then, make sure at least 1 result was found.
-    var atLeastOne = false;
-    for (var i = 0; i < origins.length; i++) {
-      var results = response.rows[i].elements;
-      for (var j = 0; j < results.length; j++) {
-        var element = results[j];
-        if (element.status === google.maps.DistanceMatrixElementStatus.OK) {
+    let atLeastOne = false;
+    for (let i = 0; i < origins.length; i++) {
+      const results = response.rows[i].elements;
+      // for (let j = 0; j < results.length; j++) {
+      for (const result of results) {
+        if (result.status === google.maps.DistanceMatrixElementStatus.OK) {
           // The distance is returned in feet, but the TEXT is in miles. If we wanted to switch
           // the function to show markers within a user-entered DISTANCE, we would need the
           // value for distance, but for now we only need the text.
-          var distanceText = element.distance.text;
+          const distanceText = result.distance.text;
 
           // Duration value is given in seconds so we make it MINUTES. We need both the value
           // and the text.
-          var duration = element.duration.value / 60;
-          var durationText = element.duration.text;
+          const duration = result.duration.value / 60;
+          const durationText = result.duration.text;
           if (duration <= maxDuration) {
-            //the origin [i] should = the markers[i]
+            // the origin [i] should = the markers[i]
             markers[i].marker.setMap(MarkerWithInfoWindow.map);
             atLeastOne = true;
 
             // Create a mini infowindow to open immediately and contain the
             // distance and duration
-            if (markers[i].infowindow === null)
+            if (markers[i].infowindow === null) {
               markers[i].infowindow = new google.maps.InfoWindow({
-                  content: durationText + ' away, ' + distanceText +
-                    '<div><input type="button" value=\"View Route\" id=\"btn_ViewRoute_' + i + '\"></input></div>'
-                }
+                  content: durationText + " away, " + distanceText +
+                    "<div><input type=\"button\" value=\"View Route\" id=\"btn_ViewRoute_" + i + "\"></input></div>",
+                },
               );
-            var origin = origins[i];
+            }
+            const origin = origins[i];
             markers[i].infowindow.open(MarkerWithInfoWindow.map, markers[i].marker);
             // Put this in so that this small window closes if the user clicks
             // the marker, when the big infowindow opens
             TimeSearch.removeGetRouteInfowindow(markers[i]);
-            TimeSearch.attachGetRouteEvent($('#btn_ViewRoute_' + i)[0], origin, markers, directionsDisplay);
+            TimeSearch.attachGetRouteEvent($("#btn_ViewRoute_" + i)[0], origin, markers, directionsDisplay);
           }
         }
       }
     }
-    if (!atLeastOne) { window.alert('We could not find any locations within that distance!'); }
+    if (!atLeastOne) { window.alert("We could not find any locations within that distance!"); }
   }
 
   /**
@@ -120,14 +121,15 @@ class TimeSearch {
    * @param markers - An array of markers for all listings.
    * @param directionsDisplay - Helps render directions on the map.
    */
-  static attachGetRouteEvent(
+  public static attachGetRouteEvent(
     button: HTMLElement,
     origin: string,
     markers: MarkerWithInfoWindow[],
-    directionsDisplay: google.maps.DirectionsRenderer
-  ) : void {
-    google.maps.event.addDomListener(button, 'click',
-        function() { DirectionsPanel.displayDirections(origin, markers, directionsDisplay) });
+    directionsDisplay: google.maps.DirectionsRenderer,
+  ): void {
+    google.maps.event.addDomListener(button, "click",
+        () => { DirectionsPanel.displayDirections(origin, markers, directionsDisplay); },
+    );
   }
 
   /**
@@ -135,9 +137,9 @@ class TimeSearch {
    * associated marker is clicked.
    * @param marker : The marker whose infowindow should be closed.
    */
-  static removeGetRouteInfowindow(
-    marker: MarkerWithInfoWindow
-  ) : void {
-    google.maps.event.addListener(marker.marker, 'click', function() { marker.infowindow.close(); });
+  public static removeGetRouteInfowindow(
+    marker: MarkerWithInfoWindow,
+  ): void {
+    google.maps.event.addListener(marker.marker, "click", () => { marker.infowindow.close(); });
   }
 }

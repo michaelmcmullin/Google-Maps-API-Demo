@@ -185,18 +185,18 @@ var DrawingTools = (function () {
             drawingMode: google.maps.drawing.OverlayType.POLYGON,
             drawingControl: false
         });
-        $(DrawingTools.handButtonId).on('click', function () {
+        $(DrawingTools.handButtonId).on("click", function () {
             DrawingTools.disableDrawing();
         });
-        $(DrawingTools.polygonButtonId).on('click', function () {
+        $(DrawingTools.polygonButtonId).on("click", function () {
             DrawingTools.drawingMode = google.maps.drawing.OverlayType.POLYGON;
             DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(this));
         });
-        $(DrawingTools.rectangleButtonId).on('click', function () {
+        $(DrawingTools.rectangleButtonId).on("click", function () {
             DrawingTools.drawingMode = google.maps.drawing.OverlayType.RECTANGLE;
             DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(this));
         });
-        $(DrawingTools.circleButtonId).on('click', function () {
+        $(DrawingTools.circleButtonId).on("click", function () {
             DrawingTools.drawingMode = google.maps.drawing.OverlayType.CIRCLE;
             DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(this));
         });
@@ -304,18 +304,11 @@ var PlaceMarker = (function (_super) {
     function PlaceMarker() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    PlaceMarker.prototype.setAsActiveInfoWindow = function () {
-        if (PlaceMarker.activeInfoWindow) {
-            PlaceMarker.activeInfoWindow.close();
-        }
-        PlaceMarker.currentPhoto = 0;
-        PlaceMarker.activeInfoWindow = this.infowindow;
-    };
     PlaceMarker.searchBoxPlaces = function (searchBox, placeMarkers) {
         Utilities.hideMarkers(placeMarkers);
         var places = searchBox.getPlaces();
         if (places.length === 0) {
-            window.alert('We did not find any places matching that search!');
+            window.alert("We did not find any places matching that search!");
         }
         else {
             PlaceMarker.createMarkersForPlaces(places, placeMarkers);
@@ -326,8 +319,8 @@ var PlaceMarker = (function (_super) {
         Utilities.hideMarkers(placeMarkers);
         var placesService = new google.maps.places.PlacesService(MarkerWithInfoWindow.map);
         placesService.textSearch({
-            query: $('#places-search').val(),
-            bounds: bounds
+            bounds: bounds,
+            query: $("#places-search").val(),
         }, function (results, status) {
             if (status === google.maps.places.PlacesServiceStatus.OK) {
                 PlaceMarker.createMarkersForPlaces(results, placeMarkers);
@@ -336,20 +329,20 @@ var PlaceMarker = (function (_super) {
     };
     PlaceMarker.createMarkersForPlaces = function (places, placeMarkers) {
         var bounds = new google.maps.LatLngBounds();
-        for (var i = 0; i < places.length; i++) {
-            var place = places[i];
+        for (var _i = 0, places_1 = places; _i < places_1.length; _i++) {
+            var place = places_1[_i];
             var icon = {
-                url: place.icon,
-                size: new google.maps.Size(35, 35),
-                origin: new google.maps.Point(0, 0),
                 anchor: new google.maps.Point(15, 34),
-                scaledSize: new google.maps.Size(25, 25)
+                origin: new google.maps.Point(0, 0),
+                scaledSize: new google.maps.Size(25, 25),
+                size: new google.maps.Size(35, 35),
+                url: place.icon,
             };
             var marker = new google.maps.Marker({
-                map: MarkerWithInfoWindow.map,
                 icon: icon,
+                map: MarkerWithInfoWindow.map,
+                position: place.geometry.location,
                 title: place.name,
-                position: place.geometry.location
             });
             var placeInfoWindow = new google.maps.InfoWindow();
             var placeMarker = new PlaceMarker();
@@ -366,52 +359,52 @@ var PlaceMarker = (function (_super) {
         }
         MarkerWithInfoWindow.map.fitBounds(bounds);
     };
-    PlaceMarker.addPlaceMarkerEvents = function (placeMarker, place_id) {
-        placeMarker.marker.addListener('click', function () {
-            PlaceMarker.getPlacesDetails(placeMarker, place_id);
+    PlaceMarker.addPlaceMarkerEvents = function (placeMarker, placeId) {
+        placeMarker.marker.addListener("click", function () {
+            PlaceMarker.getPlacesDetails(placeMarker, placeId);
         });
     };
-    PlaceMarker.getPlacesDetails = function (placeMarker, place_id) {
+    PlaceMarker.getPlacesDetails = function (placeMarker, placeId) {
         var service = new google.maps.places.PlacesService(MarkerWithInfoWindow.map);
         service.getDetails({
-            placeId: place_id
+            placeId: placeId,
         }, function (place, status) {
             if (status === google.maps.places.PlacesServiceStatus.OK) {
                 placeMarker.setAsActiveInfoWindow();
-                var innerHTML = '<div>';
+                var innerHTML = "<div>";
                 if (place.name) {
-                    innerHTML += '<strong>' + place.name + '</strong>';
+                    innerHTML += "<strong>" + place.name + "</strong>";
                 }
                 if (place.formatted_address) {
-                    innerHTML += '<br>' + place.formatted_address;
+                    innerHTML += "<br>" + place.formatted_address;
                 }
                 if (place.formatted_phone_number) {
-                    innerHTML += '<br>' + place.formatted_phone_number;
+                    innerHTML += "<br>" + place.formatted_phone_number;
                 }
                 if (place.opening_hours) {
-                    innerHTML += '<br><br><strong>Hours:</strong><br>' +
-                        place.opening_hours.weekday_text[0] + '<br>' +
-                        place.opening_hours.weekday_text[1] + '<br>' +
-                        place.opening_hours.weekday_text[2] + '<br>' +
-                        place.opening_hours.weekday_text[3] + '<br>' +
-                        place.opening_hours.weekday_text[4] + '<br>' +
-                        place.opening_hours.weekday_text[5] + '<br>' +
+                    innerHTML += "<br><br><strong>Hours:</strong><br>" +
+                        place.opening_hours.weekday_text[0] + "<br>" +
+                        place.opening_hours.weekday_text[1] + "<br>" +
+                        place.opening_hours.weekday_text[2] + "<br>" +
+                        place.opening_hours.weekday_text[3] + "<br>" +
+                        place.opening_hours.weekday_text[4] + "<br>" +
+                        place.opening_hours.weekday_text[5] + "<br>" +
                         place.opening_hours.weekday_text[6];
                 }
                 if (place.photos) {
-                    innerHTML += '<br><br><img id="' + place.place_id + '_photo" src="' + place.photos[0].getUrl({ maxHeight: 100, maxWidth: 200 }) + '">';
+                    innerHTML += "<br><br><img id=\"" + place.place_id + "_photo\" src=\"" + place.photos[0].getUrl({ maxHeight: 100, maxWidth: 200 }) + "\">";
                     if (place.photos.length > 1) {
-                        innerHTML += '<br>';
-                        innerHTML += place.photos.length + ' photos: ';
-                        innerHTML += '<a onclick="PlaceMarker.previousPhoto()">Prev</a> ';
-                        innerHTML += '<a onclick="PlaceMarker.nextPhoto()">Next</a>';
+                        innerHTML += "<br>";
+                        innerHTML += place.photos.length + " photos: ";
+                        innerHTML += "<a onclick=\"PlaceMarker.previousPhoto()\">Prev</a> ";
+                        innerHTML += "<a onclick=\"PlaceMarker.nextPhoto()\">Next</a>";
                     }
                 }
-                innerHTML += '</div>';
+                innerHTML += "</div>";
                 PlaceMarker.activeInfoWindow.setContent(innerHTML);
                 PlaceMarker.currentPlace = place;
                 PlaceMarker.activeInfoWindow.open(MarkerWithInfoWindow.map, placeMarker.marker);
-                PlaceMarker.activeInfoWindow.addListener('closeclick', function () {
+                PlaceMarker.activeInfoWindow.addListener("closeclick", function () {
                     placeMarker.marker = null;
                     PlaceMarker.activeInfoWindow = null;
                     PlaceMarker.currentPlace = null;
@@ -424,9 +417,10 @@ var PlaceMarker = (function (_super) {
         if (PlaceMarker.currentPlace) {
             var totalPhotos = PlaceMarker.currentPlace.photos.length;
             var next = PlaceMarker.currentPhoto + 1;
-            if (next >= totalPhotos)
+            if (next >= totalPhotos) {
                 next = 0;
-            $('#' + PlaceMarker.currentPlace.place_id + '_photo').attr('src', PlaceMarker.currentPlace.photos[next].getUrl({ maxHeight: 100, maxWidth: 200 }));
+            }
+            $("#" + PlaceMarker.currentPlace.place_id + "_photo").attr("src", PlaceMarker.currentPlace.photos[next].getUrl({ maxHeight: 100, maxWidth: 200 }));
             PlaceMarker.currentPhoto = next;
         }
     };
@@ -434,11 +428,19 @@ var PlaceMarker = (function (_super) {
         if (PlaceMarker.currentPlace) {
             var totalPhotos = PlaceMarker.currentPlace.photos.length;
             var next = PlaceMarker.currentPhoto - 1;
-            if (next < 0)
+            if (next < 0) {
                 next = totalPhotos - 1;
-            $('#' + PlaceMarker.currentPlace.place_id + '_photo').attr('src', PlaceMarker.currentPlace.photos[next].getUrl({ maxHeight: 100, maxWidth: 200 }));
+            }
+            $("#" + PlaceMarker.currentPlace.place_id + "_photo").attr("src", PlaceMarker.currentPlace.photos[next].getUrl({ maxHeight: 100, maxWidth: 200 }));
             PlaceMarker.currentPhoto = next;
         }
+    };
+    PlaceMarker.prototype.setAsActiveInfoWindow = function () {
+        if (PlaceMarker.activeInfoWindow) {
+            PlaceMarker.activeInfoWindow.close();
+        }
+        PlaceMarker.currentPhoto = 0;
+        PlaceMarker.activeInfoWindow = this.infowindow;
     };
     return PlaceMarker;
 }(MarkerWithInfoWindow));
@@ -449,9 +451,9 @@ var TimeSearch = (function () {
     }
     TimeSearch.searchWithinTime = function (markers, directionsDisplay) {
         var distanceMatrixService = new google.maps.DistanceMatrixService();
-        var address = $('#search-within-time-text').val();
-        if (address === '') {
-            window.alert('You must enter an address.');
+        var address = $("#search-within-time-text").val();
+        if (address === "") {
+            window.alert("You must enter an address.");
         }
         else {
             Utilities.hideMarkers(markers);
@@ -460,15 +462,15 @@ var TimeSearch = (function () {
                 origins[i] = markers[i].marker.getPosition();
             }
             var destination = address;
-            var mode = $('#mode').val();
+            var mode = $("#mode").val();
             distanceMatrixService.getDistanceMatrix({
-                origins: origins,
                 destinations: [destination],
+                origins: origins,
                 travelMode: Utilities.getTravelMode(mode),
                 unitSystem: google.maps.UnitSystem.IMPERIAL,
             }, function (response, status) {
                 if (status !== google.maps.DistanceMatrixStatus.OK) {
-                    window.alert('Error was: ' + status);
+                    window.alert("Error was: " + status);
                 }
                 else {
                     TimeSearch.displayMarkersWithinTime(response, markers, directionsDisplay);
@@ -477,43 +479,44 @@ var TimeSearch = (function () {
         }
     };
     TimeSearch.displayMarkersWithinTime = function (response, markers, directionsDisplay) {
-        var maxDuration = $('#max-duration').val();
+        var maxDuration = $("#max-duration").val();
         var origins = response.originAddresses;
         var destinations = response.destinationAddresses;
         var atLeastOne = false;
         for (var i = 0; i < origins.length; i++) {
             var results = response.rows[i].elements;
-            for (var j = 0; j < results.length; j++) {
-                var element = results[j];
-                if (element.status === google.maps.DistanceMatrixElementStatus.OK) {
-                    var distanceText = element.distance.text;
-                    var duration = element.duration.value / 60;
-                    var durationText = element.duration.text;
+            for (var _i = 0, results_1 = results; _i < results_1.length; _i++) {
+                var result = results_1[_i];
+                if (result.status === google.maps.DistanceMatrixElementStatus.OK) {
+                    var distanceText = result.distance.text;
+                    var duration = result.duration.value / 60;
+                    var durationText = result.duration.text;
                     if (duration <= maxDuration) {
                         markers[i].marker.setMap(MarkerWithInfoWindow.map);
                         atLeastOne = true;
-                        if (markers[i].infowindow === null)
+                        if (markers[i].infowindow === null) {
                             markers[i].infowindow = new google.maps.InfoWindow({
-                                content: durationText + ' away, ' + distanceText +
-                                    '<div><input type="button" value=\"View Route\" id=\"btn_ViewRoute_' + i + '\"></input></div>'
+                                content: durationText + " away, " + distanceText +
+                                    "<div><input type=\"button\" value=\"View Route\" id=\"btn_ViewRoute_" + i + "\"></input></div>",
                             });
+                        }
                         var origin = origins[i];
                         markers[i].infowindow.open(MarkerWithInfoWindow.map, markers[i].marker);
                         TimeSearch.removeGetRouteInfowindow(markers[i]);
-                        TimeSearch.attachGetRouteEvent($('#btn_ViewRoute_' + i)[0], origin, markers, directionsDisplay);
+                        TimeSearch.attachGetRouteEvent($("#btn_ViewRoute_" + i)[0], origin, markers, directionsDisplay);
                     }
                 }
             }
         }
         if (!atLeastOne) {
-            window.alert('We could not find any locations within that distance!');
+            window.alert("We could not find any locations within that distance!");
         }
     };
     TimeSearch.attachGetRouteEvent = function (button, origin, markers, directionsDisplay) {
-        google.maps.event.addDomListener(button, 'click', function () { DirectionsPanel.displayDirections(origin, markers, directionsDisplay); });
+        google.maps.event.addDomListener(button, "click", function () { DirectionsPanel.displayDirections(origin, markers, directionsDisplay); });
     };
     TimeSearch.removeGetRouteInfowindow = function (marker) {
-        google.maps.event.addListener(marker.marker, 'click', function () { marker.infowindow.close(); });
+        google.maps.event.addListener(marker.marker, "click", function () { marker.infowindow.close(); });
     };
     return TimeSearch;
 }());
@@ -522,21 +525,21 @@ var ZoomSearch = (function () {
     }
     ZoomSearch.zoomToArea = function (map) {
         var geocoder = new google.maps.Geocoder();
-        var address = $('#zoom-to-area-text').val();
-        if (address === '') {
-            window.alert('You must enter an area, or address.');
+        var address = $("#zoom-to-area-text").val();
+        if (address === "") {
+            window.alert("You must enter an area, or address.");
         }
         else {
             geocoder.geocode({
                 address: address,
-                componentRestrictions: { locality: 'New York' }
+                componentRestrictions: { locality: "New York" },
             }, function (results, status) {
-                if (status == google.maps.GeocoderStatus.OK) {
+                if (status === google.maps.GeocoderStatus.OK) {
                     map.setCenter(results[0].geometry.location);
                     map.setZoom(15);
                 }
                 else {
-                    window.alert('We could not find that location - try entering a more specific place.');
+                    window.alert("We could not find that location - try entering a more specific place.");
                 }
             });
         }
@@ -552,13 +555,13 @@ var TransportLayers = (function () {
         TransportLayers.transitLayer = new google.maps.TransitLayer();
         TransportLayers.bikeLayer = new google.maps.BicyclingLayer();
         TransportLayers.hideLayers();
-        $(TransportLayers.trafficButtonId).on('click', function () {
+        $(TransportLayers.trafficButtonId).on("click", function () {
             TransportLayers.toggleLayer(TransportLayers.trafficLayer, TransportLayers.trafficButtonId);
         });
-        $(TransportLayers.transitButtonId).on('click', function () {
+        $(TransportLayers.transitButtonId).on("click", function () {
             TransportLayers.toggleLayer(TransportLayers.transitLayer, TransportLayers.transitButtonId);
         });
-        $(TransportLayers.bicycleButtonId).on('click', function () {
+        $(TransportLayers.bicycleButtonId).on("click", function () {
             TransportLayers.toggleLayer(TransportLayers.bikeLayer, TransportLayers.bicycleButtonId);
         });
     };
@@ -566,26 +569,26 @@ var TransportLayers = (function () {
         TransportLayers.trafficLayer.setMap(null);
         TransportLayers.transitLayer.setMap(null);
         TransportLayers.bikeLayer.setMap(null);
-        $(TransportLayers.trafficButtonId).removeClass('selected');
-        $(TransportLayers.transitButtonId).removeClass('selected');
-        $(TransportLayers.bicycleButtonId).removeClass('selected');
+        $(TransportLayers.trafficButtonId).removeClass("selected");
+        $(TransportLayers.transitButtonId).removeClass("selected");
+        $(TransportLayers.bicycleButtonId).removeClass("selected");
     };
     TransportLayers.toggleLayer = function (layer, buttonId) {
         if (layer.getMap() === null) {
             TransportLayers.hideLayers();
             layer.setMap(TransportLayers.map);
-            $(buttonId).addClass('selected');
+            $(buttonId).addClass("selected");
         }
         else {
             layer.setMap(null);
-            $(buttonId).removeClass('selected');
+            $(buttonId).removeClass("selected");
         }
     };
     return TransportLayers;
 }());
-TransportLayers.trafficButtonId = '#toggle-traffic';
-TransportLayers.transitButtonId = '#toggle-transit';
-TransportLayers.bicycleButtonId = '#toggle-bicycling';
+TransportLayers.trafficButtonId = "#toggle-traffic";
+TransportLayers.transitButtonId = "#toggle-transit";
+TransportLayers.bicycleButtonId = "#toggle-bicycling";
 var locations = [
     { title: 'Park Ave Penthouse', location: { lat: 40.7713024, lng: -73.9632393 } },
     { title: 'Chelsea Loft', location: { lat: 40.7444883, lng: -73.9949465 } },
@@ -624,7 +627,7 @@ var ListingMarker = (function (_super) {
         return markerImage;
     };
     ListingMarker.prototype.addMarkerEvents = function (marker, infowindow) {
-        this.marker.addListener('click', function () {
+        this.marker.addListener("click", function () {
             removeInfoWindow();
             ListingMarker.currentMarker = marker;
             ListingMarker.currentInfoWindow = infowindow;
@@ -696,27 +699,27 @@ var SearchPanel = (function () {
     function SearchPanel() {
     }
     SearchPanel.Initialise = function (map, markers, placeMarkers, directionsDisplay) {
-        $(SearchPanel.searchButton).on('click', function () {
+        $(SearchPanel.searchButton).on("click", function () {
             $(SearchPanel.searchPanel).slideToggle("fast");
         });
         var timeAutocomplete = new google.maps.places.Autocomplete($(SearchPanel.searchTimeText)[0]);
         var zoomAutocomplete = new google.maps.places.Autocomplete($(SearchPanel.searchZoomText)[0]);
-        zoomAutocomplete.bindTo('bounds', map);
+        zoomAutocomplete.bindTo("bounds", map);
         var searchBox = new google.maps.places.SearchBox($(SearchPanel.searchPlacesText)[0]);
         searchBox.setBounds(map.getBounds());
-        $(SearchPanel.searchZoomButton).on('click', function () {
+        $(SearchPanel.searchZoomButton).on("click", function () {
             ZoomSearch.zoomToArea(map);
             SearchPanel.hide();
         });
-        $(SearchPanel.searchTimeButton).on('click', function () {
+        $(SearchPanel.searchTimeButton).on("click", function () {
             TimeSearch.searchWithinTime(markers, directionsDisplay);
             SearchPanel.hide();
         });
-        searchBox.addListener('places_changed', function () {
-            PlaceMarker.searchBoxPlaces(this, placeMarkers);
+        searchBox.addListener("places_changed", function () {
+            PlaceMarker.searchBoxPlaces(searchBox, placeMarkers);
             SearchPanel.hide();
         });
-        $(SearchPanel.searchPlacesButton).on('click', function () {
+        $(SearchPanel.searchPlacesButton).on("click", function () {
             PlaceMarker.textSearchPlaces(placeMarkers);
             SearchPanel.hide();
         });
@@ -729,14 +732,14 @@ var SearchPanel = (function () {
     };
     return SearchPanel;
 }());
-SearchPanel.searchButton = '#toggle-search';
-SearchPanel.searchPanel = '#search-panel';
-SearchPanel.searchZoomText = '#zoom-to-area-text';
-SearchPanel.searchZoomButton = '#zoom-to-area';
-SearchPanel.searchTimeText = '#search-within-time-text';
-SearchPanel.searchTimeButton = '#search-within-time';
-SearchPanel.searchPlacesText = '#places-search';
-SearchPanel.searchPlacesButton = '#go-places';
+SearchPanel.searchButton = "#toggle-search";
+SearchPanel.searchPanel = "#search-panel";
+SearchPanel.searchZoomText = "#zoom-to-area-text";
+SearchPanel.searchZoomButton = "#zoom-to-area";
+SearchPanel.searchTimeText = "#search-within-time-text";
+SearchPanel.searchTimeButton = "#search-within-time";
+SearchPanel.searchPlacesText = "#places-search";
+SearchPanel.searchPlacesButton = "#go-places";
 function initMap() {
     var map;
     var markers = [];
@@ -748,21 +751,22 @@ function initMap() {
     TransportLayers.Initialise(map);
     DrawingTools.Initialise(map, markers);
     SearchPanel.Initialise(map, markers, placeMarkers, directionsDisplay);
-    for (var i = 0; i < locations.length; i++) {
-        var position = locations[i].location;
-        var title = locations[i].title;
+    for (var _i = 0, locations_1 = locations; _i < locations_1.length; _i++) {
+        var location_1 = locations_1[_i];
+        var position = location_1.location;
+        var title = location_1.title;
         var listingMarker = new ListingMarker(position, title);
         markers.push(listingMarker);
     }
-    $('#toggle-listings').on('click', function () {
+    $("#toggle-listings").on("click", function () {
         DrawingTools.clearPolygons();
         toggleListings(markers, map);
     });
-    $('#about-button').on('click', function () {
-        $('#about-modal').show();
+    $("#about-button").on("click", function () {
+        $("#about-modal").show();
     });
-    $('#about-modal .close').on('click', function () {
-        $('#about-modal').fadeOut();
+    $("#about-modal .close").on("click", function () {
+        $("#about-modal").fadeOut();
     });
 }
 var DirectionsPanel = (function () {
@@ -771,8 +775,8 @@ var DirectionsPanel = (function () {
     DirectionsPanel.displayDirections = function (origin, markers, directionsDisplay) {
         Utilities.hideMarkers(markers);
         var directionsService = new google.maps.DirectionsService();
-        var destinationAddress = $('#search-within-time-text').val();
-        var mode = $('#mode').val();
+        var destinationAddress = $("#search-within-time-text").val();
+        var mode = $("#mode").val();
         directionsService.route({
             origin: origin,
             destination: destinationAddress,
@@ -786,21 +790,21 @@ var DirectionsPanel = (function () {
                     directions: response,
                     draggable: true,
                     polylineOptions: {
-                        strokeColor: 'green'
+                        strokeColor: "green"
                     }
                 });
                 DirectionsPanel.populateDirectionsPanel(response);
-                $('#directions-panel').show(200);
+                $("#directions-panel").show(200);
                 SearchPanel.hide();
-                directionsDisplay.addListener('directions_changed', function () {
+                directionsDisplay.addListener("directions_changed", function () {
                     DirectionsPanel.populateDirectionsPanel(directionsDisplay.getDirections());
                 });
             }
             else {
-                window.alert('Directions request failed due to ' + status);
+                window.alert("Directions request failed due to " + status);
             }
         });
-        $('#directions-panel .close').on('click', function () { DirectionsPanel.removeDirectionsPanel(directionsDisplay, markers); });
+        $("#directions-panel .close").on("click", function () { DirectionsPanel.removeDirectionsPanel(directionsDisplay, markers); });
     };
     DirectionsPanel.clearExistingDirections = function (directionsDisplay) {
         directionsDisplay.setMap(null);
@@ -811,48 +815,48 @@ var DirectionsPanel = (function () {
         var duration = directions.routes[0].legs[0].duration;
         var origin = directions.routes[0].legs[0].start_address;
         var destination = directions.routes[0].legs[0].end_address;
-        var text = '<strong>From:</strong> ' + origin;
-        text += '<br><strong>To:</strong> ' + destination;
-        text += '<br><strong>Total Journey:</strong> ' + distance.text;
-        text += ' (about ' + duration.text + ')';
-        text += '<ul class="list-group top-row-margin">';
+        var text = "<strong>From:</strong> " + origin;
+        text += "<br><strong>To:</strong> " + destination;
+        text += "<br><strong>Total Journey:</strong> " + distance.text;
+        text += " (about " + duration.text + ")";
+        text += "<ul class=\"list-group top-row-margin\">";
         for (var i = 0; i < steps.length; i++) {
             var stepDistance = steps[i].distance;
             var stepDuration = steps[i].duration;
-            text += '<li class="list-group-item">' +
-                '<div class="row"><div class="col-md-2">' +
+            text += "<li class=\"list-group-item\">" +
+                "<div class=\"row\"><div class=\"col-md-2\">" +
                 DirectionsPanel.getManeuverIcon(steps[i].instructions) +
-                '</div>' +
-                '<div class="col-md-10">' +
+                "</div>" +
+                "<div class=\"col-md-10\">" +
                 steps[i].instructions +
-                '<div class="text-right"><small>Travel for ' +
+                "<div class=\"text-right\"><small>Travel for " +
                 stepDistance.text +
-                ' (' +
+                " (" +
                 stepDuration.text +
-                ')</small></div></div></div></li>';
+                ")</small></div></div></div></li>";
         }
-        text += '</ul>';
-        $('#directions').html(text);
+        text += "</ul>";
+        $("#directions").html(text);
     };
     DirectionsPanel.getManeuverIcon = function (instructions) {
-        var maneuver = '';
-        if (instructions.indexOf('Turn <b>left</b>') > -1)
-            maneuver = 'turn-left';
-        else if (instructions.indexOf('Turn <b>right</b>') > -1)
-            maneuver = 'turn-right';
+        var maneuver = "";
+        if (instructions.indexOf("Turn <b>left</b>") > -1)
+            maneuver = "turn-left";
+        else if (instructions.indexOf("Turn <b>right</b>") > -1)
+            maneuver = "turn-right";
         switch (maneuver) {
-            case 'turn-left':
-                return '<i class="material-icons" aria-hidden="true">arrow_back</i>';
-            case 'turn-right':
-                return '<i class="material-icons" aria-hidden="true">arrow_forward</i>';
+            case "turn-left":
+                return "<i class=\"material-icons\" aria-hidden=\"true\">arrow_back</i>";
+            case "turn-right":
+                return "<i class=\"material-icons\" aria-hidden=\"true\">arrow_forward</i>";
             default:
-                return '';
+                return "";
         }
     };
     DirectionsPanel.removeDirectionsPanel = function (directionsDisplay, markers) {
         if (directionsDisplay)
             DirectionsPanel.clearExistingDirections(directionsDisplay);
-        $('#directions-panel').hide(200);
+        $("#directions-panel").hide(200);
         TimeSearch.searchWithinTime(markers, directionsDisplay);
     };
     return DirectionsPanel;

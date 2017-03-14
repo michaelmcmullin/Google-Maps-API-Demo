@@ -2,25 +2,25 @@
  * Class handling the display and function of the drawing tools
  */
 class DrawingTools {
-  static map: google.maps.Map;
-  static drawingManager: google.maps.drawing.DrawingManager;
-  static drawingMode: google.maps.drawing.OverlayType;
-  static currentDrawingTool: JQuery = null;
-  static polygon: google.maps.Polygon|google.maps.Rectangle|google.maps.Circle = null;
-  static markers: MarkerWithInfoWindow[];
+  public static map: google.maps.Map;
+  public static drawingManager: google.maps.drawing.DrawingManager;
+  public static drawingMode: google.maps.drawing.OverlayType;
+  public static currentDrawingTool: JQuery = null;
+  public static polygon: google.maps.Polygon|google.maps.Rectangle|google.maps.Circle = null;
+  public static markers: MarkerWithInfoWindow[];
 
-  static readonly handButtonId: string = '#hand-tool';
-  static readonly polygonButtonId: string = '#toggle-drawing-polygon';
-  static readonly rectangleButtonId: string = '#toggle-drawing-rectangle';
-  static readonly circleButtonId: string = '#toggle-drawing-circle';
-  static readonly listingsButtonId: string = '#toggle-listings';
+  private static readonly handButtonId: string = '#hand-tool';
+  private static readonly polygonButtonId: string = '#toggle-drawing-polygon';
+  private static readonly rectangleButtonId: string = '#toggle-drawing-rectangle';
+  private static readonly circleButtonId: string = '#toggle-drawing-circle';
+  private static readonly listingsButtonId: string = '#toggle-listings';
 
   /**
    * Initial setup for drawing tools
    * @param map - The map to use for the drawing tools
    * @param markers - A list of markers containing available listings
    */
-  static Initialise(map: google.maps.Map, markers: MarkerWithInfoWindow[]) : void
+  static Initialise(map: google.maps.Map, markers: MarkerWithInfoWindow[]): void
   {
     DrawingTools.map = map;
     DrawingTools.markers = markers;
@@ -29,19 +29,19 @@ class DrawingTools {
       drawingControl: false
     });
 
-    $(DrawingTools.handButtonId).on('click', function() {
+    $(DrawingTools.handButtonId).on("click", function() {
       DrawingTools.disableDrawing();
     });
 
-    $(DrawingTools.polygonButtonId).on('click', function() {
+    $(DrawingTools.polygonButtonId).on("click", function() {
       DrawingTools.drawingMode = google.maps.drawing.OverlayType.POLYGON;
       DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(this));
     });
-    $(DrawingTools.rectangleButtonId).on('click', function() {
+    $(DrawingTools.rectangleButtonId).on("click", function() {
       DrawingTools.drawingMode = google.maps.drawing.OverlayType.RECTANGLE;
       DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(this));
     });
-    $(DrawingTools.circleButtonId).on('click', function() {
+    $(DrawingTools.circleButtonId).on("click", function() {
      DrawingTools.drawingMode = google.maps.drawing.OverlayType.CIRCLE;
      DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(this));
     });
@@ -104,7 +104,7 @@ class DrawingTools {
   /**
    * Deselect all drawing tool icons.
    */
-  static deselectDrawingTools() : void {
+  static deselectDrawingTools(): void {
     $(DrawingTools.listingsButtonId).removeClass('selected');
     $(DrawingTools.polygonButtonId).removeClass('selected');
     $(DrawingTools.rectangleButtonId).removeClass('selected');
@@ -114,7 +114,7 @@ class DrawingTools {
   /**
    * Disable drawing functions
    */
-  static disableDrawing() : void {
+  static disableDrawing(): void {
     DrawingTools.deselectDrawingTools();
     $(DrawingTools.handButtonId).addClass('selected');
     DrawingTools.clearPolygons();
@@ -123,7 +123,7 @@ class DrawingTools {
   /**
    * Clear any polygons on screen
    */
-  static clearPolygons() : void {
+  static clearPolygons(): void {
     if (DrawingTools.drawingManager.getMap()) {
       DrawingTools.drawingManager.setMap(null);
     }
@@ -137,9 +137,9 @@ class DrawingTools {
    * ones within it. This is so that the user can specify an exact area of
    * search.
    */
-  static searchWithinPolygon() : void {
+  static searchWithinPolygon(): void {
     var markerCount = 0;
-    for (var i = 0; i < DrawingTools.markers.length; i++) {
+    for (let i = 0; i < DrawingTools.markers.length; i++) {
       if (DrawingTools.isWithinCurrentShape(DrawingTools.markers[i].marker.getPosition())) {
         DrawingTools.markers[i].marker.setMap(DrawingTools.map);
         markerCount++;

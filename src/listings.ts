@@ -58,7 +58,7 @@ class ListingMarker extends MarkerWithInfoWindow {
     infowindow: google.maps.InfoWindow
   ) {
     // Create an onclick event to open the large infowindow at each marker.
-    this.marker.addListener('click', function() {
+    this.marker.addListener("click", function() {
       removeInfoWindow();
       ListingMarker.currentMarker = marker;
       ListingMarker.currentInfoWindow = infowindow;
@@ -146,7 +146,7 @@ function showListings(
 ) {
   var bounds = new google.maps.LatLngBounds();
   // Extend the boundaries of the map for each marker and display the marker
-  for (var i = 0; i < markers.length; i++) {
+  for (let i = 0; i < markers.length; i++) {
     markers[i].marker.setMap(map);
     bounds.extend(markers[i].marker.getPosition());
   }

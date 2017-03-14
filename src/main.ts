@@ -11,24 +11,24 @@
 /// <reference path="search-panel.ts" />
 
 /**
- * The main entry point, the callback function referenced by the Google Maps 
+ * The main entry point, the callback function referenced by the Google Maps
  * API.
  */
 function initMap() {
-  var map: google.maps.Map;
+  let map: google.maps.Map;
 
   // Create a new blank array for all the listing markers.
-  var markers: MarkerWithInfoWindow[] = [];
+  let markers: MarkerWithInfoWindow[] = [];
 
   // Create placemarkers array to use in multiple functions to have control
   // over the number of places that show.
-  var placeMarkers: PlaceMarker[] = [];
+  let placeMarkers: PlaceMarker[] = [];
 
   // Route layers
-  var directionsDisplay: google.maps.DirectionsRenderer = null;
+  let directionsDisplay: google.maps.DirectionsRenderer = null;
 
   // Initialise the map and UI elements
-  map = Init.Map();  
+  map = Init.Map();
 
   MarkerWithInfoWindow.map = map;
   ListingMarker.Initialise(map);
@@ -36,31 +36,28 @@ function initMap() {
   DrawingTools.Initialise(map, markers);
   SearchPanel.Initialise(map, markers, placeMarkers, directionsDisplay);
 
-  //$('#directions-panel .close').on('click', function() { removeDirectionsPanel(directionsDisplay, markers, map); });
-  
   // The following group uses the location array to create an array of markers on initialize.
-  for (var i = 0; i < locations.length; i++) {
+  for (const location of locations) {
     // Get the position from the location array.
-    var position = locations[i].location;
-    var title = locations[i].title;
+    const position = location.location;
+    const title = location.title;
 
     // Create a marker per location, and put into markers array.
-    var listingMarker = new ListingMarker(position, title);
+    const listingMarker = new ListingMarker(position, title);
 
     // Push the marker to our array of markers.
     markers.push(listingMarker);
   }
 
-  $('#toggle-listings').on('click', function() {
+  $("#toggle-listings").on("click", () => {
     DrawingTools.clearPolygons();
     toggleListings(markers, map);
   });
- 
-  $('#about-button').on('click', function() {
-    $('#about-modal').show();
+
+  $("#about-button").on("click", () => {
+    $("#about-modal").show();
   });
-  $('#about-modal .close').on('click', function() {
-    $('#about-modal').fadeOut();
+  $("#about-modal .close").on("click", () => {
+    $("#about-modal").fadeOut();
   });
- 
 }

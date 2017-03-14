@@ -28,13 +28,6 @@ class Utilities {
    * @param markers - An array of markers for all listings.
    */
   public static hideMarkers(markers: MarkerWithInfoWindow[]): void {
-    /*for (var i = 0; i < markers.length; i++) {
-      if (markers[i].infowindow !== null)
-        markers[i].infowindow.close();
-      removeInfoWindow();
-      markers[i].infowindow = null;
-      markers[i].marker.setMap(null);
-    }*/
     for (const marker of markers) {
       if (marker.infowindow !== null) {
         marker.infowindow.close();
