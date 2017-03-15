@@ -1,4 +1,3 @@
-/// <reference path="lib/googlemaps.d.ts" />
 /// <reference path="MarkerWithInfoWindow.ts" />
 /// <reference path="utilities.ts" />
 /// <reference path="init.ts" />
