@@ -590,22 +590,22 @@ TransportLayers.trafficButtonId = "#toggle-traffic";
 TransportLayers.transitButtonId = "#toggle-transit";
 TransportLayers.bicycleButtonId = "#toggle-bicycling";
 var locations = [
-    { title: 'Park Ave Penthouse', location: { lat: 40.7713024, lng: -73.9632393 } },
-    { title: 'Chelsea Loft', location: { lat: 40.7444883, lng: -73.9949465 } },
-    { title: 'Union Square Open Floor Plan', location: { lat: 40.7347062, lng: -73.9895759 } },
-    { title: 'East Village Hip Studio', location: { lat: 40.7281777, lng: -73.984377 } },
-    { title: 'TriBeCa Artsy Bachelor Pad', location: { lat: 40.7195264, lng: -74.0089934 } },
-    { title: 'Chinatown Homey Space', location: { lat: 40.7180628, lng: -73.9961237 } }
+    { title: "Park Ave Penthouse", location: { lat: 40.7713024, lng: -73.9632393 } },
+    { title: "Chelsea Loft", location: { lat: 40.7444883, lng: -73.9949465 } },
+    { title: "Union Square Open Floor Plan", location: { lat: 40.7347062, lng: -73.9895759 } },
+    { title: "East Village Hip Studio", location: { lat: 40.7281777, lng: -73.984377 } },
+    { title: "TriBeCa Artsy Bachelor Pad", location: { lat: 40.7195264, lng: -74.0089934 } },
+    { title: "Chinatown Homey Space", location: { lat: 40.7180628, lng: -73.9961237 } },
 ];
 var ListingMarker = (function (_super) {
     __extends(ListingMarker, _super);
     function ListingMarker(position, title) {
         var _this = _super.call(this) || this;
         _this.marker = new google.maps.Marker({
+            animation: google.maps.Animation.DROP,
+            icon: ListingMarker.defaultIcon,
             position: position,
             title: title,
-            animation: google.maps.Animation.DROP,
-            icon: ListingMarker.defaultIcon
         });
         _this.infowindow = new google.maps.InfoWindow();
         _this.addMarkerEvents(_this.marker, _this.infowindow);
@@ -613,85 +613,88 @@ var ListingMarker = (function (_super) {
     }
     ListingMarker.Initialise = function (map) {
         ListingMarker.map = map;
-        ListingMarker.defaultIcon = ListingMarker.makeMarkerIcon('0091ff');
-        ListingMarker.highlightedIcon = ListingMarker.makeMarkerIcon('ffff24');
+        ListingMarker.defaultIcon = ListingMarker.makeMarkerIcon("0091ff");
+        ListingMarker.highlightedIcon = ListingMarker.makeMarkerIcon("ffff24");
     };
     ListingMarker.makeMarkerIcon = function (markerColor) {
         var markerImage = {
-            url: 'https://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + markerColor + '|40|_|%E2%80%A2',
-            size: new google.maps.Size(21, 34),
-            origin: new google.maps.Point(0, 0),
             anchor: new google.maps.Point(10, 34),
-            scaledSize: new google.maps.Size(21, 34)
+            origin: new google.maps.Point(0, 0),
+            scaledSize: new google.maps.Size(21, 34),
+            size: new google.maps.Size(21, 34),
+            url: "https://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|" + markerColor + "|40|_|%E2%80%A2",
         };
         return markerImage;
     };
+    ListingMarker.populateInfoWindow = function () {
+        function getStreetView(data, status) {
+            if (status === google.maps.StreetViewStatus.OK) {
+                var nearStreetViewLocation = data.location.latLng;
+                var heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, ListingMarker.currentMarker.getPosition());
+                ListingMarker.currentInfoWindow.setContent("<div>" + ListingMarker.currentMarker.getTitle() + "</div><div id=\"pano\"></div>");
+                var panoramaOptions = {
+                    position: nearStreetViewLocation,
+                    pov: {
+                        heading: heading,
+                        pitch: 30,
+                    },
+                };
+                var panorama = new google.maps.StreetViewPanorama($("#pano")[0], panoramaOptions);
+            }
+            else {
+                ListingMarker.currentInfoWindow.setContent("<div>" + ListingMarker.currentMarker.getTitle() + "</div><div>No Street View Found</div>");
+            }
+        }
+        ListingMarker.currentInfoWindow.setContent("");
+        ListingMarker.currentInfoWindow.addListener("closeclick", removeInfoWindow);
+        var streetViewService = new google.maps.StreetViewService();
+        var radius = 50;
+        streetViewService.getPanoramaByLocation(ListingMarker.currentMarker.getPosition(), radius, getStreetView);
+        ListingMarker.currentInfoWindow.open(ListingMarker.map, ListingMarker.currentMarker);
+    };
     ListingMarker.prototype.addMarkerEvents = function (marker, infowindow) {
+        var _this = this;
         this.marker.addListener("click", function () {
             removeInfoWindow();
             ListingMarker.currentMarker = marker;
             ListingMarker.currentInfoWindow = infowindow;
             ListingMarker.populateInfoWindow();
         });
-        this.marker.addListener('mouseover', function () {
-            this.setIcon(ListingMarker.highlightedIcon);
+        this.marker.addListener("mouseover", function () {
+            _this.marker.setIcon(ListingMarker.highlightedIcon);
         });
-        this.marker.addListener('mouseout', function () {
-            this.setIcon(ListingMarker.defaultIcon);
+        this.marker.addListener("mouseout", function () {
+            _this.marker.setIcon(ListingMarker.defaultIcon);
         });
-    };
-    ListingMarker.populateInfoWindow = function () {
-        function getStreetView(data, status) {
-            if (status == google.maps.StreetViewStatus.OK) {
-                var nearStreetViewLocation = data.location.latLng;
-                var heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, ListingMarker.currentMarker.getPosition());
-                ListingMarker.currentInfoWindow.setContent('<div>' + ListingMarker.currentMarker.getTitle() + '</div><div id="pano"></div>');
-                var panoramaOptions = {
-                    position: nearStreetViewLocation,
-                    pov: {
-                        heading: heading,
-                        pitch: 30
-                    }
-                };
-                var panorama = new google.maps.StreetViewPanorama($('#pano')[0], panoramaOptions);
-            }
-            else {
-                ListingMarker.currentInfoWindow.setContent('<div>' + ListingMarker.currentMarker.getTitle() + '</div><div>No Street View Found</div>');
-            }
-        }
-        ListingMarker.currentInfoWindow.setContent('');
-        ListingMarker.currentInfoWindow.addListener('closeclick', removeInfoWindow);
-        var streetViewService = new google.maps.StreetViewService();
-        var radius = 50;
-        streetViewService.getPanoramaByLocation(ListingMarker.currentMarker.getPosition(), radius, getStreetView);
-        ListingMarker.currentInfoWindow.open(ListingMarker.map, ListingMarker.currentMarker);
     };
     return ListingMarker;
 }(MarkerWithInfoWindow));
 ListingMarker.currentMarker = null;
 ListingMarker.currentInfoWindow = null;
 function removeInfoWindow() {
-    if (ListingMarker.currentInfoWindow !== null)
+    if (ListingMarker.currentInfoWindow !== null) {
         ListingMarker.currentInfoWindow.close();
+    }
     ListingMarker.currentMarker = null;
     ListingMarker.currentInfoWindow = null;
 }
 function toggleListings(markers, map) {
-    var listingButton = $('#toggle-listings');
-    if (listingButton.hasClass('selected')) {
-        listingButton.removeClass('selected');
+    var listingButton = $("#toggle-listings");
+    if (listingButton.hasClass("selected")) {
+        listingButton.removeClass("selected");
         Utilities.hideMarkers(markers);
     }
     else {
-        listingButton.addClass('selected');
+        listingButton.addClass("selected");
         showListings(markers, map);
     }
 }
 function showListings(markers, map) {
     var bounds = new google.maps.LatLngBounds();
-    for (var i = 0; i < markers.length; i++) {
-        markers[i].marker.setMap(map);
-        bounds.extend(markers[i].marker.getPosition());
+    for (var _i = 0, markers_2 = markers; _i < markers_2.length; _i++) {
+        var marker = markers_2[_i];
+        marker.marker.setMap(map);
+        bounds.extend(marker.marker.getPosition());
     }
     map.fitBounds(bounds);
 }
