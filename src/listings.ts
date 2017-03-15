@@ -1,5 +1,7 @@
-// These are the real estate listings that will be shown to the user.
-// Normally we'd have these in a database instead.
+/**
+ * These are the real estate listings that will be shown to the user. Normally
+ * we'd have these in a database instead.
+ */
 let locations = [
   {title: "Park Ave Penthouse", location: {lat: 40.7713024, lng: -73.9632393}},
   {title: "Chelsea Loft", location: {lat: 40.7444883, lng: -73.9949465}},
@@ -9,12 +11,20 @@ let locations = [
   {title: "Chinatown Homey Space", location: {lat: 40.7180628, lng: -73.9961237}},
 ];
 
+/**
+ * A special case of MarkerWithInfoWindow, for dealing with the property
+ * listings themselves.
+ */
 class ListingMarker extends MarkerWithInfoWindow {
   public static defaultIcon;
   public static highlightedIcon;
   public static currentMarker: google.maps.Marker = null;
   public static currentInfoWindow: google.maps.InfoWindow = null;
 
+  /**
+   * Initialise static members of the ListingMarker class.
+   * @param map - The map to use for displaying the listings
+   */
   public static Initialise(map: google.maps.Map) {
     ListingMarker.map = map;
 
@@ -26,9 +36,11 @@ class ListingMarker extends MarkerWithInfoWindow {
     ListingMarker.highlightedIcon = ListingMarker.makeMarkerIcon("ffff24");
   }
 
-  // This function takes in a COLOR, and then creates a new marker
-  // icon of that color. The icon will be 21 px wide by 34 high, have an origin
-  // of 0, 0 and be anchored at 10, 34).
+  /** Given a color in hex (e.g. "3342ac"), creates a new marker icon of that
+   * color. The icon will be 21 px wide by 34 high, have an origin of 0, 0
+   * and be anchored at 10, 34).
+   * @param markerColor - A hex string of the required marker color.
+   */
   private static makeMarkerIcon(markerColor: string) {
     const markerImage = {
       anchor: new google.maps.Point(10, 34),
@@ -40,9 +52,11 @@ class ListingMarker extends MarkerWithInfoWindow {
     return markerImage;
   }
 
-  // This function populates the infowindow when the marker is clicked. We'll only allow
-  // one infowindow which will open at the marker that is clicked, and populate based
-  // on that markers position.
+  /**
+   * Populate the infowindow when the marker is clicked. We'll only allow one
+   * infowindow which will open at the marker that is clicked, and populate
+   * based on that markers position.
+   */
   private static populateInfoWindow() {
     // In case the status is OK, which means the pano was found, compute the
     // position of the streetview image, then calculate the heading, then get a
@@ -83,6 +97,11 @@ class ListingMarker extends MarkerWithInfoWindow {
     ListingMarker.currentInfoWindow.open(ListingMarker.map, ListingMarker.currentMarker);
   }
 
+  /**
+   * Initialise an instance of a listing marker.
+   * @param position - A lat/long location of the marker.
+   * @param title - The title associated with this listing marker.
+   */
   constructor(position, title: string) {
     super();
     this.marker = new google.maps.Marker({
@@ -95,7 +114,11 @@ class ListingMarker extends MarkerWithInfoWindow {
     this.addMarkerEvents(this.marker, this.infowindow);
   }
 
-  // Function to add events to a given marker.
+  /**
+   * Add mouse events to a given marker.
+   * @param marker - The marker to add mouse events to.
+   * @param infowindow - The infowindow associated with the marker.
+   */
   private addMarkerEvents(
     marker: google.maps.Marker,
     infowindow: google.maps.InfoWindow,
@@ -119,7 +142,9 @@ class ListingMarker extends MarkerWithInfoWindow {
   }
 }
 
-// Remove the currently active info window.
+/**
+ * Remove the currently active info window.
+ */
 function removeInfoWindow() {
   if (ListingMarker.currentInfoWindow !== null) {
     ListingMarker.currentInfoWindow.close();
@@ -128,7 +153,11 @@ function removeInfoWindow() {
   ListingMarker.currentInfoWindow = null;
 }
 
-// Toggle the display of available listings.
+/**
+ * Toggle the display of available listings.
+ * @param markers - An array of markers representing the property listings.
+ * @param map - The map to use for displaying the listings.
+ */
 function toggleListings(
   markers: MarkerWithInfoWindow[],
   map: google.maps.Map,
@@ -143,7 +172,11 @@ function toggleListings(
   }
 }
 
-// This function will loop through the markers array and display them all.
+/**
+ * Loops through the markers array and display them all.
+ * @param markers - An array of markers representing the property listings.
+ * @param map - The map to use for displaying the listings.
+ */
 function showListings(
   markers: MarkerWithInfoWindow[],
   map: google.maps.Map,

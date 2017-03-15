@@ -4,8 +4,8 @@
 class SearchPanel {
   /**
    * Initialise all the controls in the search panel
-   * @param map - The map to use for the letious search functions.
-   * @param markers - An array of markers representing the propery listings.
+   * @param map - The map to use for the various search functions.
+   * @param markers - An array of markers representing the property listings.
    * @param placeMarkers - An array of places searched for.
    * @param directionsDisplay - Helps render directions on the map
    */
