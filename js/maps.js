@@ -782,20 +782,21 @@ var DirectionsPanel = (function () {
         var destinationAddress = $("#search-within-time-text").val();
         var mode = $("#mode").val();
         directionsService.route({
-            origin: origin,
             destination: destinationAddress,
-            travelMode: Utilities.getTravelMode(mode)
+            origin: origin,
+            travelMode: Utilities.getTravelMode(mode),
         }, function (response, status) {
             if (status === google.maps.DirectionsStatus.OK) {
-                if (directionsDisplay)
+                if (directionsDisplay) {
                     DirectionsPanel.clearExistingDirections(directionsDisplay);
+                }
                 directionsDisplay = new google.maps.DirectionsRenderer({
-                    map: MarkerWithInfoWindow.map,
                     directions: response,
                     draggable: true,
+                    map: MarkerWithInfoWindow.map,
                     polylineOptions: {
-                        strokeColor: "green"
-                    }
+                        strokeColor: "green",
+                    },
                 });
                 DirectionsPanel.populateDirectionsPanel(response);
                 $("#directions-panel").show(200);
@@ -808,7 +809,9 @@ var DirectionsPanel = (function () {
                 window.alert("Directions request failed due to " + status);
             }
         });
-        $("#directions-panel .close").on("click", function () { DirectionsPanel.removeDirectionsPanel(directionsDisplay, markers); });
+        $("#directions-panel .close").on("click", function () {
+            DirectionsPanel.removeDirectionsPanel(directionsDisplay, markers);
+        });
     };
     DirectionsPanel.clearExistingDirections = function (directionsDisplay) {
         directionsDisplay.setMap(null);
@@ -824,15 +827,16 @@ var DirectionsPanel = (function () {
         text += "<br><strong>Total Journey:</strong> " + distance.text;
         text += " (about " + duration.text + ")";
         text += "<ul class=\"list-group top-row-margin\">";
-        for (var i = 0; i < steps.length; i++) {
-            var stepDistance = steps[i].distance;
-            var stepDuration = steps[i].duration;
+        for (var _i = 0, steps_1 = steps; _i < steps_1.length; _i++) {
+            var step = steps_1[_i];
+            var stepDistance = step.distance;
+            var stepDuration = step.duration;
             text += "<li class=\"list-group-item\">" +
                 "<div class=\"row\"><div class=\"col-md-2\">" +
-                DirectionsPanel.getManeuverIcon(steps[i].instructions) +
+                DirectionsPanel.getManeuverIcon(step.instructions) +
                 "</div>" +
                 "<div class=\"col-md-10\">" +
-                steps[i].instructions +
+                step.instructions +
                 "<div class=\"text-right\"><small>Travel for " +
                 stepDistance.text +
                 " (" +
@@ -844,10 +848,12 @@ var DirectionsPanel = (function () {
     };
     DirectionsPanel.getManeuverIcon = function (instructions) {
         var maneuver = "";
-        if (instructions.indexOf("Turn <b>left</b>") > -1)
+        if (instructions.indexOf("Turn <b>left</b>") > -1) {
             maneuver = "turn-left";
-        else if (instructions.indexOf("Turn <b>right</b>") > -1)
+        }
+        else if (instructions.indexOf("Turn <b>right</b>") > -1) {
             maneuver = "turn-right";
+        }
         switch (maneuver) {
             case "turn-left":
                 return "<i class=\"material-icons\" aria-hidden=\"true\">arrow_back</i>";
@@ -858,8 +864,9 @@ var DirectionsPanel = (function () {
         }
     };
     DirectionsPanel.removeDirectionsPanel = function (directionsDisplay, markers) {
-        if (directionsDisplay)
+        if (directionsDisplay) {
             DirectionsPanel.clearExistingDirections(directionsDisplay);
+        }
         $("#directions-panel").hide(200);
         TimeSearch.searchWithinTime(markers, directionsDisplay);
     };
