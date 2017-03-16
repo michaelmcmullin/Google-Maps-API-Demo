@@ -182,25 +182,25 @@ var DrawingTools = (function () {
         DrawingTools.map = map;
         DrawingTools.markers = markers;
         DrawingTools.drawingManager = new google.maps.drawing.DrawingManager({
+            drawingControl: false,
             drawingMode: google.maps.drawing.OverlayType.POLYGON,
-            drawingControl: false
         });
         $(DrawingTools.handButtonId).on("click", function () {
             DrawingTools.disableDrawing();
         });
         $(DrawingTools.polygonButtonId).on("click", function () {
             DrawingTools.drawingMode = google.maps.drawing.OverlayType.POLYGON;
-            DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(this));
+            DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(DrawingTools.polygonButtonId));
         });
         $(DrawingTools.rectangleButtonId).on("click", function () {
             DrawingTools.drawingMode = google.maps.drawing.OverlayType.RECTANGLE;
-            DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(this));
+            DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(DrawingTools.rectangleButtonId));
         });
         $(DrawingTools.circleButtonId).on("click", function () {
             DrawingTools.drawingMode = google.maps.drawing.OverlayType.CIRCLE;
-            DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(this));
+            DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(DrawingTools.circleButtonId));
         });
-        DrawingTools.drawingManager.addListener('overlaycomplete', function (event) {
+        DrawingTools.drawingManager.addListener("overlaycomplete", function (event) {
             if (DrawingTools.polygon) {
                 DrawingTools.polygon.setMap(null);
                 Utilities.hideMarkers(DrawingTools.markers);
@@ -211,7 +211,7 @@ var DrawingTools = (function () {
         DrawingTools.disableDrawing();
     };
     DrawingTools.toggleDrawing = function (caller) {
-        $(DrawingTools.handButtonId).removeClass('selected');
+        $(DrawingTools.handButtonId).removeClass("selected");
         DrawingTools.deselectDrawingTools();
         if (DrawingTools.drawingManager.getMap() && caller === DrawingTools.currentDrawingTool) {
             DrawingTools.drawingManager.setMap(null);
@@ -225,21 +225,10 @@ var DrawingTools = (function () {
             if (DrawingTools.polygon !== null) {
                 DrawingTools.polygon.setMap(null);
             }
-            caller.addClass('selected');
+            caller.addClass("selected");
             DrawingTools.currentDrawingTool = caller;
         }
         return DrawingTools.currentDrawingTool;
-    };
-    DrawingTools.deselectDrawingTools = function () {
-        $(DrawingTools.listingsButtonId).removeClass('selected');
-        $(DrawingTools.polygonButtonId).removeClass('selected');
-        $(DrawingTools.rectangleButtonId).removeClass('selected');
-        $(DrawingTools.circleButtonId).removeClass('selected');
-    };
-    DrawingTools.disableDrawing = function () {
-        DrawingTools.deselectDrawingTools();
-        $(DrawingTools.handButtonId).addClass('selected');
-        DrawingTools.clearPolygons();
     };
     DrawingTools.clearPolygons = function () {
         if (DrawingTools.drawingManager.getMap()) {
@@ -249,25 +238,37 @@ var DrawingTools = (function () {
             DrawingTools.polygon.setMap(null);
         }
     };
+    DrawingTools.deselectDrawingTools = function () {
+        $(DrawingTools.listingsButtonId).removeClass("selected");
+        $(DrawingTools.polygonButtonId).removeClass("selected");
+        $(DrawingTools.rectangleButtonId).removeClass("selected");
+        $(DrawingTools.circleButtonId).removeClass("selected");
+    };
+    DrawingTools.disableDrawing = function () {
+        DrawingTools.deselectDrawingTools();
+        $(DrawingTools.handButtonId).addClass("selected");
+        DrawingTools.clearPolygons();
+    };
     DrawingTools.searchWithinPolygon = function () {
         var markerCount = 0;
-        for (var i = 0; i < DrawingTools.markers.length; i++) {
-            if (DrawingTools.isWithinCurrentShape(DrawingTools.markers[i].marker.getPosition())) {
-                DrawingTools.markers[i].marker.setMap(DrawingTools.map);
+        for (var _i = 0, _a = DrawingTools.markers; _i < _a.length; _i++) {
+            var marker = _a[_i];
+            if (DrawingTools.isWithinCurrentShape(marker.marker.getPosition())) {
+                marker.marker.setMap(DrawingTools.map);
                 markerCount++;
             }
             else {
-                DrawingTools.markers[i].marker.setMap(null);
+                marker.marker.setMap(null);
             }
         }
         DrawingTools.deselectDrawingTools();
         if (markerCount > 0) {
-            $(DrawingTools.listingsButtonId).addClass('selected');
+            $(DrawingTools.listingsButtonId).addClass("selected");
         }
         else {
-            $(DrawingTools.listingsButtonId).removeClass('selected');
+            $(DrawingTools.listingsButtonId).removeClass("selected");
         }
-        $(DrawingTools.handButtonId).addClass('selected');
+        $(DrawingTools.handButtonId).addClass("selected");
         if (DrawingTools.drawingManager.getMap()) {
             DrawingTools.drawingManager.setMap(null);
         }
@@ -275,15 +276,15 @@ var DrawingTools = (function () {
     DrawingTools.isWithinCurrentShape = function (position) {
         var currentShape = DrawingTools.currentDrawingTool[0].id;
         if (currentShape) {
-            currentShape = currentShape.split('-').pop();
-            if (currentShape === 'polygon') {
+            currentShape = currentShape.split("-").pop();
+            if (currentShape === "polygon") {
                 return google.maps.geometry.poly.containsLocation(position, DrawingTools.polygon);
             }
-            if (currentShape === 'rectangle') {
+            if (currentShape === "rectangle") {
                 var rect = DrawingTools.polygon;
                 return rect.getBounds().contains(position);
             }
-            if (currentShape === 'circle') {
+            if (currentShape === "circle") {
                 var circle = DrawingTools.polygon;
                 return google.maps.geometry.spherical.computeDistanceBetween(position, circle.getCenter()) <= circle.getRadius();
             }
@@ -294,11 +295,11 @@ var DrawingTools = (function () {
 }());
 DrawingTools.currentDrawingTool = null;
 DrawingTools.polygon = null;
-DrawingTools.handButtonId = '#hand-tool';
-DrawingTools.polygonButtonId = '#toggle-drawing-polygon';
-DrawingTools.rectangleButtonId = '#toggle-drawing-rectangle';
-DrawingTools.circleButtonId = '#toggle-drawing-circle';
-DrawingTools.listingsButtonId = '#toggle-listings';
+DrawingTools.handButtonId = "#hand-tool";
+DrawingTools.polygonButtonId = "#toggle-drawing-polygon";
+DrawingTools.rectangleButtonId = "#toggle-drawing-rectangle";
+DrawingTools.circleButtonId = "#toggle-drawing-circle";
+DrawingTools.listingsButtonId = "#toggle-listings";
 var PlaceMarker = (function (_super) {
     __extends(PlaceMarker, _super);
     function PlaceMarker() {

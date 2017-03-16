@@ -9,47 +9,40 @@ class DrawingTools {
   public static polygon: google.maps.Polygon|google.maps.Rectangle|google.maps.Circle = null;
   public static markers: MarkerWithInfoWindow[];
 
-  private static readonly handButtonId: string = '#hand-tool';
-  private static readonly polygonButtonId: string = '#toggle-drawing-polygon';
-  private static readonly rectangleButtonId: string = '#toggle-drawing-rectangle';
-  private static readonly circleButtonId: string = '#toggle-drawing-circle';
-  private static readonly listingsButtonId: string = '#toggle-listings';
-
   /**
    * Initial setup for drawing tools
    * @param map - The map to use for the drawing tools
    * @param markers - A list of markers containing available listings
    */
-  static Initialise(map: google.maps.Map, markers: MarkerWithInfoWindow[]): void
-  {
+  public static Initialise(map: google.maps.Map, markers: MarkerWithInfoWindow[]): void {
     DrawingTools.map = map;
     DrawingTools.markers = markers;
     DrawingTools.drawingManager = new google.maps.drawing.DrawingManager({
+      drawingControl: false,
       drawingMode: google.maps.drawing.OverlayType.POLYGON,
-      drawingControl: false
     });
 
-    $(DrawingTools.handButtonId).on("click", function() {
+    $(DrawingTools.handButtonId).on("click", () => {
       DrawingTools.disableDrawing();
     });
 
-    $(DrawingTools.polygonButtonId).on("click", function() {
+    $(DrawingTools.polygonButtonId).on("click", () => {
       DrawingTools.drawingMode = google.maps.drawing.OverlayType.POLYGON;
-      DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(this));
+      DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(DrawingTools.polygonButtonId));
     });
-    $(DrawingTools.rectangleButtonId).on("click", function() {
+    $(DrawingTools.rectangleButtonId).on("click", () => {
       DrawingTools.drawingMode = google.maps.drawing.OverlayType.RECTANGLE;
-      DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(this));
+      DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(DrawingTools.rectangleButtonId));
     });
-    $(DrawingTools.circleButtonId).on("click", function() {
+    $(DrawingTools.circleButtonId).on("click", () => {
      DrawingTools.drawingMode = google.maps.drawing.OverlayType.CIRCLE;
-     DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(this));
+     DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(DrawingTools.circleButtonId));
     });
 
     // Add an event listener so that the polygon is captured, call the
     // searchWithinPolygon function. This will show the markers in the polygon,
     // and hide any outside of it.
-    DrawingTools.drawingManager.addListener('overlaycomplete', function(event) {
+    DrawingTools.drawingManager.addListener("overlaycomplete", (event) => {
       // First, check if there is an existing polygon.
       // If there is, get rid of it and remove the markers
       if (DrawingTools.polygon) {
@@ -58,18 +51,18 @@ class DrawingTools {
       }
 
       // Switching the drawing mode to the HAND (i.e., no longer drawing).
-      //drawingManager.setDrawingMode(null);
+      // drawingManager.setDrawingMode(null);
 
       // Creating a new editable polygon from the overlay.
       DrawingTools.polygon = event.overlay;
-      //DrawingTools.polygon.setEditable(true);
+      // DrawingTools.polygon.setEditable(true);
 
       // Searching within the polygon.
       DrawingTools.searchWithinPolygon();
 
       // Make sure the search is re-done if the poly is changed (only relevant if editable).
-      //DrawingTools.polygon.getPath().addListener('set_at', searchWithinPolygon);
-      //DrawingTools.polygon.getPath().addListener('insert_at', searchWithinPolygon);
+      // DrawingTools.polygon.getPath().addListener('set_at', searchWithinPolygon);
+      // DrawingTools.polygon.getPath().addListener('insert_at', searchWithinPolygon);
     });
 
     DrawingTools.disableDrawing();
@@ -79,10 +72,10 @@ class DrawingTools {
    * This shows and hides (respectively) the drawing options.
    * @param caller - The jQuery drawing tool selected which triggers this function.
    */
-  static toggleDrawing(caller: JQuery) : JQuery {
-    $(DrawingTools.handButtonId).removeClass('selected');
+  public static toggleDrawing(caller: JQuery): JQuery {
+    $(DrawingTools.handButtonId).removeClass("selected");
     DrawingTools.deselectDrawingTools();
-    
+
     if (DrawingTools.drawingManager.getMap() && caller === DrawingTools.currentDrawingTool) {
       DrawingTools.drawingManager.setMap(null);
       // In case the user drew anything, get rid of the polygon
@@ -95,35 +88,16 @@ class DrawingTools {
       if (DrawingTools.polygon !== null) {
         DrawingTools.polygon.setMap(null);
       }
-      caller.addClass('selected');
+      caller.addClass("selected");
       DrawingTools.currentDrawingTool = caller;
     }
     return DrawingTools.currentDrawingTool;
   }
 
   /**
-   * Deselect all drawing tool icons.
-   */
-  static deselectDrawingTools(): void {
-    $(DrawingTools.listingsButtonId).removeClass('selected');
-    $(DrawingTools.polygonButtonId).removeClass('selected');
-    $(DrawingTools.rectangleButtonId).removeClass('selected');
-    $(DrawingTools.circleButtonId).removeClass('selected');
-  }
-
-  /**
-   * Disable drawing functions
-   */
-  static disableDrawing(): void {
-    DrawingTools.deselectDrawingTools();
-    $(DrawingTools.handButtonId).addClass('selected');
-    DrawingTools.clearPolygons();
-  }
-
-  /**
    * Clear any polygons on screen
    */
-  static clearPolygons(): void {
+  public static clearPolygons(): void {
     if (DrawingTools.drawingManager.getMap()) {
       DrawingTools.drawingManager.setMap(null);
     }
@@ -132,28 +106,53 @@ class DrawingTools {
     }
   }
 
+  private static readonly handButtonId: string = "#hand-tool";
+  private static readonly polygonButtonId: string = "#toggle-drawing-polygon";
+  private static readonly rectangleButtonId: string = "#toggle-drawing-rectangle";
+  private static readonly circleButtonId: string = "#toggle-drawing-circle";
+  private static readonly listingsButtonId: string = "#toggle-listings";
+
+  /**
+   * Deselect all drawing tool icons.
+   */
+  private static deselectDrawingTools(): void {
+    $(DrawingTools.listingsButtonId).removeClass("selected");
+    $(DrawingTools.polygonButtonId).removeClass("selected");
+    $(DrawingTools.rectangleButtonId).removeClass("selected");
+    $(DrawingTools.circleButtonId).removeClass("selected");
+  }
+
+  /**
+   * Disable drawing functions
+   */
+  private static disableDrawing(): void {
+    DrawingTools.deselectDrawingTools();
+    $(DrawingTools.handButtonId).addClass("selected");
+    DrawingTools.clearPolygons();
+  }
+
   /**
    * This function hides all markers outside the polygon, and shows only the
    * ones within it. This is so that the user can specify an exact area of
    * search.
    */
-  static searchWithinPolygon(): void {
-    var markerCount = 0;
-    for (let i = 0; i < DrawingTools.markers.length; i++) {
-      if (DrawingTools.isWithinCurrentShape(DrawingTools.markers[i].marker.getPosition())) {
-        DrawingTools.markers[i].marker.setMap(DrawingTools.map);
+  private static searchWithinPolygon(): void {
+    let markerCount = 0;
+    for (const marker of DrawingTools.markers) {
+      if (DrawingTools.isWithinCurrentShape(marker.marker.getPosition())) {
+        marker.marker.setMap(DrawingTools.map);
         markerCount++;
       } else {
-        DrawingTools.markers[i].marker.setMap(null);
+        marker.marker.setMap(null);
       }
     }
     DrawingTools.deselectDrawingTools();
     if (markerCount > 0) {
-      $(DrawingTools.listingsButtonId).addClass('selected');
+      $(DrawingTools.listingsButtonId).addClass("selected");
     } else {
-      $(DrawingTools.listingsButtonId).removeClass('selected');
+      $(DrawingTools.listingsButtonId).removeClass("selected");
     }
-    $(DrawingTools.handButtonId).addClass('selected');
+    $(DrawingTools.handButtonId).addClass("selected");
     if (DrawingTools.drawingManager.getMap()) {
       DrawingTools.drawingManager.setMap(null);
     }
@@ -163,24 +162,24 @@ class DrawingTools {
    * Determine if a position is within the current drawing tool
    * @param position - The co-ordinates to compare with the current shape.
    */
-  static isWithinCurrentShape(position: google.maps.LatLng) : boolean {
-    var currentShape = DrawingTools.currentDrawingTool[0].id;
+  private static isWithinCurrentShape(position: google.maps.LatLng): boolean {
+    let currentShape = DrawingTools.currentDrawingTool[0].id;
     if (currentShape) {
-      currentShape = currentShape.split('-').pop();
-      if (currentShape === 'polygon') {
-        return google.maps.geometry.poly.containsLocation(position, DrawingTools.polygon as google.maps.Polygon);
+      currentShape = currentShape.split("-").pop();
+      if (currentShape === "polygon") {
+        return google.maps.geometry.poly.containsLocation(
+          position, DrawingTools.polygon as google.maps.Polygon);
       }
-      if (currentShape === 'rectangle') {
-        var rect = DrawingTools.polygon as google.maps.Rectangle;
+      if (currentShape === "rectangle") {
+        const rect = DrawingTools.polygon as google.maps.Rectangle;
         return rect.getBounds().contains(position);
       }
-      if (currentShape === 'circle') {
-        var circle = DrawingTools.polygon as google.maps.Circle;
-        return google.maps.geometry.spherical.computeDistanceBetween(position, circle.getCenter()) <= circle.getRadius();
+      if (currentShape === "circle") {
+        const circle = DrawingTools.polygon as google.maps.Circle;
+        return google.maps.geometry.spherical.computeDistanceBetween(
+          position, circle.getCenter()) <= circle.getRadius();
       }
     }
     return false;
   }
 }
-
-
