@@ -8,6 +8,11 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var MarkerWithInfoWindow = (function () {
+    function MarkerWithInfoWindow() {
+    }
+    return MarkerWithInfoWindow;
+}());
 var Utilities = (function () {
     function Utilities() {
     }
@@ -31,18 +36,26 @@ var Utilities = (function () {
             if (marker.infowindow !== null) {
                 marker.infowindow.close();
             }
-            removeInfoWindow();
+            ListingMarker.removeInfoWindow();
             marker.infowindow = null;
             marker.marker.setMap(null);
         }
     };
     return Utilities;
 }());
-var MarkerWithInfoWindow = (function () {
-    function MarkerWithInfoWindow() {
+var Data = (function () {
+    function Data() {
     }
-    return MarkerWithInfoWindow;
+    return Data;
 }());
+Data.locations = [
+    { title: "Park Ave Penthouse", location: { lat: 40.7713024, lng: -73.9632393 } },
+    { title: "Chelsea Loft", location: { lat: 40.7444883, lng: -73.9949465 } },
+    { title: "Union Square Open Floor Plan", location: { lat: 40.7347062, lng: -73.9895759 } },
+    { title: "East Village Hip Studio", location: { lat: 40.7281777, lng: -73.984377 } },
+    { title: "TriBeCa Artsy Bachelor Pad", location: { lat: 40.7195264, lng: -74.0089934 } },
+    { title: "Chinatown Homey Space", location: { lat: 40.7180628, lng: -73.9961237 } },
+];
 var Init = (function () {
     function Init() {
     }
@@ -590,14 +603,6 @@ var TransportLayers = (function () {
 TransportLayers.trafficButtonId = "#toggle-traffic";
 TransportLayers.transitButtonId = "#toggle-transit";
 TransportLayers.bicycleButtonId = "#toggle-bicycling";
-var locations = [
-    { title: "Park Ave Penthouse", location: { lat: 40.7713024, lng: -73.9632393 } },
-    { title: "Chelsea Loft", location: { lat: 40.7444883, lng: -73.9949465 } },
-    { title: "Union Square Open Floor Plan", location: { lat: 40.7347062, lng: -73.9895759 } },
-    { title: "East Village Hip Studio", location: { lat: 40.7281777, lng: -73.984377 } },
-    { title: "TriBeCa Artsy Bachelor Pad", location: { lat: 40.7195264, lng: -74.0089934 } },
-    { title: "Chinatown Homey Space", location: { lat: 40.7180628, lng: -73.9961237 } },
-];
 var ListingMarker = (function (_super) {
     __extends(ListingMarker, _super);
     function ListingMarker(position, title) {
@@ -616,6 +621,33 @@ var ListingMarker = (function (_super) {
         ListingMarker.map = map;
         ListingMarker.defaultIcon = ListingMarker.makeMarkerIcon("0091ff");
         ListingMarker.highlightedIcon = ListingMarker.makeMarkerIcon("ffff24");
+    };
+    ListingMarker.removeInfoWindow = function () {
+        if (ListingMarker.currentInfoWindow !== null) {
+            ListingMarker.currentInfoWindow.close();
+        }
+        ListingMarker.currentMarker = null;
+        ListingMarker.currentInfoWindow = null;
+    };
+    ListingMarker.toggleListings = function (markers, map) {
+        var listingButton = $("#toggle-listings");
+        if (listingButton.hasClass("selected")) {
+            listingButton.removeClass("selected");
+            Utilities.hideMarkers(markers);
+        }
+        else {
+            listingButton.addClass("selected");
+            ListingMarker.showListings(markers, map);
+        }
+    };
+    ListingMarker.showListings = function (markers, map) {
+        var bounds = new google.maps.LatLngBounds();
+        for (var _i = 0, markers_2 = markers; _i < markers_2.length; _i++) {
+            var marker = markers_2[_i];
+            marker.marker.setMap(map);
+            bounds.extend(marker.marker.getPosition());
+        }
+        map.fitBounds(bounds);
     };
     ListingMarker.makeMarkerIcon = function (markerColor) {
         var markerImage = {
@@ -647,7 +679,7 @@ var ListingMarker = (function (_super) {
             }
         }
         ListingMarker.currentInfoWindow.setContent("");
-        ListingMarker.currentInfoWindow.addListener("closeclick", removeInfoWindow);
+        ListingMarker.currentInfoWindow.addListener("closeclick", ListingMarker.removeInfoWindow);
         var streetViewService = new google.maps.StreetViewService();
         var radius = 50;
         streetViewService.getPanoramaByLocation(ListingMarker.currentMarker.getPosition(), radius, getStreetView);
@@ -656,7 +688,7 @@ var ListingMarker = (function (_super) {
     ListingMarker.prototype.addMarkerEvents = function (marker, infowindow) {
         var _this = this;
         this.marker.addListener("click", function () {
-            removeInfoWindow();
+            ListingMarker.removeInfoWindow();
             ListingMarker.currentMarker = marker;
             ListingMarker.currentInfoWindow = infowindow;
             ListingMarker.populateInfoWindow();
@@ -672,107 +704,6 @@ var ListingMarker = (function (_super) {
 }(MarkerWithInfoWindow));
 ListingMarker.currentMarker = null;
 ListingMarker.currentInfoWindow = null;
-function removeInfoWindow() {
-    if (ListingMarker.currentInfoWindow !== null) {
-        ListingMarker.currentInfoWindow.close();
-    }
-    ListingMarker.currentMarker = null;
-    ListingMarker.currentInfoWindow = null;
-}
-function toggleListings(markers, map) {
-    var listingButton = $("#toggle-listings");
-    if (listingButton.hasClass("selected")) {
-        listingButton.removeClass("selected");
-        Utilities.hideMarkers(markers);
-    }
-    else {
-        listingButton.addClass("selected");
-        showListings(markers, map);
-    }
-}
-function showListings(markers, map) {
-    var bounds = new google.maps.LatLngBounds();
-    for (var _i = 0, markers_2 = markers; _i < markers_2.length; _i++) {
-        var marker = markers_2[_i];
-        marker.marker.setMap(map);
-        bounds.extend(marker.marker.getPosition());
-    }
-    map.fitBounds(bounds);
-}
-var SearchPanel = (function () {
-    function SearchPanel() {
-    }
-    SearchPanel.Initialise = function (map, markers, placeMarkers, directionsDisplay) {
-        $(SearchPanel.searchButton).on("click", function () {
-            $(SearchPanel.searchPanel).slideToggle("fast");
-        });
-        var timeAutocomplete = new google.maps.places.Autocomplete($(SearchPanel.searchTimeText)[0]);
-        var zoomAutocomplete = new google.maps.places.Autocomplete($(SearchPanel.searchZoomText)[0]);
-        zoomAutocomplete.bindTo("bounds", map);
-        var searchBox = new google.maps.places.SearchBox($(SearchPanel.searchPlacesText)[0]);
-        searchBox.setBounds(map.getBounds());
-        $(SearchPanel.searchZoomButton).on("click", function () {
-            ZoomSearch.zoomToArea(map);
-            SearchPanel.hide();
-        });
-        $(SearchPanel.searchTimeButton).on("click", function () {
-            TimeSearch.searchWithinTime(markers, directionsDisplay);
-            SearchPanel.hide();
-        });
-        searchBox.addListener("places_changed", function () {
-            PlaceMarker.searchBoxPlaces(searchBox, placeMarkers);
-            SearchPanel.hide();
-        });
-        $(SearchPanel.searchPlacesButton).on("click", function () {
-            PlaceMarker.textSearchPlaces(placeMarkers);
-            SearchPanel.hide();
-        });
-    };
-    SearchPanel.show = function () {
-        $(SearchPanel.searchPanel).slideDown("fast");
-    };
-    SearchPanel.hide = function () {
-        $(SearchPanel.searchPanel).slideUp("fast");
-    };
-    return SearchPanel;
-}());
-SearchPanel.searchButton = "#toggle-search";
-SearchPanel.searchPanel = "#search-panel";
-SearchPanel.searchZoomText = "#zoom-to-area-text";
-SearchPanel.searchZoomButton = "#zoom-to-area";
-SearchPanel.searchTimeText = "#search-within-time-text";
-SearchPanel.searchTimeButton = "#search-within-time";
-SearchPanel.searchPlacesText = "#places-search";
-SearchPanel.searchPlacesButton = "#go-places";
-function initMap() {
-    var map;
-    var markers = [];
-    var placeMarkers = [];
-    var directionsDisplay = null;
-    map = Init.Map();
-    MarkerWithInfoWindow.map = map;
-    ListingMarker.Initialise(map);
-    TransportLayers.Initialise(map);
-    DrawingTools.Initialise(map, markers);
-    SearchPanel.Initialise(map, markers, placeMarkers, directionsDisplay);
-    for (var _i = 0, locations_1 = locations; _i < locations_1.length; _i++) {
-        var location_1 = locations_1[_i];
-        var position = location_1.location;
-        var title = location_1.title;
-        var listingMarker = new ListingMarker(position, title);
-        markers.push(listingMarker);
-    }
-    $("#toggle-listings").on("click", function () {
-        DrawingTools.clearPolygons();
-        toggleListings(markers, map);
-    });
-    $("#about-button").on("click", function () {
-        $("#about-modal").show();
-    });
-    $("#about-modal .close").on("click", function () {
-        $("#about-modal").fadeOut();
-    });
-}
 var DirectionsPanel = (function () {
     function DirectionsPanel() {
     }
@@ -872,4 +803,78 @@ var DirectionsPanel = (function () {
     };
     return DirectionsPanel;
 }());
+var SearchPanel = (function () {
+    function SearchPanel() {
+    }
+    SearchPanel.Initialise = function (map, markers, placeMarkers, directionsDisplay) {
+        $(SearchPanel.searchButton).on("click", function () {
+            $(SearchPanel.searchPanel).slideToggle("fast");
+        });
+        var timeAutocomplete = new google.maps.places.Autocomplete($(SearchPanel.searchTimeText)[0]);
+        var zoomAutocomplete = new google.maps.places.Autocomplete($(SearchPanel.searchZoomText)[0]);
+        zoomAutocomplete.bindTo("bounds", map);
+        var searchBox = new google.maps.places.SearchBox($(SearchPanel.searchPlacesText)[0]);
+        searchBox.setBounds(map.getBounds());
+        $(SearchPanel.searchZoomButton).on("click", function () {
+            ZoomSearch.zoomToArea(map);
+            SearchPanel.hide();
+        });
+        $(SearchPanel.searchTimeButton).on("click", function () {
+            TimeSearch.searchWithinTime(markers, directionsDisplay);
+            SearchPanel.hide();
+        });
+        searchBox.addListener("places_changed", function () {
+            PlaceMarker.searchBoxPlaces(searchBox, placeMarkers);
+            SearchPanel.hide();
+        });
+        $(SearchPanel.searchPlacesButton).on("click", function () {
+            PlaceMarker.textSearchPlaces(placeMarkers);
+            SearchPanel.hide();
+        });
+    };
+    SearchPanel.show = function () {
+        $(SearchPanel.searchPanel).slideDown("fast");
+    };
+    SearchPanel.hide = function () {
+        $(SearchPanel.searchPanel).slideUp("fast");
+    };
+    return SearchPanel;
+}());
+SearchPanel.searchButton = "#toggle-search";
+SearchPanel.searchPanel = "#search-panel";
+SearchPanel.searchZoomText = "#zoom-to-area-text";
+SearchPanel.searchZoomButton = "#zoom-to-area";
+SearchPanel.searchTimeText = "#search-within-time-text";
+SearchPanel.searchTimeButton = "#search-within-time";
+SearchPanel.searchPlacesText = "#places-search";
+SearchPanel.searchPlacesButton = "#go-places";
+function initMap() {
+    var map;
+    var markers = [];
+    var placeMarkers = [];
+    var directionsDisplay = null;
+    map = Init.Map();
+    MarkerWithInfoWindow.map = map;
+    ListingMarker.Initialise(map);
+    TransportLayers.Initialise(map);
+    DrawingTools.Initialise(map, markers);
+    SearchPanel.Initialise(map, markers, placeMarkers, directionsDisplay);
+    for (var _i = 0, _a = Data.locations; _i < _a.length; _i++) {
+        var location_1 = _a[_i];
+        var position = location_1.location;
+        var title = location_1.title;
+        var listingMarker = new ListingMarker(position, title);
+        markers.push(listingMarker);
+    }
+    $("#toggle-listings").on("click", function () {
+        DrawingTools.clearPolygons();
+        ListingMarker.toggleListings(markers, map);
+    });
+    $("#about-button").on("click", function () {
+        $("#about-modal").show();
+    });
+    $("#about-modal .close").on("click", function () {
+        $("#about-modal").fadeOut();
+    });
+}
 //# sourceMappingURL=maps.js.map

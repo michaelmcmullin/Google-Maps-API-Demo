@@ -1,13 +1,4 @@
-/// <reference path="MarkerWithInfoWindow.ts" />
-/// <reference path="utilities.ts" />
-/// <reference path="init.ts" />
-/// <reference path="drawing-tools.ts" />
-/// <reference path="search-places.ts" />
-/// <reference path="search-time.ts" />
-/// <reference path="search-zoom.ts" />
-/// <reference path="transport-layers.ts" />
-/// <reference path="listings.ts" />
-/// <reference path="search-panel.ts" />
+/// <reference path="references.ts" />
 
 /**
  * The main entry point, the callback function referenced by the Google Maps
@@ -17,11 +8,11 @@ function initMap() {
   let map: google.maps.Map;
 
   // Create a new blank array for all the listing markers.
-  let markers: MarkerWithInfoWindow[] = [];
+  const markers: MarkerWithInfoWindow[] = [];
 
   // Create placemarkers array to use in multiple functions to have control
   // over the number of places that show.
-  let placeMarkers: PlaceMarker[] = [];
+  const placeMarkers: PlaceMarker[] = [];
 
   // Route layers
   let directionsDisplay: google.maps.DirectionsRenderer = null;
@@ -36,7 +27,7 @@ function initMap() {
   SearchPanel.Initialise(map, markers, placeMarkers, directionsDisplay);
 
   // The following group uses the location array to create an array of markers on initialize.
-  for (const location of locations) {
+  for (const location of Data.locations) {
     // Get the position from the location array.
     const position = location.location;
     const title = location.title;
@@ -50,7 +41,7 @@ function initMap() {
 
   $("#toggle-listings").on("click", () => {
     DrawingTools.clearPolygons();
-    toggleListings(markers, map);
+    ListingMarker.toggleListings(markers, map);
   });
 
   $("#about-button").on("click", () => {

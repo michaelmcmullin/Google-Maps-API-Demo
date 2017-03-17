@@ -32,7 +32,7 @@ class Utilities {
       if (marker.infowindow !== null) {
         marker.infowindow.close();
       }
-      removeInfoWindow();
+      ListingMarker.removeInfoWindow();
       marker.infowindow = null;
       marker.marker.setMap(null);
     }

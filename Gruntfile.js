@@ -26,18 +26,7 @@ module.exports = function(grunt) {
     ts: {
       default:{
         src: [
-          'src/utilities.ts',
-          'src/MarkerWithInfoWindow.ts',
-          'src/init.ts',
-          'src/main.ts',
-          'src/listings.ts',
-          'src/search-panel.ts',
-          'src/search-zoom.ts',
-          'src/search-time.ts',
-          'src/search-places.ts',
-          'src/drawing-tools.ts',
-          'src/directions-panel.ts',
-          'src/transport-layers.ts'
+          'src/main.ts'
         ],
         out: 'js/maps.js'
       },

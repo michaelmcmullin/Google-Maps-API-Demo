@@ -1,17 +1,4 @@
 /**
- * These are the real estate listings that will be shown to the user. Normally
- * we'd have these in a database instead.
- */
-let locations = [
-  {title: "Park Ave Penthouse", location: {lat: 40.7713024, lng: -73.9632393}},
-  {title: "Chelsea Loft", location: {lat: 40.7444883, lng: -73.9949465}},
-  {title: "Union Square Open Floor Plan", location: {lat: 40.7347062, lng: -73.9895759}},
-  {title: "East Village Hip Studio", location: {lat: 40.7281777, lng: -73.984377}},
-  {title: "TriBeCa Artsy Bachelor Pad", location: {lat: 40.7195264, lng: -74.0089934}},
-  {title: "Chinatown Homey Space", location: {lat: 40.7180628, lng: -73.9961237}},
-];
-
-/**
  * A special case of MarkerWithInfoWindow, for dealing with the property
  * listings themselves.
  */
@@ -34,6 +21,54 @@ class ListingMarker extends MarkerWithInfoWindow {
     // Create a "highlighted location" marker color for when the user
     // mouses over the marker.
     ListingMarker.highlightedIcon = ListingMarker.makeMarkerIcon("ffff24");
+  }
+
+  /**
+   * Remove the currently active info window.
+   */
+  public static removeInfoWindow() {
+    if (ListingMarker.currentInfoWindow !== null) {
+      ListingMarker.currentInfoWindow.close();
+    }
+    ListingMarker.currentMarker = null;
+    ListingMarker.currentInfoWindow = null;
+  }
+
+  /**
+   * Toggle the display of available listings.
+   * @param markers - An array of markers representing the property listings.
+   * @param map - The map to use for displaying the listings.
+   */
+  public static toggleListings(
+    markers: MarkerWithInfoWindow[],
+    map: google.maps.Map,
+  ) {
+    const listingButton = $("#toggle-listings");
+    if (listingButton.hasClass("selected")) {
+      listingButton.removeClass("selected");
+      Utilities.hideMarkers(markers);
+    } else {
+      listingButton.addClass("selected");
+      ListingMarker.showListings(markers, map);
+    }
+  }
+
+  /**
+   * Loops through the markers array and display them all.
+   * @param markers - An array of markers representing the property listings.
+   * @param map - The map to use for displaying the listings.
+   */
+  public static showListings(
+    markers: MarkerWithInfoWindow[],
+    map: google.maps.Map,
+  ) {
+    const bounds = new google.maps.LatLngBounds();
+    // Extend the boundaries of the map for each marker and display the marker
+    for (const marker of markers) {
+      marker.marker.setMap(map);
+      bounds.extend(marker.marker.getPosition());
+    }
+    map.fitBounds(bounds);
   }
 
   /** Given a color in hex (e.g. "3342ac"), creates a new marker icon of that
@@ -85,7 +120,7 @@ class ListingMarker extends MarkerWithInfoWindow {
     ListingMarker.currentInfoWindow.setContent("");
 
     // Make sure the marker property is cleared if the infowindow is closed.
-    ListingMarker.currentInfoWindow.addListener("closeclick", removeInfoWindow);
+    ListingMarker.currentInfoWindow.addListener("closeclick", ListingMarker.removeInfoWindow);
     const streetViewService = new google.maps.StreetViewService();
     const radius = 50;
 
@@ -125,7 +160,7 @@ class ListingMarker extends MarkerWithInfoWindow {
   ) {
     // Create an onclick event to open the large infowindow at each marker.
     this.marker.addListener("click", () => {
-      removeInfoWindow();
+      ListingMarker.removeInfoWindow();
       ListingMarker.currentMarker = marker;
       ListingMarker.currentInfoWindow = infowindow;
       ListingMarker.populateInfoWindow();
@@ -140,52 +175,4 @@ class ListingMarker extends MarkerWithInfoWindow {
       this.marker.setIcon(ListingMarker.defaultIcon);
     });
   }
-}
-
-/**
- * Remove the currently active info window.
- */
-function removeInfoWindow() {
-  if (ListingMarker.currentInfoWindow !== null) {
-    ListingMarker.currentInfoWindow.close();
-  }
-  ListingMarker.currentMarker = null;
-  ListingMarker.currentInfoWindow = null;
-}
-
-/**
- * Toggle the display of available listings.
- * @param markers - An array of markers representing the property listings.
- * @param map - The map to use for displaying the listings.
- */
-function toggleListings(
-  markers: MarkerWithInfoWindow[],
-  map: google.maps.Map,
-) {
-  const listingButton = $("#toggle-listings");
-  if (listingButton.hasClass("selected")) {
-    listingButton.removeClass("selected");
-    Utilities.hideMarkers(markers);
-  } else {
-    listingButton.addClass("selected");
-    showListings(markers, map);
-  }
-}
-
-/**
- * Loops through the markers array and display them all.
- * @param markers - An array of markers representing the property listings.
- * @param map - The map to use for displaying the listings.
- */
-function showListings(
-  markers: MarkerWithInfoWindow[],
-  map: google.maps.Map,
-) {
-  const bounds = new google.maps.LatLngBounds();
-  // Extend the boundaries of the map for each marker and display the marker
-  for (const marker of markers) {
-    marker.marker.setMap(map);
-    bounds.extend(marker.marker.getPosition());
-  }
-  map.fitBounds(bounds);
 }
