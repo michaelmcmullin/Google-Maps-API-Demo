@@ -3,18 +3,18 @@
  * Handles the directions panel
  */
 class DirectionsPanel {
+  public static Display: google.maps.DirectionsRenderer;
+
   /**
    * This function is in response to the user selecting "show route" on one of
    * the markers within the calculated distance. This will display the route on
    * the map.
    * @param origin - The starting address for directions
    * @param markers - An array of markers representing our listings
-   * @param directionsDisplay - Helps render the directions on the map
    */
   public static displayDirections(
     origin: string,
     markers: MarkerWithInfoWindow[],
-    directionsDisplay: google.maps.DirectionsRenderer,
   ): void {
     Utilities.hideMarkers(markers);
     const directionsService = new google.maps.DirectionsService();
@@ -30,10 +30,10 @@ class DirectionsPanel {
         travelMode: Utilities.getTravelMode(mode),
       }, (response, status) => {
         if (status === google.maps.DirectionsStatus.OK) {
-          if (directionsDisplay) {
-            DirectionsPanel.clearExistingDirections(directionsDisplay);
+          if (DirectionsPanel.Display) {
+            DirectionsPanel.clearExistingDirections();
           }
-          directionsDisplay = new google.maps.DirectionsRenderer({
+          DirectionsPanel.Display = new google.maps.DirectionsRenderer({
               directions: response,
               draggable: true,
               map: MarkerWithInfoWindow.map,
@@ -46,8 +46,8 @@ class DirectionsPanel {
           $("#directions-panel").show(200);
           SearchPanel.hide();
 
-          directionsDisplay.addListener("directions_changed", () => {
-            DirectionsPanel.populateDirectionsPanel(directionsDisplay.getDirections());
+          DirectionsPanel.Display.addListener("directions_changed", () => {
+            DirectionsPanel.populateDirectionsPanel(DirectionsPanel.Display.getDirections());
           });
         } else {
           window.alert("Directions request failed due to " + status);
@@ -56,7 +56,7 @@ class DirectionsPanel {
     );
 
     $("#directions-panel .close").on("click", () => {
-      DirectionsPanel.removeDirectionsPanel(directionsDisplay, markers);
+      DirectionsPanel.removeDirectionsPanel(markers);
     });
   }
 
@@ -65,8 +65,10 @@ class DirectionsPanel {
    * get too cluttered.
    * @param directionsDisplay - Helps render the directions on the map
    */
-  private static clearExistingDirections(directionsDisplay: google.maps.DirectionsRenderer): void {
-    directionsDisplay.setMap(null);
+  public static clearExistingDirections(): void {
+    if (DirectionsPanel.Display) {
+      DirectionsPanel.Display.setMap(null);
+    }
   }
 
   /**
@@ -140,13 +142,12 @@ class DirectionsPanel {
    * @param markers - An array of markers representing our listings
    */
   private static removeDirectionsPanel(
-    directionsDisplay: google.maps.DirectionsRenderer,
     markers: MarkerWithInfoWindow[],
   ): void {
-    if (directionsDisplay) {
-      DirectionsPanel.clearExistingDirections(directionsDisplay);
+    if (DirectionsPanel.Display) {
+      DirectionsPanel.clearExistingDirections();
     }
     $("#directions-panel").hide(200);
-    TimeSearch.searchWithinTime(markers, directionsDisplay);
+    TimeSearch.searchWithinTime(markers);
   }
 }

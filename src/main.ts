@@ -14,9 +14,6 @@ function initMap() {
   // over the number of places that show.
   const placeMarkers: PlaceMarker[] = [];
 
-  // Route layers
-  let directionsDisplay: google.maps.DirectionsRenderer = null;
-
   // Initialise the map and UI elements
   map = Init.Map();
 
@@ -24,7 +21,7 @@ function initMap() {
   ListingMarker.Initialise(map);
   TransportLayers.Initialise(map);
   DrawingTools.Initialise(map, markers);
-  SearchPanel.Initialise(map, markers, placeMarkers, directionsDisplay);
+  SearchPanel.Initialise(map, markers, placeMarkers);
 
   // The following group uses the location array to create an array of markers on initialize.
   for (const location of Data.locations) {

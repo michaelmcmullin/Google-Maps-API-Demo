@@ -463,7 +463,7 @@ PlaceMarker.currentPhoto = 0;
 var TimeSearch = (function () {
     function TimeSearch() {
     }
-    TimeSearch.searchWithinTime = function (markers, directionsDisplay) {
+    TimeSearch.searchWithinTime = function (markers) {
         var distanceMatrixService = new google.maps.DistanceMatrixService();
         var address = $("#search-within-time-text").val();
         if (address === "") {
@@ -471,6 +471,7 @@ var TimeSearch = (function () {
         }
         else {
             Utilities.hideMarkers(markers);
+            DirectionsPanel.clearExistingDirections();
             var origins = [];
             for (var i = 0; i < markers.length; i++) {
                 origins[i] = markers[i].marker.getPosition();
@@ -487,12 +488,12 @@ var TimeSearch = (function () {
                     window.alert("Error was: " + status);
                 }
                 else {
-                    TimeSearch.displayMarkersWithinTime(response, markers, directionsDisplay);
+                    TimeSearch.displayMarkersWithinTime(response, markers);
                 }
             });
         }
     };
-    TimeSearch.displayMarkersWithinTime = function (response, markers, directionsDisplay) {
+    TimeSearch.displayMarkersWithinTime = function (response, markers) {
         var maxDuration = $("#max-duration").val();
         var origins = response.originAddresses;
         var destinations = response.destinationAddresses;
@@ -517,7 +518,7 @@ var TimeSearch = (function () {
                         var origin = origins[i];
                         markers[i].infowindow.open(MarkerWithInfoWindow.map, markers[i].marker);
                         TimeSearch.removeGetRouteInfowindow(markers[i]);
-                        TimeSearch.attachGetRouteEvent($("#btn_ViewRoute_" + i)[0], origin, markers, directionsDisplay);
+                        TimeSearch.attachGetRouteEvent($("#btn_ViewRoute_" + i)[0], origin, markers);
                     }
                 }
             }
@@ -526,8 +527,8 @@ var TimeSearch = (function () {
             window.alert("We could not find any locations within that distance!");
         }
     };
-    TimeSearch.attachGetRouteEvent = function (button, origin, markers, directionsDisplay) {
-        google.maps.event.addDomListener(button, "click", function () { DirectionsPanel.displayDirections(origin, markers, directionsDisplay); });
+    TimeSearch.attachGetRouteEvent = function (button, origin, markers) {
+        google.maps.event.addDomListener(button, "click", function () { DirectionsPanel.displayDirections(origin, markers); });
     };
     TimeSearch.removeGetRouteInfowindow = function (marker) {
         google.maps.event.addListener(marker.marker, "click", function () { marker.infowindow.close(); });
@@ -707,7 +708,7 @@ ListingMarker.currentInfoWindow = null;
 var DirectionsPanel = (function () {
     function DirectionsPanel() {
     }
-    DirectionsPanel.displayDirections = function (origin, markers, directionsDisplay) {
+    DirectionsPanel.displayDirections = function (origin, markers) {
         Utilities.hideMarkers(markers);
         var directionsService = new google.maps.DirectionsService();
         var destinationAddress = $("#search-within-time-text").val();
@@ -718,10 +719,10 @@ var DirectionsPanel = (function () {
             travelMode: Utilities.getTravelMode(mode),
         }, function (response, status) {
             if (status === google.maps.DirectionsStatus.OK) {
-                if (directionsDisplay) {
-                    DirectionsPanel.clearExistingDirections(directionsDisplay);
+                if (DirectionsPanel.Display) {
+                    DirectionsPanel.clearExistingDirections();
                 }
-                directionsDisplay = new google.maps.DirectionsRenderer({
+                DirectionsPanel.Display = new google.maps.DirectionsRenderer({
                     directions: response,
                     draggable: true,
                     map: MarkerWithInfoWindow.map,
@@ -732,8 +733,8 @@ var DirectionsPanel = (function () {
                 DirectionsPanel.populateDirectionsPanel(response);
                 $("#directions-panel").show(200);
                 SearchPanel.hide();
-                directionsDisplay.addListener("directions_changed", function () {
-                    DirectionsPanel.populateDirectionsPanel(directionsDisplay.getDirections());
+                DirectionsPanel.Display.addListener("directions_changed", function () {
+                    DirectionsPanel.populateDirectionsPanel(DirectionsPanel.Display.getDirections());
                 });
             }
             else {
@@ -741,11 +742,13 @@ var DirectionsPanel = (function () {
             }
         });
         $("#directions-panel .close").on("click", function () {
-            DirectionsPanel.removeDirectionsPanel(directionsDisplay, markers);
+            DirectionsPanel.removeDirectionsPanel(markers);
         });
     };
-    DirectionsPanel.clearExistingDirections = function (directionsDisplay) {
-        directionsDisplay.setMap(null);
+    DirectionsPanel.clearExistingDirections = function () {
+        if (DirectionsPanel.Display) {
+            DirectionsPanel.Display.setMap(null);
+        }
     };
     DirectionsPanel.populateDirectionsPanel = function (directions) {
         var steps = directions.routes[0].legs[0].steps;
@@ -794,19 +797,19 @@ var DirectionsPanel = (function () {
                 return "";
         }
     };
-    DirectionsPanel.removeDirectionsPanel = function (directionsDisplay, markers) {
-        if (directionsDisplay) {
-            DirectionsPanel.clearExistingDirections(directionsDisplay);
+    DirectionsPanel.removeDirectionsPanel = function (markers) {
+        if (DirectionsPanel.Display) {
+            DirectionsPanel.clearExistingDirections();
         }
         $("#directions-panel").hide(200);
-        TimeSearch.searchWithinTime(markers, directionsDisplay);
+        TimeSearch.searchWithinTime(markers);
     };
     return DirectionsPanel;
 }());
 var SearchPanel = (function () {
     function SearchPanel() {
     }
-    SearchPanel.Initialise = function (map, markers, placeMarkers, directionsDisplay) {
+    SearchPanel.Initialise = function (map, markers, placeMarkers) {
         $(SearchPanel.searchButton).on("click", function () {
             $(SearchPanel.searchPanel).slideToggle("fast");
         });
@@ -820,7 +823,7 @@ var SearchPanel = (function () {
             SearchPanel.hide();
         });
         $(SearchPanel.searchTimeButton).on("click", function () {
-            TimeSearch.searchWithinTime(markers, directionsDisplay);
+            TimeSearch.searchWithinTime(markers);
             SearchPanel.hide();
         });
         searchBox.addListener("places_changed", function () {
@@ -852,13 +855,12 @@ function initMap() {
     var map;
     var markers = [];
     var placeMarkers = [];
-    var directionsDisplay = null;
     map = Init.Map();
     MarkerWithInfoWindow.map = map;
     ListingMarker.Initialise(map);
     TransportLayers.Initialise(map);
     DrawingTools.Initialise(map, markers);
-    SearchPanel.Initialise(map, markers, placeMarkers, directionsDisplay);
+    SearchPanel.Initialise(map, markers, placeMarkers);
     for (var _i = 0, _a = Data.locations; _i < _a.length; _i++) {
         var location_1 = _a[_i];
         var position = location_1.location;

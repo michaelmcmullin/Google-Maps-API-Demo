@@ -13,7 +13,6 @@ class SearchPanel {
     map: google.maps.Map,
     markers: MarkerWithInfoWindow[],
     placeMarkers: PlaceMarker[],
-    directionsDisplay: google.maps.DirectionsRenderer,
   ): void {
     $(SearchPanel.searchButton).on("click", () => {
       $(SearchPanel.searchPanel).slideToggle("fast");
@@ -43,7 +42,7 @@ class SearchPanel {
     });
 
     $(SearchPanel.searchTimeButton).on("click", () => {
-      TimeSearch.searchWithinTime(markers, directionsDisplay);
+      TimeSearch.searchWithinTime(markers);
       SearchPanel.hide();
     });
 

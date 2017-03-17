@@ -11,8 +11,7 @@ class TimeSearch {
    */
   public static searchWithinTime(
     markers: MarkerWithInfoWindow[],
-    directionsDisplay: google.maps.DirectionsRenderer,
-  ): void {
+   ): void {
     // Initialize the distance matrix service.
     const distanceMatrixService = new google.maps.DistanceMatrixService();
     const address = $("#search-within-time-text").val();
@@ -22,6 +21,8 @@ class TimeSearch {
       window.alert("You must enter an address.");
     } else {
       Utilities.hideMarkers(markers);
+      DirectionsPanel.clearExistingDirections();
+
       // Use the distance matrix service to calculate the duration of the
       // routes between all our markers, and the destination address entered
       // by the user. Then put all the origins into an origin matrix.
@@ -43,7 +44,7 @@ class TimeSearch {
           if (status !== google.maps.DistanceMatrixStatus.OK) {
             window.alert("Error was: " + status);
           } else {
-            TimeSearch.displayMarkersWithinTime(response, markers, directionsDisplay);
+            TimeSearch.displayMarkersWithinTime(response, markers);
           }
         },
       );
@@ -63,7 +64,6 @@ class TimeSearch {
   public static displayMarkersWithinTime(
     response: google.maps.DistanceMatrixResponse,
     markers: MarkerWithInfoWindow[],
-    directionsDisplay: google.maps.DirectionsRenderer,
   ): void {
     const maxDuration = $("#max-duration").val();
     const origins = response.originAddresses;
@@ -105,7 +105,7 @@ class TimeSearch {
             // Put this in so that this small window closes if the user clicks
             // the marker, when the big infowindow opens
             TimeSearch.removeGetRouteInfowindow(markers[i]);
-            TimeSearch.attachGetRouteEvent($("#btn_ViewRoute_" + i)[0], origin, markers, directionsDisplay);
+            TimeSearch.attachGetRouteEvent($("#btn_ViewRoute_" + i)[0], origin, markers);
           }
         }
       }
@@ -125,10 +125,9 @@ class TimeSearch {
     button: HTMLElement,
     origin: string,
     markers: MarkerWithInfoWindow[],
-    directionsDisplay: google.maps.DirectionsRenderer,
   ): void {
     google.maps.event.addDomListener(button, "click",
-        () => { DirectionsPanel.displayDirections(origin, markers, directionsDisplay); },
+        () => { DirectionsPanel.displayDirections(origin, markers); },
     );
   }
 
