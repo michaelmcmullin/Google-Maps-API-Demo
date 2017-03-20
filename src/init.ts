@@ -13,7 +13,7 @@ class Init {
     );
 
     // Constructor creates a new map - only center and zoom are required.
-    const map: google.maps.Map = new google.maps.Map($("#map")[0], {
+    const map: google.maps.Map = new google.maps.Map($(Mapping.Configuration.MAP)[0], {
         center: {lat: 40.7413549, lng: -73.9980244},
          mapTypeControlOptions: {
           mapTypeIds: ["roadmap", "satellite", "hybrid", "terrain", "mono"],

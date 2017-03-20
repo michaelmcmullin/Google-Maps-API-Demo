@@ -14,34 +14,34 @@ class SearchPanel {
     markers: MarkerWithInfoWindow[],
     placeMarkers: PlaceMarker[],
   ): void {
-    $(SearchPanel.searchButton).on("click", () => {
-      $(SearchPanel.searchPanel).slideToggle("fast");
+    $(Mapping.Configuration.TOGGLE_SEARCH).on("click", () => {
+      $(Mapping.Configuration.SEARCH_PANEL).slideToggle("fast");
     });
 
     // This autocomplete is for use in the search within time entry box.
     const timeAutocomplete: google.maps.places.Autocomplete =
-      new google.maps.places.Autocomplete($(SearchPanel.searchTimeText)[0] as HTMLInputElement);
+      new google.maps.places.Autocomplete($(Mapping.Configuration.SEARCH_TIME_TEXTBOX)[0] as HTMLInputElement);
 
     // This autocomplete is for use in the geocoder entry box.
     const zoomAutocomplete: google.maps.places.Autocomplete =
-      new google.maps.places.Autocomplete($(SearchPanel.searchZoomText)[0] as HTMLInputElement);
+      new google.maps.places.Autocomplete($(Mapping.Configuration.SEARCH_ZOOM_TEXT)[0] as HTMLInputElement);
 
     // Bias the boundaries within the map for the zoom to area text.
     zoomAutocomplete.bindTo("bounds", map);
 
     // Create a searchbox in order to execute a places search
     const searchBox: google.maps.places.SearchBox =
-      new google.maps.places.SearchBox($(SearchPanel.searchPlacesText)[0] as HTMLInputElement);
+      new google.maps.places.SearchBox($(Mapping.Configuration.SEARCH_PLACES_TEXT)[0] as HTMLInputElement);
 
     // Bias the searchbox to within the bounds of the map.
     searchBox.setBounds(map.getBounds());
 
-    $(SearchPanel.searchZoomButton).on("click", () => {
+    $(Mapping.Configuration.SEARCH_ZOOM_BUTTON).on("click", () => {
       ZoomSearch.zoomToArea(map);
       SearchPanel.hide();
     });
 
-    $(SearchPanel.searchTimeButton).on("click", () => {
+    $(Mapping.Configuration.SEARCH_TIME_BUTTON).on("click", () => {
       TimeSearch.searchWithinTime(markers);
       SearchPanel.hide();
     });
@@ -55,7 +55,7 @@ class SearchPanel {
 
     // Listen for the event fired when the user selects a prediction and clicks
     // "go" more details for that place.
-    $(SearchPanel.searchPlacesButton).on("click", () => {
+    $(Mapping.Configuration.SEARCH_PLACES_BUTTON).on("click", () => {
       PlaceMarker.textSearchPlaces(placeMarkers);
       SearchPanel.hide();
     });
@@ -65,25 +65,13 @@ class SearchPanel {
    * Slide the search panel down so it's visible
    */
   public static show(): void {
-    $(SearchPanel.searchPanel).slideDown("fast");
+    $(Mapping.Configuration.SEARCH_PANEL).slideDown("fast");
   }
 
   /**
    * Slide the search panel up so it's hidden
    */
   public static hide(): void {
-    $(SearchPanel.searchPanel).slideUp("fast");
+    $(Mapping.Configuration.SEARCH_PANEL).slideUp("fast");
   }
-
-  private static readonly searchButton: string = "#toggle-search";
-  private static readonly searchPanel: string = "#search-panel";
-
-  private static readonly searchZoomText: string = "#zoom-to-area-text";
-  private static readonly searchZoomButton: string = "#zoom-to-area";
-
-  private static readonly searchTimeText: string = "#search-within-time-text";
-  private static readonly searchTimeButton: string = "#search-within-time";
-
-  private static readonly searchPlacesText: string = "#places-search";
-  private static readonly searchPlacesButton: string = "#go-places";
 }

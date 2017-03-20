@@ -43,7 +43,7 @@ class ListingMarker extends MarkerWithInfoWindow {
     markers: MarkerWithInfoWindow[],
     map: google.maps.Map,
   ) {
-    const listingButton = $("#toggle-listings");
+    const listingButton = $(Mapping.Configuration.TOGGLE_LISTINGS);
     if (listingButton.hasClass("selected")) {
       listingButton.removeClass("selected");
       Utilities.hideMarkers(markers);
@@ -110,7 +110,7 @@ class ListingMarker extends MarkerWithInfoWindow {
             pitch: 30,
           },
         };
-        const panorama = new google.maps.StreetViewPanorama($("#pano")[0], panoramaOptions);
+        const panorama = new google.maps.StreetViewPanorama($(Mapping.Configuration.PANORAMA)[0], panoramaOptions);
       } else {
         ListingMarker.currentInfoWindow.setContent(
           "<div>" + ListingMarker.currentMarker.getTitle() + "</div><div>No Street View Found</div>");

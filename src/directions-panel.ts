@@ -19,9 +19,9 @@ class DirectionsPanel {
     Utilities.hideMarkers(markers);
     const directionsService = new google.maps.DirectionsService();
     // Get the destination address from the user entered value.
-    const destinationAddress = $("#search-within-time-text").val();
+    const destinationAddress = $(Mapping.Configuration.SEARCH_TIME_TEXTBOX).val();
     // Get mode again from the user entered value.
-    const mode: string = $("#mode").val();
+    const mode: string = $(Mapping.Configuration.SEARCH_TIME_MODE).val();
     directionsService.route({
         // The destination is user entered address.
         destination: destinationAddress,
@@ -43,7 +43,7 @@ class DirectionsPanel {
             },
           );
           DirectionsPanel.populateDirectionsPanel(response);
-          $("#directions-panel").show(200);
+          $(Mapping.Configuration.DIRECTIONS_PANEL).show(200);
           SearchPanel.hide();
 
           DirectionsPanel.Display.addListener("directions_changed", () => {
@@ -55,7 +55,7 @@ class DirectionsPanel {
       },
     );
 
-    $("#directions-panel .close").on("click", () => {
+    $(Mapping.Configuration.DIRECTIONS_PANEL_CLOSE).on("click", () => {
       DirectionsPanel.removeDirectionsPanel(markers);
     });
   }
@@ -108,7 +108,7 @@ class DirectionsPanel {
     }
     text += "</ul>";
 
-    $("#directions").html(text);
+    $(Mapping.Configuration.DIRECTIONS_TEXT).html(text);
   }
 
   /**
@@ -147,7 +147,7 @@ class DirectionsPanel {
     if (DirectionsPanel.Display) {
       DirectionsPanel.clearExistingDirections();
     }
-    $("#directions-panel").hide(200);
+    $(Mapping.Configuration.DIRECTIONS_PANEL).hide(200);
     TimeSearch.searchWithinTime(markers);
   }
 }

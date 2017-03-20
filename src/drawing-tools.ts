@@ -22,21 +22,21 @@ class DrawingTools {
       drawingMode: google.maps.drawing.OverlayType.POLYGON,
     });
 
-    $(DrawingTools.handButtonId).on("click", () => {
+    $(Mapping.Configuration.HAND_BUTTON).on("click", () => {
       DrawingTools.disableDrawing();
     });
 
-    $(DrawingTools.polygonButtonId).on("click", () => {
+    $(Mapping.Configuration.POLYGON_BUTTON).on("click", () => {
       DrawingTools.drawingMode = google.maps.drawing.OverlayType.POLYGON;
-      DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(DrawingTools.polygonButtonId));
+      DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(Mapping.Configuration.POLYGON_BUTTON));
     });
-    $(DrawingTools.rectangleButtonId).on("click", () => {
+    $(Mapping.Configuration.RECTANGLE_BUTTON).on("click", () => {
       DrawingTools.drawingMode = google.maps.drawing.OverlayType.RECTANGLE;
-      DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(DrawingTools.rectangleButtonId));
+      DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(Mapping.Configuration.RECTANGLE_BUTTON));
     });
-    $(DrawingTools.circleButtonId).on("click", () => {
+    $(Mapping.Configuration.CIRCLE_BUTTON).on("click", () => {
      DrawingTools.drawingMode = google.maps.drawing.OverlayType.CIRCLE;
-     DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(DrawingTools.circleButtonId));
+     DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(Mapping.Configuration.CIRCLE_BUTTON));
     });
 
     // Add an event listener so that the polygon is captured, call the
@@ -73,7 +73,7 @@ class DrawingTools {
    * @param caller - The jQuery drawing tool selected which triggers this function.
    */
   public static toggleDrawing(caller: JQuery): JQuery {
-    $(DrawingTools.handButtonId).removeClass("selected");
+    $(Mapping.Configuration.HAND_BUTTON).removeClass("selected");
     DrawingTools.deselectDrawingTools();
 
     if (DrawingTools.drawingManager.getMap() && caller === DrawingTools.currentDrawingTool) {
@@ -106,20 +106,14 @@ class DrawingTools {
     }
   }
 
-  private static readonly handButtonId: string = "#hand-tool";
-  private static readonly polygonButtonId: string = "#toggle-drawing-polygon";
-  private static readonly rectangleButtonId: string = "#toggle-drawing-rectangle";
-  private static readonly circleButtonId: string = "#toggle-drawing-circle";
-  private static readonly listingsButtonId: string = "#toggle-listings";
-
   /**
    * Deselect all drawing tool icons.
    */
   private static deselectDrawingTools(): void {
-    $(DrawingTools.listingsButtonId).removeClass("selected");
-    $(DrawingTools.polygonButtonId).removeClass("selected");
-    $(DrawingTools.rectangleButtonId).removeClass("selected");
-    $(DrawingTools.circleButtonId).removeClass("selected");
+    $(Mapping.Configuration.LISTINGS_BUTTON).removeClass("selected");
+    $(Mapping.Configuration.POLYGON_BUTTON).removeClass("selected");
+    $(Mapping.Configuration.RECTANGLE_BUTTON).removeClass("selected");
+    $(Mapping.Configuration.CIRCLE_BUTTON).removeClass("selected");
   }
 
   /**
@@ -127,7 +121,7 @@ class DrawingTools {
    */
   private static disableDrawing(): void {
     DrawingTools.deselectDrawingTools();
-    $(DrawingTools.handButtonId).addClass("selected");
+    $(Mapping.Configuration.HAND_BUTTON).addClass("selected");
     DrawingTools.clearPolygons();
   }
 
@@ -148,11 +142,11 @@ class DrawingTools {
     }
     DrawingTools.deselectDrawingTools();
     if (markerCount > 0) {
-      $(DrawingTools.listingsButtonId).addClass("selected");
+      $(Mapping.Configuration.LISTINGS_BUTTON).addClass("selected");
     } else {
-      $(DrawingTools.listingsButtonId).removeClass("selected");
+      $(Mapping.Configuration.LISTINGS_BUTTON).removeClass("selected");
     }
-    $(DrawingTools.handButtonId).addClass("selected");
+    $(Mapping.Configuration.HAND_BUTTON).addClass("selected");
     if (DrawingTools.drawingManager.getMap()) {
       DrawingTools.drawingManager.setMap(null);
     }

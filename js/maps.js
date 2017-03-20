@@ -8,14 +8,35 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var MapDemo;
-(function (MapDemo) {
+var Mapping;
+(function (Mapping) {
     var Configuration = (function () {
         function Configuration() {
         }
         return Configuration;
     }());
-})(MapDemo || (MapDemo = {}));
+    Configuration.MAP = "#map";
+    Configuration.PANORAMA = "#pano";
+    Configuration.TOGGLE_SEARCH = "#toggle-search";
+    Configuration.SEARCH_PANEL = "#search-panel";
+    Configuration.SEARCH_ZOOM_TEXT = "#zoom-to-area-text";
+    Configuration.SEARCH_ZOOM_BUTTON = "#zoom-to-area";
+    Configuration.SEARCH_TIME_TEXTBOX = "#search-within-time-text";
+    Configuration.SEARCH_TIME_MODE = "#mode";
+    Configuration.SEARCH_TIME_BUTTON = "#search-within-time";
+    Configuration.SEARCH_PLACES_TEXT = "#places-search";
+    Configuration.SEARCH_PLACES_BUTTON = "#go-places";
+    Configuration.TOGGLE_LISTINGS = "#toggle-listings";
+    Configuration.HAND_BUTTON = "#hand-tool";
+    Configuration.POLYGON_BUTTON = "#toggle-drawing-polygon";
+    Configuration.RECTANGLE_BUTTON = "#toggle-drawing-rectangle";
+    Configuration.CIRCLE_BUTTON = "#toggle-drawing-circle";
+    Configuration.LISTINGS_BUTTON = "#toggle-listings";
+    Configuration.DIRECTIONS_PANEL = "#directions-panel";
+    Configuration.DIRECTIONS_PANEL_CLOSE = "#directions-panel .close";
+    Configuration.DIRECTIONS_TEXT = "#directions";
+    Mapping.Configuration = Configuration;
+})(Mapping || (Mapping = {}));
 var MarkerWithInfoWindow = (function () {
     function MarkerWithInfoWindow() {
     }
@@ -69,7 +90,7 @@ var Init = (function () {
     }
     Init.Map = function () {
         var styledMapType = new google.maps.StyledMapType(Init.styles, { name: "Mono" });
-        var map = new google.maps.Map($("#map")[0], {
+        var map = new google.maps.Map($(Mapping.Configuration.MAP)[0], {
             center: { lat: 40.7413549, lng: -73.9980244 },
             mapTypeControlOptions: {
                 mapTypeIds: ["roadmap", "satellite", "hybrid", "terrain", "mono"],
@@ -206,20 +227,20 @@ var DrawingTools = (function () {
             drawingControl: false,
             drawingMode: google.maps.drawing.OverlayType.POLYGON,
         });
-        $(DrawingTools.handButtonId).on("click", function () {
+        $(Mapping.Configuration.HAND_BUTTON).on("click", function () {
             DrawingTools.disableDrawing();
         });
-        $(DrawingTools.polygonButtonId).on("click", function () {
+        $(Mapping.Configuration.POLYGON_BUTTON).on("click", function () {
             DrawingTools.drawingMode = google.maps.drawing.OverlayType.POLYGON;
-            DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(DrawingTools.polygonButtonId));
+            DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(Mapping.Configuration.POLYGON_BUTTON));
         });
-        $(DrawingTools.rectangleButtonId).on("click", function () {
+        $(Mapping.Configuration.RECTANGLE_BUTTON).on("click", function () {
             DrawingTools.drawingMode = google.maps.drawing.OverlayType.RECTANGLE;
-            DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(DrawingTools.rectangleButtonId));
+            DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(Mapping.Configuration.RECTANGLE_BUTTON));
         });
-        $(DrawingTools.circleButtonId).on("click", function () {
+        $(Mapping.Configuration.CIRCLE_BUTTON).on("click", function () {
             DrawingTools.drawingMode = google.maps.drawing.OverlayType.CIRCLE;
-            DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(DrawingTools.circleButtonId));
+            DrawingTools.currentDrawingTool = DrawingTools.toggleDrawing($(Mapping.Configuration.CIRCLE_BUTTON));
         });
         DrawingTools.drawingManager.addListener("overlaycomplete", function (event) {
             if (DrawingTools.polygon) {
@@ -232,7 +253,7 @@ var DrawingTools = (function () {
         DrawingTools.disableDrawing();
     };
     DrawingTools.toggleDrawing = function (caller) {
-        $(DrawingTools.handButtonId).removeClass("selected");
+        $(Mapping.Configuration.HAND_BUTTON).removeClass("selected");
         DrawingTools.deselectDrawingTools();
         if (DrawingTools.drawingManager.getMap() && caller === DrawingTools.currentDrawingTool) {
             DrawingTools.drawingManager.setMap(null);
@@ -260,14 +281,14 @@ var DrawingTools = (function () {
         }
     };
     DrawingTools.deselectDrawingTools = function () {
-        $(DrawingTools.listingsButtonId).removeClass("selected");
-        $(DrawingTools.polygonButtonId).removeClass("selected");
-        $(DrawingTools.rectangleButtonId).removeClass("selected");
-        $(DrawingTools.circleButtonId).removeClass("selected");
+        $(Mapping.Configuration.LISTINGS_BUTTON).removeClass("selected");
+        $(Mapping.Configuration.POLYGON_BUTTON).removeClass("selected");
+        $(Mapping.Configuration.RECTANGLE_BUTTON).removeClass("selected");
+        $(Mapping.Configuration.CIRCLE_BUTTON).removeClass("selected");
     };
     DrawingTools.disableDrawing = function () {
         DrawingTools.deselectDrawingTools();
-        $(DrawingTools.handButtonId).addClass("selected");
+        $(Mapping.Configuration.HAND_BUTTON).addClass("selected");
         DrawingTools.clearPolygons();
     };
     DrawingTools.searchWithinPolygon = function () {
@@ -284,12 +305,12 @@ var DrawingTools = (function () {
         }
         DrawingTools.deselectDrawingTools();
         if (markerCount > 0) {
-            $(DrawingTools.listingsButtonId).addClass("selected");
+            $(Mapping.Configuration.LISTINGS_BUTTON).addClass("selected");
         }
         else {
-            $(DrawingTools.listingsButtonId).removeClass("selected");
+            $(Mapping.Configuration.LISTINGS_BUTTON).removeClass("selected");
         }
-        $(DrawingTools.handButtonId).addClass("selected");
+        $(Mapping.Configuration.HAND_BUTTON).addClass("selected");
         if (DrawingTools.drawingManager.getMap()) {
             DrawingTools.drawingManager.setMap(null);
         }
@@ -316,11 +337,6 @@ var DrawingTools = (function () {
 }());
 DrawingTools.currentDrawingTool = null;
 DrawingTools.polygon = null;
-DrawingTools.handButtonId = "#hand-tool";
-DrawingTools.polygonButtonId = "#toggle-drawing-polygon";
-DrawingTools.rectangleButtonId = "#toggle-drawing-rectangle";
-DrawingTools.circleButtonId = "#toggle-drawing-circle";
-DrawingTools.listingsButtonId = "#toggle-listings";
 var PlaceMarker = (function (_super) {
     __extends(PlaceMarker, _super);
     function PlaceMarker() {
@@ -639,7 +655,7 @@ var ListingMarker = (function (_super) {
         ListingMarker.currentInfoWindow = null;
     };
     ListingMarker.toggleListings = function (markers, map) {
-        var listingButton = $("#toggle-listings");
+        var listingButton = $(Mapping.Configuration.TOGGLE_LISTINGS);
         if (listingButton.hasClass("selected")) {
             listingButton.removeClass("selected");
             Utilities.hideMarkers(markers);
@@ -681,7 +697,7 @@ var ListingMarker = (function (_super) {
                         pitch: 30,
                     },
                 };
-                var panorama = new google.maps.StreetViewPanorama($("#pano")[0], panoramaOptions);
+                var panorama = new google.maps.StreetViewPanorama($(Mapping.Configuration.PANORAMA)[0], panoramaOptions);
             }
             else {
                 ListingMarker.currentInfoWindow.setContent("<div>" + ListingMarker.currentMarker.getTitle() + "</div><div>No Street View Found</div>");
@@ -719,8 +735,8 @@ var DirectionsPanel = (function () {
     DirectionsPanel.displayDirections = function (origin, markers) {
         Utilities.hideMarkers(markers);
         var directionsService = new google.maps.DirectionsService();
-        var destinationAddress = $("#search-within-time-text").val();
-        var mode = $("#mode").val();
+        var destinationAddress = $(Mapping.Configuration.SEARCH_TIME_TEXTBOX).val();
+        var mode = $(Mapping.Configuration.SEARCH_TIME_MODE).val();
         directionsService.route({
             destination: destinationAddress,
             origin: origin,
@@ -739,7 +755,7 @@ var DirectionsPanel = (function () {
                     },
                 });
                 DirectionsPanel.populateDirectionsPanel(response);
-                $("#directions-panel").show(200);
+                $(Mapping.Configuration.DIRECTIONS_PANEL).show(200);
                 SearchPanel.hide();
                 DirectionsPanel.Display.addListener("directions_changed", function () {
                     DirectionsPanel.populateDirectionsPanel(DirectionsPanel.Display.getDirections());
@@ -749,7 +765,7 @@ var DirectionsPanel = (function () {
                 window.alert("Directions request failed due to " + status);
             }
         });
-        $("#directions-panel .close").on("click", function () {
+        $(Mapping.Configuration.DIRECTIONS_PANEL_CLOSE).on("click", function () {
             DirectionsPanel.removeDirectionsPanel(markers);
         });
     };
@@ -786,7 +802,7 @@ var DirectionsPanel = (function () {
                 ")</small></div></div></div></li>";
         }
         text += "</ul>";
-        $("#directions").html(text);
+        $(Mapping.Configuration.DIRECTIONS_TEXT).html(text);
     };
     DirectionsPanel.getManeuverIcon = function (instructions) {
         var maneuver = "";
@@ -809,7 +825,7 @@ var DirectionsPanel = (function () {
         if (DirectionsPanel.Display) {
             DirectionsPanel.clearExistingDirections();
         }
-        $("#directions-panel").hide(200);
+        $(Mapping.Configuration.DIRECTIONS_PANEL).hide(200);
         TimeSearch.searchWithinTime(markers);
     };
     return DirectionsPanel;
@@ -818,19 +834,19 @@ var SearchPanel = (function () {
     function SearchPanel() {
     }
     SearchPanel.Initialise = function (map, markers, placeMarkers) {
-        $(SearchPanel.searchButton).on("click", function () {
-            $(SearchPanel.searchPanel).slideToggle("fast");
+        $(Mapping.Configuration.TOGGLE_SEARCH).on("click", function () {
+            $(Mapping.Configuration.SEARCH_PANEL).slideToggle("fast");
         });
-        var timeAutocomplete = new google.maps.places.Autocomplete($(SearchPanel.searchTimeText)[0]);
-        var zoomAutocomplete = new google.maps.places.Autocomplete($(SearchPanel.searchZoomText)[0]);
+        var timeAutocomplete = new google.maps.places.Autocomplete($(Mapping.Configuration.SEARCH_TIME_TEXTBOX)[0]);
+        var zoomAutocomplete = new google.maps.places.Autocomplete($(Mapping.Configuration.SEARCH_ZOOM_TEXT)[0]);
         zoomAutocomplete.bindTo("bounds", map);
-        var searchBox = new google.maps.places.SearchBox($(SearchPanel.searchPlacesText)[0]);
+        var searchBox = new google.maps.places.SearchBox($(Mapping.Configuration.SEARCH_PLACES_TEXT)[0]);
         searchBox.setBounds(map.getBounds());
-        $(SearchPanel.searchZoomButton).on("click", function () {
+        $(Mapping.Configuration.SEARCH_ZOOM_BUTTON).on("click", function () {
             ZoomSearch.zoomToArea(map);
             SearchPanel.hide();
         });
-        $(SearchPanel.searchTimeButton).on("click", function () {
+        $(Mapping.Configuration.SEARCH_TIME_BUTTON).on("click", function () {
             TimeSearch.searchWithinTime(markers);
             SearchPanel.hide();
         });
@@ -838,27 +854,19 @@ var SearchPanel = (function () {
             PlaceMarker.searchBoxPlaces(searchBox, placeMarkers);
             SearchPanel.hide();
         });
-        $(SearchPanel.searchPlacesButton).on("click", function () {
+        $(Mapping.Configuration.SEARCH_PLACES_BUTTON).on("click", function () {
             PlaceMarker.textSearchPlaces(placeMarkers);
             SearchPanel.hide();
         });
     };
     SearchPanel.show = function () {
-        $(SearchPanel.searchPanel).slideDown("fast");
+        $(Mapping.Configuration.SEARCH_PANEL).slideDown("fast");
     };
     SearchPanel.hide = function () {
-        $(SearchPanel.searchPanel).slideUp("fast");
+        $(Mapping.Configuration.SEARCH_PANEL).slideUp("fast");
     };
     return SearchPanel;
 }());
-SearchPanel.searchButton = "#toggle-search";
-SearchPanel.searchPanel = "#search-panel";
-SearchPanel.searchZoomText = "#zoom-to-area-text";
-SearchPanel.searchZoomButton = "#zoom-to-area";
-SearchPanel.searchTimeText = "#search-within-time-text";
-SearchPanel.searchTimeButton = "#search-within-time";
-SearchPanel.searchPlacesText = "#places-search";
-SearchPanel.searchPlacesButton = "#go-places";
 function initMap() {
     var map;
     var markers = [];
