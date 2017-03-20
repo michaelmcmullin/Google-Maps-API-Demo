@@ -8,6 +8,14 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var MapDemo;
+(function (MapDemo) {
+    var Configuration = (function () {
+        function Configuration() {
+        }
+        return Configuration;
+    }());
+})(MapDemo || (MapDemo = {}));
 var MarkerWithInfoWindow = (function () {
     function MarkerWithInfoWindow() {
     }

@@ -20,7 +20,7 @@ class Init {
           position: google.maps.ControlPosition.TOP_RIGHT,
         },
         zoom: 13,
-   });
+    });
     map.mapTypes.set("mono", styledMapType);
     map.setMapTypeId("mono");
 

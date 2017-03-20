@@ -1,3 +1,4 @@
+/// <reference path="configuration.ts" />
 /// <reference path="MarkerWithInfoWindow.ts" />
 /// <reference path="utilities.ts" />
 /// <reference path="locations.ts" />
