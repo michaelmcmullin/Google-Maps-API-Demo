@@ -36,15 +36,15 @@ function initMap() {
     markers.push(listingMarker);
   }
 
-  $("#toggle-listings").on("click", () => {
+  $(Mapping.Configuration.TOGGLE_LISTINGS).on("click", () => {
     DrawingTools.clearPolygons();
     ListingMarker.toggleListings(markers, map);
   });
 
-  $("#about-button").on("click", () => {
-    $("#about-modal").show();
+  $(Mapping.Configuration.ABOUT_BUTTON).on("click", () => {
+    $(Mapping.Configuration.ABOUT).show();
   });
-  $("#about-modal .close").on("click", () => {
-    $("#about-modal").fadeOut();
+  $(Mapping.Configuration.ABOUT_CLOSE).on("click", () => {
+    $(Mapping.Configuration.ABOUT).fadeOut();
   });
 }

@@ -13,7 +13,7 @@ class ZoomSearch {
     const geocoder = new google.maps.Geocoder();
 
     // Get the address or place that the user entered.
-    const address = $("#zoom-to-area-text").val();
+    const address = $(Mapping.Configuration.SEARCH_ZOOM_TEXT).val();
 
     // Make sure the address isn't blank.
     if (address === "") {

@@ -110,7 +110,7 @@ class DrawingTools {
    * Deselect all drawing tool icons.
    */
   private static deselectDrawingTools(): void {
-    $(Mapping.Configuration.LISTINGS_BUTTON).removeClass("selected");
+    $(Mapping.Configuration.TOGGLE_LISTINGS).removeClass("selected");
     $(Mapping.Configuration.POLYGON_BUTTON).removeClass("selected");
     $(Mapping.Configuration.RECTANGLE_BUTTON).removeClass("selected");
     $(Mapping.Configuration.CIRCLE_BUTTON).removeClass("selected");
@@ -142,9 +142,9 @@ class DrawingTools {
     }
     DrawingTools.deselectDrawingTools();
     if (markerCount > 0) {
-      $(Mapping.Configuration.LISTINGS_BUTTON).addClass("selected");
+      $(Mapping.Configuration.TOGGLE_LISTINGS).addClass("selected");
     } else {
-      $(Mapping.Configuration.LISTINGS_BUTTON).removeClass("selected");
+      $(Mapping.Configuration.TOGGLE_LISTINGS).removeClass("selected");
     }
     $(Mapping.Configuration.HAND_BUTTON).addClass("selected");
     if (DrawingTools.drawingManager.getMap()) {

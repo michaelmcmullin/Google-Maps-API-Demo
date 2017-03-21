@@ -14,7 +14,7 @@ class TimeSearch {
    ): void {
     // Initialize the distance matrix service.
     const distanceMatrixService = new google.maps.DistanceMatrixService();
-    const address = $("#search-within-time-text").val();
+    const address = $(Mapping.Configuration.SEARCH_TIME_TEXTBOX).val();
 
     // Check to make sure the place entered isn't blank.
     if (address === "") {
@@ -31,7 +31,7 @@ class TimeSearch {
         origins[i] = markers[i].marker.getPosition();
       }
       const destination = address;
-      const mode: string = $("#mode").val();
+      const mode: string = $(Mapping.Configuration.SEARCH_TIME_MODE).val();
 
       // Now that both the origins and destination are defined, get all the
       // info for the distances between them.
@@ -65,7 +65,7 @@ class TimeSearch {
     response: google.maps.DistanceMatrixResponse,
     markers: MarkerWithInfoWindow[],
   ): void {
-    const maxDuration = $("#max-duration").val();
+    const maxDuration = $(Mapping.Configuration.SEARCH_TIME_DURATION).val();
     const origins = response.originAddresses;
     const destinations = response.destinationAddresses;
     // Parse through the results, and get the distance and duration of each.

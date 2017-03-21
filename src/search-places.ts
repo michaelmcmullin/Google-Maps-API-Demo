@@ -38,7 +38,7 @@ class PlaceMarker extends MarkerWithInfoWindow {
     const placesService = new google.maps.places.PlacesService(MarkerWithInfoWindow.map);
     placesService.textSearch({
         bounds,
-        query: $("#places-search").val(),
+        query: $(Mapping.Configuration.SEARCH_PLACES_TEXT).val(),
       }, (results, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
           PlaceMarker.createMarkersForPlaces(results, placeMarkers);

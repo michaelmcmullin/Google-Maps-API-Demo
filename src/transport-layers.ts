@@ -19,14 +19,14 @@ class TransportLayers {
 
     TransportLayers.hideLayers();
 
-    $(TransportLayers.trafficButtonId).on("click", () => {
-      TransportLayers.toggleLayer(TransportLayers.trafficLayer, TransportLayers.trafficButtonId);
+    $(Mapping.Configuration.LAYER_TRAFFIC).on("click", () => {
+      TransportLayers.toggleLayer(TransportLayers.trafficLayer, Mapping.Configuration.LAYER_TRAFFIC);
     });
-    $(TransportLayers.transitButtonId).on("click", () => {
-      TransportLayers.toggleLayer(TransportLayers.transitLayer, TransportLayers.transitButtonId);
+    $(Mapping.Configuration.LAYER_TRANSIT).on("click", () => {
+      TransportLayers.toggleLayer(TransportLayers.transitLayer, Mapping.Configuration.LAYER_TRANSIT);
     });
-    $(TransportLayers.bicycleButtonId).on("click", () => {
-      TransportLayers.toggleLayer(TransportLayers.bikeLayer, TransportLayers.bicycleButtonId);
+    $(Mapping.Configuration.LAYER_BICYCLE).on("click", () => {
+      TransportLayers.toggleLayer(TransportLayers.bikeLayer, Mapping.Configuration.LAYER_BICYCLE);
     });
   }
 
@@ -38,9 +38,9 @@ class TransportLayers {
     TransportLayers.transitLayer.setMap(null);
     TransportLayers.bikeLayer.setMap(null);
 
-    $(TransportLayers.trafficButtonId).removeClass("selected");
-    $(TransportLayers.transitButtonId).removeClass("selected");
-    $(TransportLayers.bicycleButtonId).removeClass("selected");
+    $(Mapping.Configuration.LAYER_TRAFFIC).removeClass("selected");
+    $(Mapping.Configuration.LAYER_TRANSIT).removeClass("selected");
+    $(Mapping.Configuration.LAYER_BICYCLE).removeClass("selected");
   }
 
   /** Toggle a transport layer and button
@@ -60,7 +60,4 @@ class TransportLayers {
     }
   }
 
-  private static readonly trafficButtonId: string = "#toggle-traffic";
-  private static readonly transitButtonId: string = "#toggle-transit";
-  private static readonly bicycleButtonId: string = "#toggle-bicycling";
 }
