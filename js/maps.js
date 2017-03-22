@@ -15,6 +15,9 @@ var Mapping;
         }
         return Configuration;
     }());
+    Configuration.INITIAL_LATITUDE = 40.7413549;
+    Configuration.INITIAL_LONGITUDE = -73.9980244;
+    Configuration.INITIAL_ZOOM = 13;
     Configuration.MAP = "#map";
     Configuration.PANORAMA = "#pano";
     Configuration.TOGGLE_SEARCH = "#toggle-search";
@@ -97,12 +100,12 @@ var Init = (function () {
     Init.Map = function () {
         var styledMapType = new google.maps.StyledMapType(Init.styles, { name: "Mono" });
         var map = new google.maps.Map($(Mapping.Configuration.MAP)[0], {
-            center: { lat: 40.7413549, lng: -73.9980244 },
+            center: { lat: Mapping.Configuration.INITIAL_LATITUDE, lng: Mapping.Configuration.INITIAL_LONGITUDE },
             mapTypeControlOptions: {
                 mapTypeIds: ["roadmap", "satellite", "hybrid", "terrain", "mono"],
                 position: google.maps.ControlPosition.TOP_RIGHT,
             },
-            zoom: 13,
+            zoom: Mapping.Configuration.INITIAL_ZOOM,
         });
         map.mapTypes.set("mono", styledMapType);
         map.setMapTypeId("mono");

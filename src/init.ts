@@ -14,12 +14,12 @@ class Init {
 
     // Constructor creates a new map - only center and zoom are required.
     const map: google.maps.Map = new google.maps.Map($(Mapping.Configuration.MAP)[0], {
-        center: {lat: 40.7413549, lng: -73.9980244},
+        center: {lat: Mapping.Configuration.INITIAL_LATITUDE, lng: Mapping.Configuration.INITIAL_LONGITUDE},
          mapTypeControlOptions: {
           mapTypeIds: ["roadmap", "satellite", "hybrid", "terrain", "mono"],
           position: google.maps.ControlPosition.TOP_RIGHT,
         },
-        zoom: 13,
+        zoom: Mapping.Configuration.INITIAL_ZOOM,
     });
     map.mapTypes.set("mono", styledMapType);
     map.setMapTypeId("mono");

@@ -3,6 +3,11 @@ namespace Mapping {
    * Configuration settings for all mapping functionality in this app.
    */
   export class Configuration {
+      // Initial position of map
+      public static readonly INITIAL_LATITUDE: number = 40.7413549;
+      public static readonly INITIAL_LONGITUDE: number = -73.9980244;
+      public static readonly INITIAL_ZOOM: number = 13;
+
       // IDs of the various HTML elements that interact with mapping code.
       public static readonly MAP: string = "#map";
       public static readonly PANORAMA: string = "#pano";
