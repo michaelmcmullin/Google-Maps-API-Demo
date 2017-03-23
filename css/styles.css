@@ -1,38 +1,38 @@
 html,
 body {
-  margin: 0;
-  padding: 0;
+  font-family: 'Open Sans', sans-serif;
   height: 100%;
+  margin: 0;
   overflow: hidden;
-  position: relative;
-  font-family: 'Open Sans', sans-serif; }
+  padding: 0;
+  position: relative; }
 
 a {
   cursor: pointer; }
 
 /* Main sections */
 #header {
-  position: relative;
-  box-sizing: border-box;
   background: #004784;
+  box-sizing: border-box;
   color: #fff;
-  width: 100%;
   height: 48px;
+  position: relative;
+  width: 100%;
   z-index: 500; }
 
 #content {
+  bottom: 0;
   position: absolute;
   top: 48px;
-  bottom: 0;
   width: 100%; }
 
 /* Header */
 h1 {
   float: left;
-  vertical-align: middle;
-  margin: 8px 12px;
+  font-size: 24px;
   font-weight: normal;
-  font-size: 24px; }
+  margin: 8px 12px;
+  vertical-align: middle; }
 
 #header a {
   display: block;
@@ -45,28 +45,28 @@ h1 {
   vertical-align: middle; }
 
 #header ul {
-  display: none;
-  position: absolute;
   background: rgba(68, 68, 68, 0.9);
+  display: none;
+  left: 96px;
+  list-style: none;
   margin: 0;
   padding: 0;
-  list-style: none;
-  top: 48px;
-  left: 96px; }
+  position: absolute;
+  top: 48px; }
 
 #header li {
-  padding: 12px;
-  border-top: 1px solid #777; }
+  border-top: 1px solid #777;
+  padding: 12px; }
 
 /* Control Panel */
 #main_controls {
-  position: absolute;
+  background: rgba(68, 68, 68, 0.9);
+  border-radius: 12px;
   display: block;
   list-style: none;
-  background: rgba(68, 68, 68, 0.9);
-  padding: 12px 6px;
   margin: 12px;
-  border-radius: 12px;
+  padding: 12px 6px;
+  position: absolute;
   z-index: 400; }
 
 #main_controls li i {
@@ -74,9 +74,9 @@ h1 {
   padding: 6px; }
 
 #main_controls .separator {
-  padding-bottom: 12px;
   border-bottom: 1px solid #777;
-  margin-bottom: 6px; }
+  margin-bottom: 6px;
+  padding-bottom: 12px; }
 
 #main_controls a {
   color: #aaa; }
@@ -86,15 +86,15 @@ h1 {
 
 /* About Modal */
 #about-modal {
+  background: rgba(0, 0, 0, 0.75);
   display: none;
-  position: absolute;
-  z-index: 1000;
+  height: 100%;
   left: 0;
+  overflow: hidden;
+  position: absolute;
   top: 0;
   width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: rgba(0, 0, 0, 0.75); }
+  z-index: 1000; }
 
 #about-modal-content {
   background: #fff;
@@ -104,38 +104,38 @@ h1 {
 
 /* Directions */
 #directions-panel {
-  position: absolute;
-  z-index: 600;
-  top: 100px;
-  right: 10px;
-  width: 25%;
   background: #fff;
+  display: none;
   padding: 24px;
-  display: none; }
+  position: absolute;
+  right: 10px;
+  top: 100px;
+  width: 25%;
+  z-index: 600; }
 
 .close {
   float: right; }
 
 /* Map */
 #map {
-  bottom: 0px;
+  bottom: 0;
   height: 100%;
-  left: 0px;
+  left: 0;
   position: absolute;
-  right: 0px;
+  right: 0;
   z-index: 0; }
 
 .options-box {
-  position: absolute;
+  box-shadow: 10px 10px 30px 0 rgba(0, 0, 0, 0.75);
   margin-top: 10px;
-  box-shadow: 10px 10px 30px 0px rgba(0, 0, 0, 0.75);
+  position: absolute;
   z-index: 1000; }
 
 #pano {
-  width: 200px;
-  height: 200px; }
+  height: 200px;
+  width: 200px; }
 
 .top-row-margin {
-  margin-top: 0.5em; }
+  margin-top: .5em; }
 
 /*# sourceMappingURL=styles.css.map */

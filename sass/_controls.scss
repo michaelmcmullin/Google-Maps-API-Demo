@@ -1,26 +1,30 @@
 /* Control Panel */
 #main_controls {
-  position: absolute;
+  background: rgba(68, 68, 68, .9);
+  border-radius: 12px;
   display: block;
   list-style: none;
-  background: rgba(68,68,68,0.9);
-  padding: 12px 6px;
   margin: 12px;
-  border-radius: 12px;
+  padding: 12px 6px;
+  position: absolute;
   z-index: 400;
 }
+
 #main_controls li i {
   font-size: 24px;
   padding: 6px;
 }
+
 #main_controls .separator {
-  padding-bottom: 12px;
   border-bottom: 1px solid #777;
   margin-bottom: 6px;
+  padding-bottom: 12px;
 }
+
 #main_controls a {
   color: #aaa;
 }
+
 #main_controls a.selected {
   color: #fff;
 }

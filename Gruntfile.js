@@ -1,6 +1,12 @@
 module.exports = function(grunt) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
+    sasslint: {
+        options: {
+            configFile: 'sass/.sass-lint.yml'
+        },
+        target: ['sass/*.scss']
+    },
 		sass: {
       options: {
         outputStyle: "nested",
@@ -56,11 +62,12 @@ module.exports = function(grunt) {
       }
     }
 	});
+  grunt.loadNpmTasks('grunt-sass-lint');
 	grunt.loadNpmTasks('grunt-sass');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-ts');
   grunt.loadNpmTasks("grunt-tslint");
 	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.registerTask('default',['sass', 'cssmin', 'ts', 'tslint']);
+	grunt.registerTask('default',['sasslint', 'sass', 'cssmin', 'ts', 'tslint']);
 }
