@@ -1,0 +1,32 @@
+/* Header */
+h1 {
+  float: left;
+  vertical-align: middle;
+  margin: 8px 12px;
+  font-weight: normal;
+  font-size: 24px;
+}
+#header a {
+  display: block;
+  float: left;
+  height: 100%;
+  padding: 12px 6px;
+}
+#header i {
+  display: block;
+  vertical-align: middle;
+}
+#header ul {
+  display: none;
+  position: absolute;
+  background: rgba(68,68,68,0.9);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  top: 48px;
+  left: 96px;
+}
+#header li {
+  padding: 12px;
+  border-top: 1px solid #777;
+}

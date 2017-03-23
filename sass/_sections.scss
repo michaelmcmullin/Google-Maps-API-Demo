@@ -1,0 +1,16 @@
+/* Main sections */
+#header {
+  position: relative;
+  box-sizing: border-box;
+  background: #004784;
+  color: #fff;
+  width: 100%;
+  height: 48px;
+  z-index: 500;
+}
+#content {
+  position: absolute;
+  top: 48px;
+  bottom: 0;
+  width: 100%;
+}
