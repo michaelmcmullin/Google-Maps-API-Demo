@@ -11,15 +11,6 @@ a {
   cursor: pointer; }
 
 /* Main sections */
-#header {
-  background: #004784;
-  box-sizing: border-box;
-  color: #fff;
-  height: 48px;
-  position: relative;
-  width: 100%;
-  z-index: 500; }
-
 #content {
   bottom: 0;
   position: absolute;
@@ -34,29 +25,34 @@ h1 {
   margin: 8px 12px;
   vertical-align: middle; }
 
-#header a {
-  display: block;
-  float: left;
-  height: 100%;
-  padding: 12px 6px; }
-
-#header i {
-  display: block;
-  vertical-align: middle; }
-
-#header ul {
-  background: rgba(68, 68, 68, 0.9);
-  display: none;
-  left: 96px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  position: absolute;
-  top: 48px; }
-
-#header li {
-  border-top: 1px solid #777;
-  padding: 12px; }
+#header {
+  background: #004784;
+  box-sizing: border-box;
+  color: #fff;
+  height: 48px;
+  position: relative;
+  width: 100%;
+  z-index: 500; }
+  #header a {
+    display: block;
+    float: left;
+    height: 100%;
+    padding: 12px 6px; }
+  #header i {
+    display: block;
+    vertical-align: middle; }
+  #header ul {
+    background: rgba(68, 68, 68, 0.9);
+    display: none;
+    left: 96px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 48px; }
+  #header li {
+    border-top: 1px solid #777;
+    padding: 12px; }
 
 /* Control Panel */
 #main_controls {
@@ -68,24 +64,20 @@ h1 {
   padding: 12px 6px;
   position: absolute;
   z-index: 400; }
-
-#main_controls li i {
-  font-size: 24px;
-  padding: 6px; }
-
-#main_controls .separator {
-  border-bottom: 1px solid #777;
-  margin-bottom: 6px;
-  padding-bottom: 12px; }
-
-#main_controls a {
-  color: #aaa; }
-
-#main_controls a.selected {
-  color: #fff; }
+  #main_controls li i {
+    font-size: 24px;
+    padding: 6px; }
+  #main_controls .separator {
+    border-bottom: 1px solid #777;
+    margin-bottom: 6px;
+    padding-bottom: 12px; }
+  #main_controls a {
+    color: #aaa; }
+  #main_controls a.selected {
+    color: #fff; }
 
 /* About Modal */
-#about-modal {
+.modal-background {
   background: rgba(0, 0, 0, 0.75);
   display: none;
   height: 100%;
@@ -96,7 +88,7 @@ h1 {
   width: 100%;
   z-index: 1000; }
 
-#about-modal-content {
+.modal-window {
   background: #fff;
   margin: 10% auto;
   padding: 24px;
@@ -124,12 +116,6 @@ h1 {
   position: absolute;
   right: 0;
   z-index: 0; }
-
-.options-box {
-  box-shadow: 10px 10px 30px 0 rgba(0, 0, 0, 0.75);
-  margin-top: 10px;
-  position: absolute;
-  z-index: 1000; }
 
 #pano {
   height: 200px;

@@ -1,6 +1,6 @@
 /* About Modal */
-#about-modal {
-  background: rgba(0, 0, 0, .75);
+.modal-background {
+  background: $background-modal;
   display: none;
   height: 100%;
   left: 0;
@@ -11,8 +11,8 @@
   z-index: 1000;
 }
 
-#about-modal-content {
-  background: #fff;
+.modal-window {
+  background: $background-modal-content;
   margin: 10% auto;
   padding: 24px;
   width: 60%;

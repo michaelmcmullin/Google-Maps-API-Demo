@@ -7,30 +7,40 @@ h1 {
   vertical-align: middle;
 }
 
-#header a {
-  display: block;
-  float: left;
-  height: 100%;
-  padding: 12px 6px;
-}
+#header {
+  background: #004784;
+  box-sizing: border-box;
+  color: #fff;
+  height: 48px;
+  position: relative;
+  width: 100%;
+  z-index: 500;
 
-#header i {
-  display: block;
-  vertical-align: middle;
-}
+  a {
+    display: block;
+    float: left;
+    height: 100%;
+    padding: 12px 6px;
+  }
 
-#header ul {
-  background: rgba(68, 68, 68, .9);
-  display: none;
-  left: 96px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  position: absolute;
-  top: 48px;
-}
+  i {
+    display: block;
+    vertical-align: middle;
+  }
 
-#header li {
-  border-top: 1px solid #777;
-  padding: 12px;
+  ul {
+    background: rgba(68, 68, 68, .9);
+    display: none;
+    left: 96px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 48px;
+  }
+
+  li {
+    border-top: 1px solid #777;
+    padding: 12px;
+  }
 }
