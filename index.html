@@ -11,7 +11,7 @@
     <link href="css/styles.min.css" rel="stylesheet" />
 </head>
 <body>
-  <section id="header"> 
+  <section id="header" class="header"> 
     <h1>Find Your New NYC Home</h1>
     <a id="toggle-search" title="Search"><i class="material-icons">search</i></a>
     <ul id="search-panel">
@@ -45,12 +45,12 @@
     </ul>
   </section>
   
-  <section id="content">
+  <section id="content" class="content">
     <!-- The map itself -->
-    <div id="map"></div>
+    <div id="map" class="map"></div>
 
     <!-- Main Controls -->
-    <ul id="main_controls">
+    <ul id="main_controls" class="main-controls">
       <li class="separator"><a id="toggle-listings" type="button" title="Toggle Listings"><i class="material-icons">home</i></a></li>
 
       <li><a id="toggle-traffic" type="button" title="Toggle Traffic"><i class="material-icons">directions_car</i></a></li>
@@ -98,7 +98,7 @@
   </section>
 
   <!-- Directions panel (populated dynamically) -->
-  <section id="directions-panel">
+  <section id="directions-panel" class="directions-panel">
     <a class="close"><i class="material-icons">close</i></a>
     <h2 class="panel-title">Directions</h2>
     <div id="directions"></div>

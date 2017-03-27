@@ -7,10 +7,10 @@ h1 {
   vertical-align: middle;
 }
 
-#header {
-  background: #004784;
+.header {
+  background: $background-header;
   box-sizing: border-box;
-  color: #fff;
+  color: $color-header;
   height: 48px;
   position: relative;
   width: 100%;
@@ -29,7 +29,7 @@ h1 {
   }
 
   ul {
-    background: rgba(68, 68, 68, .9);
+    background: $background-controls;//rgba(68, 68, 68, .9);
     display: none;
     left: 96px;
     list-style: none;
@@ -40,7 +40,7 @@ h1 {
   }
 
   li {
-    border-top: 1px solid #777;
+    border-top: 1px solid $color-controls-button;
     padding: 12px;
   }
 }

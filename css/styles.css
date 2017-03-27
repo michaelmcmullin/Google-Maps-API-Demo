@@ -11,7 +11,7 @@ a {
   cursor: pointer; }
 
 /* Main sections */
-#content {
+.content {
   bottom: 0;
   position: absolute;
   top: 48px;
@@ -25,7 +25,7 @@ h1 {
   margin: 8px 12px;
   vertical-align: middle; }
 
-#header {
+.header {
   background: #004784;
   box-sizing: border-box;
   color: #fff;
@@ -33,15 +33,15 @@ h1 {
   position: relative;
   width: 100%;
   z-index: 500; }
-  #header a {
+  .header a {
     display: block;
     float: left;
     height: 100%;
     padding: 12px 6px; }
-  #header i {
+  .header i {
     display: block;
     vertical-align: middle; }
-  #header ul {
+  .header ul {
     background: rgba(68, 68, 68, 0.9);
     display: none;
     left: 96px;
@@ -50,12 +50,12 @@ h1 {
     padding: 0;
     position: absolute;
     top: 48px; }
-  #header li {
-    border-top: 1px solid #777;
+  .header li {
+    border-top: 1px solid #aaa;
     padding: 12px; }
 
 /* Control Panel */
-#main_controls {
+.main-controls {
   background: rgba(68, 68, 68, 0.9);
   border-radius: 12px;
   display: block;
@@ -64,17 +64,17 @@ h1 {
   padding: 12px 6px;
   position: absolute;
   z-index: 400; }
-  #main_controls li i {
+  .main-controls li i {
     font-size: 24px;
     padding: 6px; }
-  #main_controls .separator {
+  .main-controls .separator {
     border-bottom: 1px solid #777;
     margin-bottom: 6px;
     padding-bottom: 12px; }
-  #main_controls a {
+  .main-controls a {
     color: #aaa; }
-  #main_controls a.selected {
-    color: #fff; }
+    .main-controls a .selected {
+      color: #fff; }
 
 /* About Modal */
 .modal-background {
@@ -95,7 +95,7 @@ h1 {
   width: 60%; }
 
 /* Directions */
-#directions-panel {
+.directions-panel {
   background: #fff;
   display: none;
   padding: 24px;
@@ -109,7 +109,7 @@ h1 {
   float: right; }
 
 /* Map */
-#map {
+.map {
   bottom: 0;
   height: 100%;
   left: 0;
@@ -117,7 +117,7 @@ h1 {
   right: 0;
   z-index: 0; }
 
-#pano {
+.pano {
   height: 200px;
   width: 200px; }
 

@@ -102,7 +102,7 @@ class ListingMarker extends MarkerWithInfoWindow {
         const heading = google.maps.geometry.spherical.computeHeading(
           nearStreetViewLocation, ListingMarker.currentMarker.getPosition());
         ListingMarker.currentInfoWindow.setContent(
-          "<div>" + ListingMarker.currentMarker.getTitle() + "</div><div id=\"pano\"></div>");
+          "<div>" + ListingMarker.currentMarker.getTitle() + "</div><div id=\"pano\" class=\"pano\"></div>");
         const panoramaOptions = {
           position: nearStreetViewLocation,
           pov: {

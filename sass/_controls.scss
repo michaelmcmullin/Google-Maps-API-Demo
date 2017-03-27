@@ -1,5 +1,5 @@
 /* Control Panel */
-#main_controls {
+.main-controls {
   background: $background-controls;
   border-radius: 12px;
   display: block;
@@ -9,21 +9,24 @@
   position: absolute;
   z-index: 400;
 
-  li i {
-    font-size: 24px;
-    padding: 6px;
+  li {
+    i {
+      font-size: 24px;
+      padding: 6px;
+    }
   }
 
   .separator {
-    border-bottom: 1px solid #777;
+    border-bottom: 1px solid $border-color-controls-separator;
     margin-bottom: 6px;
     padding-bottom: 12px;
   }
 
   a {
-    color: #aaa;
-  }
-  a.selected {
-    color: #fff;
+    color: $color-controls-button;
+
+    .selected {
+      color: $color-controls-button-selected;
+    }
   }
 }
