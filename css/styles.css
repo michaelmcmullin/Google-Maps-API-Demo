@@ -10,14 +10,12 @@ body {
 a {
   cursor: pointer; }
 
-/* Main sections */
 .content {
   bottom: 0;
   position: absolute;
   top: 48px;
   width: 100%; }
 
-/* Header */
 h1 {
   float: left;
   font-size: 24px;
@@ -54,7 +52,6 @@ h1 {
     border-top: 1px solid #aaa;
     padding: 12px; }
 
-/* Control Panel */
 .main-controls {
   background: rgba(68, 68, 68, 0.9);
   border-radius: 12px;
@@ -76,7 +73,6 @@ h1 {
     .main-controls a .selected {
       color: #fff; }
 
-/* About Modal */
 .modal-background {
   background: rgba(0, 0, 0, 0.75);
   display: none;
@@ -94,7 +90,6 @@ h1 {
   padding: 24px;
   width: 60%; }
 
-/* Directions */
 .directions-panel {
   background: #fff;
   display: none;
@@ -108,7 +103,6 @@ h1 {
 .close {
   float: right; }
 
-/* Map */
 .map {
   bottom: 0;
   height: 100%;
