@@ -1,6 +1,6 @@
 # Google Maps API Demo
 
-[Live Demo](https://mrmcnerd.github.io/Google-Maps-API-Demo/)
+## [Live Demo](https://michaelmcmullin.github.io/Google-Maps-API-Demo/)
 
 This page began by following along with Udacity's [Google Maps APIs course](https://www.udacity.com/course/google-maps-apis--ud864).
 Most of the starter code came from there originally (check out their [repo here](https://github.com/udacity/ud864)).
